@@ -1,10 +1,28 @@
+------------
+Introduction
+------------
+
 Welcome to the VoxelGuest 4 (Bouncer) github repository! Yes, we are releasing VoxelGuest to the public and making it open source on Github. The project will be big, as it is a HUGE plugin. The original versions were much more aimed for exclusive use on The Voxel Box, but psanker wanted to make it a lot more modularized and abstracted to be quicker and cleaner.
 
 There will be two versions, one with use of any standardized Permissions system integration for commands and one mainly for The Voxel Box (psanker will probably do this version solely). If you wish to work on VG4, contact psanker on bukkit.org, thevoxelbox.com/forum/ or on irc.esper.net. He will tell you what you can do.
 
 Licensed under GPL (will put up copy later). Contributors: once your PR has been accepted, you will be added to the contribution list below (to be recognized for your work).
 
+
+------------
 Contributors
 ------------
 
 psanker
+
+
+------------
+Documentation
+and Discussion
+------------
+
+Documentation is available at the VoxelWiki:
+http://voxelwiki.com/minecraft/VoxelGuest
+
+Discussion is ongoing at the VoxelForum:
+http://thevoxelbox.com/forum/minecraft-mods-plugins/voxelguest-4-discussion-t577.html
