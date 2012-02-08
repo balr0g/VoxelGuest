@@ -82,7 +82,7 @@ public class CommandsManager {
     public boolean executeCommand(org.bukkit.command.Command command, CommandSender cs, String[] args) {
         // Search if command is registered
         if (!this.isRegistered(command.getName())) {
-            cs.sendMessage("¤cUnhandled command: " + command.getName());
+            cs.sendMessage("Â§cUnhandled command: " + command.getName());
             return false;
         }
         
@@ -90,7 +90,7 @@ public class CommandsManager {
         Method method = aliases.get(command.getName());
         
         if (!method.isAnnotationPresent(Command.class)) {
-            cs.sendMessage("¤cMalformatted command: " + command.getName());
+            cs.sendMessage("Â§cMalformatted command: " + command.getName());
             VoxelGuest.log("Found incorrectly formatted command " + command.getName() + " that was registered.", 1);
             return false;
         }
@@ -101,21 +101,21 @@ public class CommandsManager {
         boolean playerOnly = cmd.playerOnly();
         
         if (playerOnly && !(cs instanceof Player)) {
-            cs.sendMessage("¤cPlayer-only command: " + command.getName());
+            cs.sendMessage("Â§cPlayer-only command: " + command.getName());
             return false;
         }
         
         int[] bounds = cmd.bounds();
         if (args.length < bounds[0] || (args.length > bounds[1] && bounds[1] >= 0)) {
-            cs.sendMessage("¤cArgument length out of bounds: " + command.getName());
-            cs.sendMessage("¤6Usage: " + command.getUsage());
+            cs.sendMessage("Â§cArgument length out of bounds: " + command.getName());
+            cs.sendMessage("Â§6Usage: " + command.getUsage());
             return false;
         }
         
         if (args.length == 1 && Arrays.asList(helpArgs).contains(args[0])) {
-            cs.sendMessage("¤6===Help: " + command.getName() + "===");
+            cs.sendMessage("Â§6===Help: " + command.getName() + "===");
             cs.sendMessage(cmd.help());
-            cs.sendMessage("¤6=========================");
+            cs.sendMessage("Â§6=========================");
             return true;
         }
         
@@ -123,7 +123,7 @@ public class CommandsManager {
         	CommandPermission perm = method.getAnnotation(CommandPermission.class);
         	
         	if (!GuestPermissions.hasPermission(cs, perm.permission())) {
-        		cs.sendMessage("¤cYou do not have sufficient privileges to access this command.");
+        		cs.sendMessage("Â§cYou do not have sufficient privileges to access this command.");
         		return false;
         	}
         }
@@ -140,13 +140,13 @@ public class CommandsManager {
             method.invoke(instance, commandMethodArgs);
             return true;
         } catch (IllegalAccessException ex) {
-            cs.sendMessage("¤cInternal error. Could not execute command.");
+            cs.sendMessage("Â§cInternal error. Could not execute command.");
             return false;
         } catch (IllegalArgumentException ex) {
-            cs.sendMessage("¤cInternal error. Could not execute command.");
+            cs.sendMessage("Â§cInternal error. Could not execute command.");
             return false;
         } catch (InvocationTargetException ex) {
-            cs.sendMessage("¤cInternal error. Could not execute command.");
+            cs.sendMessage("Â§cInternal error. Could not execute command.");
             return false;
         }
     }
