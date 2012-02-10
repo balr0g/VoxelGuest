@@ -5,7 +5,7 @@
 package com.thevoxelbox.voxelguest.commands;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
-import com.thevoxelbox.voxelguest.permissions.GuestPermissions;
+import com.thevoxelbox.voxelguest.permissions.GuestPermissionsHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,9 +121,9 @@ public class CommandsManager {
         if (method.isAnnotationPresent(CommandPermission.class)) {
             CommandPermission perm = method.getAnnotation(CommandPermission.class);
 
-            if (!GuestPermissions.hasPermission(cs, perm.permission())) {
-                cs.sendMessage("§cYou do not have sufficient privileges to access this command.");
-                return false;
+            // -- Check if cs is player or not
+            if (cs instanceof Player) {
+                
             }
         }
         
@@ -132,7 +132,7 @@ public class CommandsManager {
             
             if (Arrays.asList(subs.arguments()).contains(args[0])) {
                 for (int i = 0; i < subs.arguments().length; i++) {
-                    if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !GuestPermissions.hasPermission(cs, subs.permission()[i])) {
+                    if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !GuestPermissionsHandler.hasPermission(cs, subs.permission()[i])) {
                         cs.sendMessage("§cYou do not have sufficient privileges to access this command.");
                         return false;
                     }

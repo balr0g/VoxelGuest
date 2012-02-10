@@ -8,6 +8,7 @@ import com.thevoxelbox.voxelguest.commands.CommandsManager;
 import com.thevoxelbox.voxelguest.commands.commands.AsshatMitigationCommands;
 import com.thevoxelbox.voxelguest.listeners.ChatEventListener;
 import com.thevoxelbox.voxelguest.listeners.LoginEventListener;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 
 import java.util.HashMap;
@@ -17,11 +18,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class VoxelGuest extends JavaPlugin {
@@ -32,6 +35,7 @@ public class VoxelGuest extends JavaPlugin {
     protected static LoginEventListener loginListener = new LoginEventListener();
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
+    protected static PermissionsManager perms;
     public static String joinFormat = "&8($gc:$g#&8) &3$n &7joined";
     public static String leaveFormat = "&8($gc:$g#&8) &3$n &7left";
 
@@ -43,10 +47,12 @@ public class VoxelGuest extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        perms = new PermissionsManager(this.getServer());
         registerPluginIds();
 
         Bukkit.getPluginManager().registerEvents(chatListener, this);
         Bukkit.getPluginManager().registerEvents(loginListener, this);
+        Bukkit.getPluginManager().registerEvents(perms, this);
 
         commandsManager.registerCommands(AsshatMitigationCommands.class);
 
