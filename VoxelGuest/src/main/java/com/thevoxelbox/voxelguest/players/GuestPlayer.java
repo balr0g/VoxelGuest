@@ -12,7 +12,7 @@ public class GuestPlayer {
 
     protected Player p;
     protected Map<String, HashMap<String, Object>> storage = new HashMap<String, HashMap<String, Object>>();
-
+    
     public GuestPlayer(Player player) {
         this.p = player;
 

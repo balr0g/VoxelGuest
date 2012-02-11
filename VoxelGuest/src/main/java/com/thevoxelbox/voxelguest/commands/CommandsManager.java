@@ -5,8 +5,8 @@
 package com.thevoxelbox.voxelguest.commands;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
-import com.thevoxelbox.voxelguest.permissions.GuestPermissionsHandler;
 
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -123,18 +123,27 @@ public class CommandsManager {
 
             // -- Check if cs is player or not
             if (cs instanceof Player) {
+                Player p = (Player) cs;
                 
+                if (!PermissionsManager.getHandler().hasPermission(p.getName(), perm.permission())) {
+                    cs.sendMessage("§cYou do not have sufficient privileges to access this command.");
+                    return false;
+                }      
             }
         }
         
         if (method.isAnnotationPresent(Subcommands.class)) {
             Subcommands subs = method.getAnnotation(Subcommands.class);
             
-            if (Arrays.asList(subs.arguments()).contains(args[0])) {
-                for (int i = 0; i < subs.arguments().length; i++) {
-                    if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !GuestPermissionsHandler.hasPermission(cs, subs.permission()[i])) {
-                        cs.sendMessage("§cYou do not have sufficient privileges to access this command.");
-                        return false;
+            if (cs instanceof Player) {
+                Player p = (Player) cs;
+                
+                if (Arrays.asList(subs.arguments()).contains(args[0])) {
+                    for (int i = 0; i < subs.arguments().length; i++) {
+                        if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !PermissionsManager.getHandler().hasPermission(p.getName(), subs.permission()[i])) {
+                            cs.sendMessage("§cYou do not have sufficient privileges to access this command.");
+                            return false;
+                        }
                     }
                 }
             }
@@ -231,7 +240,8 @@ public class CommandsManager {
  *      aliases={"command", "cmnd", "cmd"},
  *      bounds={0,-1},
  *      help="This is the help for this command\n" +
- *           "This is another line of help"
+ *           "This is another line of help" +
+ *      playerOnly = true // This is in case you want this command to be player only
  * )
  * public void command(CommandSender cs, String[] args) { // <-- YOU NEED THESE ARGS
  *      ... Code to execute...

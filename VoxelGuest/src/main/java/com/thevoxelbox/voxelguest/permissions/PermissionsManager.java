@@ -6,6 +6,7 @@ package com.thevoxelbox.voxelguest.permissions;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,25 +20,25 @@ import org.bukkit.event.server.PluginEnableEvent;
  * Inspired by WEPIF
  * 
  */
-public class PermissionsManager implements Listener {
-    
-    private final Server server;
-    
-    protected PermissionsHandler handler; // instance of external handler
-    protected GuestPermissionsHandler defaultHandler = new GuestPermissionsHandler();
+public class PermissionsManager extends PermissionsHandler implements Listener {
+    protected static PermissionsHandler handler;
     
     public PermissionsManager(Server server) {
         this.server = server;
     }
     
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
-        GuestPermissionsHandler.class,
-        PermissionsExHandler.class
+        PermissionsExHandler.class,
+        BPermissionsHandler.class
     };
     
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPluginEnable(PluginEnableEvent event) {
-        registerActiveHandler();
+        String[] plugins = {"PermissionsEx", "bPermissions"};
+        
+        if (Arrays.asList(plugins).contains(event.getPlugin().getDescription().getName())) {
+            registerActiveHandler();
+        }
     }
     
     public void registerActiveHandler() {
@@ -47,34 +48,52 @@ public class PermissionsManager implements Listener {
 
                 PermissionsHandler _handler = (PermissionsHandler) init.invoke(null, this.server);
 
-                if (!(_handler.equals(defaultHandler))) {
+                if (_handler != null) {
                     handler = _handler;
                     VoxelGuest.log(handler.getDetectionMessage(), 0);
+                    break;
                 }
+                
             } catch (Throwable t) {
-                VoxelGuest.log("Error in installing permissions handler", 2);
-                handler = defaultHandler;
-                VoxelGuest.log(handler.getDetectionMessage(), 0);
+                continue;
             }
         }
         
-        handler = defaultHandler;
+        handler = this;
         VoxelGuest.log(handler.getDetectionMessage(), 0);
     }
     
+    public static PermissionsHandler getHandler() {
+        return handler;
+    }
+    
+    @Override
     public boolean hasPermission(String name, String permission) {
         return handler.hasPermission(name, permission);
     }
     
+    @Override
     public boolean hasPermission(String world, String name, String permission) {
         return handler.hasPermission(world, name, permission);
     }
     
+    @Override
     public boolean inGroup(String name, String group) {
         return handler.inGroup(name, group);
     }
     
+    @Override
     public String[] getGroups(String name) {
         return handler.getGroups(name);
+    }
+
+    @Override
+    public PermissionsHandler initialize(Server server) {
+        throw new UnsupportedOperationException("Incorrect usage of main permissions manager");
+    }
+
+    @Override
+    public String getDetectionMessage() {
+        return "Using built-in permissions system";
     }
 }

@@ -14,7 +14,7 @@
         <file>
             <source>${project.build.directory}/${artifactId}-${project.version}.jar</source>
             <destName>VoxelGuest.jar</destName>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>${project.build.directory}</outputDirectory>
             <filtered>false</filtered>
         </file>
     </files>

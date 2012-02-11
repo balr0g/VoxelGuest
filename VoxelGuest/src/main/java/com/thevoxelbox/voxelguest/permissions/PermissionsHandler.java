@@ -16,6 +16,8 @@ public abstract class PermissionsHandler {
     
     public abstract PermissionsHandler initialize(Server server);
     
+    public abstract String getDetectionMessage();
+    
     public abstract boolean hasPermission(String name, String permission);
     
     public abstract boolean hasPermission(String world, String name, String permission);
@@ -23,6 +25,4 @@ public abstract class PermissionsHandler {
     public abstract boolean inGroup(String name, String group);
     
     public abstract String[] getGroups(String name);
-    
-    public abstract String getDetectionMessage();
 }
