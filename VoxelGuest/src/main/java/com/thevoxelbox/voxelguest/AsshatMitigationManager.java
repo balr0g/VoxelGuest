@@ -1,4 +1,4 @@
-package com.thevoxelbox.voxelguest.players;
+package com.thevoxelbox.voxelguest;
 
 import java.util.LinkedList;
 import java.util.List;

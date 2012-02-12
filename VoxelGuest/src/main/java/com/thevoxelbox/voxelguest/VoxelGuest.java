@@ -34,8 +34,6 @@ public class VoxelGuest extends JavaPlugin {
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
     protected static PermissionsManager perms;
-    public static String joinFormat = "&8($gc:$g#&8) &3$n &7joined";
-    public static String leaveFormat = "&8($gc:$g#&8) &3$n &7left";
 
     @Override
     public void onDisable() {

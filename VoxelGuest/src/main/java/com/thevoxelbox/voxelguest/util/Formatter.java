@@ -1,24 +1,21 @@
 package com.thevoxelbox.voxelguest.util;
 
-import com.thevoxelbox.voxelguest.players.GuestPlayer;
+import java.lang.reflect.Method;
 
-public class Formatter {
-
-    /*
-     * --------------
-     * FORMAT HANDLES
-     * --------------
-     * $n = name of the player
-     * $name = long form of $n
-     * $g = group of the player // How do I handle multigroup? Queries?
-     * $group = long form of $g
-     * $g# = number of online players of player's group
-     * $gc = code for that group (if desired) // How do I handle multigroup? Queries?
-     * 
-     */
-    public static String format(String input, GuestPlayer gp) {
-        String output = input;
-
-        return output;
+public abstract class Formatter {
+    
+    public static Formatter selectFormatter(Class<? extends Formatter> cls) {
+        try {
+            Method method = cls.getMethod("install");
+            
+            Formatter formatter = (Formatter) method.invoke(null);
+            return formatter;
+        } catch (Throwable t) {
+            return null;
+        }
     }
+    
+    public abstract Formatter install();
+    
+    public abstract String[] format(String in);
 }
