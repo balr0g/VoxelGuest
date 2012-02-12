@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.thevoxelbox.voxelguest.permissions;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
@@ -29,7 +25,8 @@ public class PermissionsManager extends PermissionsHandler implements Listener {
     
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
         PermissionsExHandler.class,
-        BPermissionsHandler.class
+        BPermissionsHandler.class,
+        DinnerpermsHandler.class
     };
     
     @EventHandler(priority=EventPriority.MONITOR)
@@ -58,9 +55,6 @@ public class PermissionsManager extends PermissionsHandler implements Listener {
                 continue;
             }
         }
-        
-        handler = this;
-        VoxelGuest.log(handler.getDetectionMessage(), 0);
     }
     
     public static PermissionsHandler getHandler() {
@@ -89,11 +83,11 @@ public class PermissionsManager extends PermissionsHandler implements Listener {
 
     @Override
     public PermissionsHandler initialize(Server server) {
-        throw new UnsupportedOperationException("Incorrect usage of main permissions manager");
+        return handler.initialize(server);
     }
 
     @Override
     public String getDetectionMessage() {
-        return "Using built-in permissions system";
+        return handler.getDetectionMessage();
     }
 }

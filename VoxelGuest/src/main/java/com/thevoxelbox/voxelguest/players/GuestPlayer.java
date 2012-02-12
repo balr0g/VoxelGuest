@@ -17,6 +17,7 @@ public class GuestPlayer {
         this.p = player;
 
         Map<String, Object> data = IOManager.load(p.getName(), "/players");
+        storage.put(VoxelGuest.getPluginId(VoxelGuest.getInstance()), ((HashMap<String, Object>) data));
     }
 
     public Player getPlayer() {
