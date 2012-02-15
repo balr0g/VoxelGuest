@@ -26,7 +26,8 @@ public class PermissionsManager extends PermissionsHandler implements Listener {
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
         PermissionsExHandler.class,
         BPermissionsHandler.class,
-        DinnerpermsHandler.class
+        DinnerpermsHandler.class,
+        GuestPermissionsHandler.class
     };
     
     @EventHandler(priority=EventPriority.MONITOR)
@@ -46,6 +47,9 @@ public class PermissionsManager extends PermissionsHandler implements Listener {
                 PermissionsHandler _handler = (PermissionsHandler) init.invoke(null, this.server);
 
                 if (_handler != null) {
+                    if (_handler instanceof GuestPermissionsHandler)
+                        continue;
+                    
                     handler = _handler;
                     VoxelGuest.log(handler.getDetectionMessage(), 0);
                     break;
@@ -55,6 +59,9 @@ public class PermissionsManager extends PermissionsHandler implements Listener {
                 continue;
             }
         }
+        
+        handler = new GuestPermissionsHandler(server);
+        VoxelGuest.log(handler.getDetectionMessage(), 0);
     }
     
     public static PermissionsHandler getHandler() {
