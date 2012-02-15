@@ -109,6 +109,9 @@ public class GuestPermissionsHandler extends PermissionsHandler {
         List<String> list = yamlPerms.getStringList("group." + group + ".permissions");
         String parent = yamlPerms.getString("group." + group + ".inherits");
         
+        if (list.contains("*") || list.contains("all"))
+            return true;
+        
         if (list == null)
             return false;
         else if (processNodes(list, permission))
