@@ -70,7 +70,10 @@ public class GuestPermissionsHandler extends PermissionsHandler {
         List<String> list = yamlPerms.getStringList("user." + name + ".permissions");
         String group = yamlPerms.getString("user." + name + ".group");
         
-        if (list != null && list.contains(permission))
+        if (list.contains("*") || list.contains("all"))
+            return true;
+        
+        if (processNodes(list, permission))
             return true;
         
         if (group != null)
@@ -108,10 +111,30 @@ public class GuestPermissionsHandler extends PermissionsHandler {
         
         if (list == null)
             return false;
-        else if (list.contains(permission))
+        else if (processNodes(list, permission))
             return true;
         else if (parent != null)
             return hasGroupPermissionRecursive(parent, permission);
+        
+        return false;
+    }
+    
+    private boolean processNodes(List<String> permissions, String permission) {
+        String[] nodes = permission.split(".");
+        int maxIndex = nodes.length;
+        String concat = "";
+        
+        for (int i = 0; i < maxIndex; i++) {
+            String node = nodes[i];
+            concat = concat + "." + node;
+            
+            if ((node.equals("*") || node.equals("all")) && (i <= (maxIndex - 1))) {
+                return true;
+            }
+            
+            if (permissions.contains(concat))
+                return true;
+        }
         
         return false;
     }
