@@ -6,7 +6,7 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
-import com.thevoxelbox.voxelguest.util.IOManager;
+import com.thevoxelbox.voxelguest.util.PropertyManager;
 
 public class GuestPlayer {
 
@@ -16,7 +16,7 @@ public class GuestPlayer {
     public GuestPlayer(Player player) {
         this.p = player;
 
-        Map<String, Object> data = IOManager.load(p.getName(), "/players");
+        Map<String, Object> data = PropertyManager.load(p.getName(), "/players");
         storage.put(VoxelGuest.getPluginId(VoxelGuest.getInstance()), ((HashMap<String, Object>) data));
     }
 

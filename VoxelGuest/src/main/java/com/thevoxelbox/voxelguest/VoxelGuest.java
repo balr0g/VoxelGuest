@@ -130,6 +130,10 @@ public class VoxelGuest extends JavaPlugin {
     public static CommandsManager getCommandsManager() {
         return commandsManager;
     }
+    
+    public static void log(String str) {
+        log(str, 0);
+    }
 
     public static void log(String str, int importance) {
         switch (importance) {

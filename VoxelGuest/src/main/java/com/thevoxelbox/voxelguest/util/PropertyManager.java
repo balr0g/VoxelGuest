@@ -12,11 +12,11 @@ import java.util.Properties;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
 
-public class IOManager {
+public class PropertyManager {
 
     private static String directory = "plugins/VoxelGuest/data";
 
-    public IOManager(String dir) {
+    public PropertyManager(String dir) {
         directory = dir;
     }
 
@@ -132,7 +132,7 @@ public class IOManager {
         }
     }
 
-    private static final Object[] parseList(String input) {
+    private static Object[] parseList(String input) {
         input = input.trim();
         String[] split = input.split(",");
         Object[] obj = new Object[split.length];
