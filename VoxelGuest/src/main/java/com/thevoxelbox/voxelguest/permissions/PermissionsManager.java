@@ -16,11 +16,12 @@ import org.bukkit.event.server.PluginEnableEvent;
  * Inspired by WEPIF
  * 
  */
-public class PermissionsManager extends PermissionsHandler implements Listener {
+public class PermissionsManager implements Listener {
+    private final Server server;
     protected static PermissionsHandler handler;
     
-    public PermissionsManager(Server server) {
-        this.server = server;
+    public PermissionsManager(Server s) {
+        server = s;
     }
     
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
@@ -68,32 +69,22 @@ public class PermissionsManager extends PermissionsHandler implements Listener {
         return handler;
     }
     
-    @Override
     public boolean hasPermission(String name, String permission) {
         return handler.hasPermission(name, permission);
     }
     
-    @Override
     public boolean hasPermission(String world, String name, String permission) {
         return handler.hasPermission(world, name, permission);
     }
     
-    @Override
     public boolean inGroup(String name, String group) {
         return handler.inGroup(name, group);
     }
     
-    @Override
     public String[] getGroups(String name) {
         return handler.getGroups(name);
     }
 
-    @Override
-    public PermissionsHandler initialize(Server server) {
-        return handler.initialize(server);
-    }
-
-    @Override
     public String getDetectionMessage() {
         return handler.getDetectionMessage();
     }
