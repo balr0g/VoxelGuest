@@ -5,7 +5,9 @@
 package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.commands.CommandException;
+import com.thevoxelbox.commands.CommandMethodInvocationException;
 import com.thevoxelbox.commands.CommandsManager;
+import com.thevoxelbox.commands.MalformattedCommandException;
 import com.thevoxelbox.voxelguest.commands.AsshatMitigationCommands;
 import com.thevoxelbox.voxelguest.listeners.ChatEventListener;
 import com.thevoxelbox.voxelguest.listeners.LoginEventListener;
@@ -86,6 +88,12 @@ public class VoxelGuest extends JavaPlugin {
             
             for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report)) {
                 cs.sendMessage(str);
+            }
+            
+            if (ex instanceof CommandMethodInvocationException || ex instanceof MalformattedCommandException) {
+                log(ex.getReason(), 2);
+                ex.printStackTrace();
+                return true;
             }
             
             commandLog(command, cs, args, false);
