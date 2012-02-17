@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.thevoxelbox.commands;
 
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
@@ -18,7 +14,7 @@ import org.bukkit.entity.Player;
 
 /**
  *
- * @author patrick
+ * @author psanker
  */
 public class CommandsManager {
     // =============================
@@ -106,9 +102,7 @@ public class CommandsManager {
         }
 
         if (args.length == 1 && Arrays.asList(helpArgs).contains(args[0])) {
-            cs.sendMessage("§6===Help: " + command.getName() + "===");
-            cs.sendMessage(cmd.help());
-            cs.sendMessage("§6=========================");
+            sendHelp(cs, command);
             return;
         }
 
@@ -160,7 +154,23 @@ public class CommandsManager {
         }
     }
     
-    public static void log(String str, int importance) {
+    public void sendHelp(CommandSender cs, org.bukkit.command.Command command) throws MalformattedCommandException {
+        Method method = aliases.get(command.getName());
+        
+        if (!method.isAnnotationPresent(Command.class)) {
+            throw new MalformattedCommandException("Malformatted command: " + command.getName());
+        }
+
+        Command cmd = method.getAnnotation(Command.class);
+        
+        String help = "&6===Help: " + command.getName() + "===\n" + cmd.help() + "\n" + "&6=========================";
+        
+        for (String str : encodeMessage(help)) {
+            cs.sendMessage(str);
+        }
+    }
+    
+    private static void log(String str, int importance) {
         switch (importance) {
             case 0:
                 Logger.getLogger("Mincraft").info(tag + " " + str);
@@ -175,6 +185,14 @@ public class CommandsManager {
                 Logger.getLogger("Mincraft").info(tag + " " + str);
                 return;
         }
+    }
+    
+    private static String[] encodeMessage(String message) {
+        for (FormatColors color : FormatColors.values())
+            message = message.replace(color.getColorCode(), color.getBukkitColorCode());
+        
+        String[] split = message.split("\n");
+        return split;
     }
 }
 
@@ -196,3 +214,36 @@ public class CommandsManager {
  * 
  * 
  */
+
+enum FormatColors {
+    WHITE("&f"),
+    DARK_BLUE("&1"),
+    DARK_GREEN("&2"),
+    TEAL("&3"),
+    DARK_RED("&4"),
+    PURPLE("&5"),
+    ORANGE("&6"),
+    LIGHT_GREY("&7"),
+    DARK_GREY("&8"),
+    INDIGO("&9"),
+    LIGHT_GREEN("&a"),
+    CYAN("&b"),
+    RED("&c"),
+    PINK("&d"),
+    YELLOW("&e"),
+    BLACK("&0");
+    
+    private String color;
+    
+    private FormatColors(String c) {
+        color = c;
+    }
+    
+    public String getColorCode() {
+        return color;
+    }
+    
+    public String getBukkitColorCode() {
+        return color.replace("&", "\u00A7");
+    }
+ }

@@ -4,6 +4,7 @@
  */
 package com.thevoxelbox.voxelguest;
 
+import com.thevoxelbox.commands.ArgumentOutOfBoundsException;
 import com.thevoxelbox.commands.CommandException;
 import com.thevoxelbox.commands.CommandMethodInvocationException;
 import com.thevoxelbox.commands.CommandsManager;
@@ -28,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -94,6 +96,20 @@ public class VoxelGuest extends JavaPlugin {
                 log(ex.getReason(), 2);
                 ex.printStackTrace();
                 return true;
+            } else if (ex instanceof ArgumentOutOfBoundsException) {
+                try {
+                    commandsManager.sendHelp(cs, command);
+                } catch (MalformattedCommandException ex1) {
+                    String _report = "&c" + ex1.getReason();
+            
+                    for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(_report)) {
+                        cs.sendMessage(str);
+                    }
+                    
+                    log(ex.getReason(), 2);
+                    ex.printStackTrace();
+                    return true;
+                }
             }
             
             commandLog(command, cs, args, false);
