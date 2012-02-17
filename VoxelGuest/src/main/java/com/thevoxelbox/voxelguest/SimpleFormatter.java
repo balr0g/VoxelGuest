@@ -2,6 +2,7 @@ package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.voxelguest.util.Formatter;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
+import com.thevoxelbox.voxelguest.util.Configuration;
 
 public class SimpleFormatter extends Formatter {
     
@@ -11,10 +12,12 @@ public class SimpleFormatter extends Formatter {
      * --------------
      * $n = name of the player
      * $name = long form of $n
-     * $g = group of the player // How do I handle multigroup? Queries?
+     * $g = group (INDEX 0) of the player
      * $group = long form of $g
-     * $g# = number of online players of player's group
-     * $gc = code for that group (if desired) // How do I handle multigroup? Queries?
+     * $gc = code for that group (if desired)
+     * 
+     * Would be best to extend from this implementation
+     * so you don't have to rewrite the group crap again
      * 
      */
     
@@ -30,16 +33,29 @@ public class SimpleFormatter extends Formatter {
     
     public String[] format(String input, GuestPlayer gp) {
         String copy = input;
-        boolean groupParsing;
+        boolean guestPlayerParcing;
         
-        groupParsing = (gp == null) ? false : true;
+        guestPlayerParcing = (gp == null) ? false : true;
         
-        // -- Procesing --
+        if (guestPlayerParcing) {
+            
+            if (gp.getGroups() != null) {
+                String group = gp.getGroups()[0];
+                Configuration config = VoxelGuest.getGroupManager().getGroupConfiguration(group);
+                String groupID = config.getString("group-id");
+
+                copy = copy.replace("$group", group);
+                if (groupID != null) {copy = copy.replace("$gc", groupID);}
+                copy = copy.replace("$g", group);
+            }
+            
+            copy = copy.replace("$name", gp.getPlayer().getName());
+            copy = copy.replace("$n", gp.getPlayer().getName());
+        }
+        
+        copy = encodeColors(copy);
         
         String[] copies = copy.split("\n");
-        
-        // -- Procesing --
-        
         return copies;
     }
 }

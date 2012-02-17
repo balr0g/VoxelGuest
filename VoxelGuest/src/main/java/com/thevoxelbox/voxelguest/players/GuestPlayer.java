@@ -6,18 +6,22 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.util.PropertyManager;
 
 public class GuestPlayer {
 
     protected Player p;
     protected Map<String, HashMap<String, Object>> storage = new HashMap<String, HashMap<String, Object>>();
+    protected String[] groups;
     
     public GuestPlayer(Player player) {
         this.p = player;
 
         Map<String, Object> data = PropertyManager.load(p.getName(), "/players");
         storage.put(VoxelGuest.getPluginId(VoxelGuest.getInstance()), ((HashMap<String, Object>) data));
+        
+        groups = PermissionsManager.getHandler().getGroups(p.getName());
     }
 
     public Player getPlayer() {
@@ -54,5 +58,9 @@ public class GuestPlayer {
         } else {
             return null;
         }
+    }
+    
+    public String[] getGroups() {
+        return groups;
     }
 }

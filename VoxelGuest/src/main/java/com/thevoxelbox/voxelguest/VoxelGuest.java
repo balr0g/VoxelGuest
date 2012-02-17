@@ -9,6 +9,7 @@ import com.thevoxelbox.voxelguest.commands.commands.AsshatMitigationCommands;
 import com.thevoxelbox.voxelguest.listeners.ChatEventListener;
 import com.thevoxelbox.voxelguest.listeners.LoginEventListener;
 import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.players.GroupManager;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public class VoxelGuest extends JavaPlugin {
     protected static LoginEventListener loginListener = new LoginEventListener();
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
+    protected static GroupManager groupManager;
     protected static PermissionsManager perms;
 
     @Override
@@ -44,6 +46,7 @@ public class VoxelGuest extends JavaPlugin {
     public void onEnable() {
         instance = this;
         perms = new PermissionsManager(this.getServer());
+        groupManager = new GroupManager();
         registerPluginIds();
 
         Bukkit.getPluginManager().registerEvents(chatListener, this);
@@ -129,6 +132,10 @@ public class VoxelGuest extends JavaPlugin {
 
     public static CommandsManager getCommandsManager() {
         return commandsManager;
+    }
+    
+    public static GroupManager getGroupManager() {
+        return groupManager;
     }
     
     public static void log(String str) {
