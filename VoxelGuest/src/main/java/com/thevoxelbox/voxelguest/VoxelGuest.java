@@ -4,14 +4,22 @@
  */
 package com.thevoxelbox.voxelguest;
 
-import com.thevoxelbox.voxelguest.commands.CommandsManager;
-import com.thevoxelbox.voxelguest.commands.commands.AsshatMitigationCommands;
+import com.thevoxelbox.commands.CommandException;
+import com.thevoxelbox.commands.CommandsManager;
+import com.thevoxelbox.voxelguest.commands.AsshatMitigationCommands;
 import com.thevoxelbox.voxelguest.listeners.ChatEventListener;
 import com.thevoxelbox.voxelguest.listeners.LoginEventListener;
-import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
+import com.thevoxelbox.permissions.InsufficientPermissionsException;
+import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.players.GroupManager;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 
+import com.thevoxelbox.voxelguest.util.Configuration;
+import com.thevoxelbox.voxelguest.util.Formatter;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,13 +37,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class VoxelGuest extends JavaPlugin {
 
     private static VoxelGuest instance;
-    protected static CommandsManager commandsManager = new CommandsManager();
+    protected static CommandsManager commandsManager = new CommandsManager("[VoxelGuest]");
     protected static ChatEventListener chatListener = new ChatEventListener();
     protected static LoginEventListener loginListener = new LoginEventListener();
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
     protected static GroupManager groupManager;
     protected static PermissionsManager perms;
+    
+    protected final Configuration config = new Configuration("VoxelGuest");
 
     @Override
     public void onDisable() {
@@ -45,7 +55,7 @@ public class VoxelGuest extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        perms = new PermissionsManager(this.getServer());
+        perms = new PermissionsManager(this.getServer(), "[VoxelGuest]");
         groupManager = new GroupManager();
         registerPluginIds();
 
@@ -68,9 +78,32 @@ public class VoxelGuest extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender cs, Command command, String label, String[] args) {
-        boolean status = commandsManager.executeCommand(command, cs, args);
-        commandsManager.commandLog(command, cs, args, status);
+        try {
+            commandsManager.executeCommand(command, cs, args);
+            commandLog(command, cs, args, true);
+        } catch (CommandException ex) {
+            String report = "&c" + ex.getReason();
+            
+            for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report)) {
+                cs.sendMessage(str);
+            }
+            
+            commandLog(command, cs, args, false);
+        } catch (InsufficientPermissionsException ex) {
+            String report = "&c" + ex.getReason();
+            
+            for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report)) {
+                cs.sendMessage(str);
+            }
+            
+            commandLog(command, cs, args, false);
+        }
+        
         return true;
+    }
+    
+    public Configuration getConfigData() {
+        return config;
     }
 
     public static GuestPlayer getGuestPlayer(Player player) {
@@ -156,6 +189,64 @@ public class VoxelGuest extends JavaPlugin {
             default:
                 Logger.getLogger("Mincraft").info("[VoxelGuest] " + str);
                 return;
+        }
+    }
+    
+    public void commandLog(org.bukkit.command.Command command, CommandSender cs, String[] args, boolean status) {
+        File f = new File("plugins/VoxelGuest/logs/commands.txt");
+        PrintWriter pw = null;
+
+        try {
+            if (!f.exists()) {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+            }
+
+            pw = new PrintWriter(f);
+            Date d = new Date();
+
+            if (cs instanceof Player) {
+                Player p = (Player) cs;
+
+                String concat = "";
+
+                for (int i = 0; i < args.length; i++) {
+                    if (i == (args.length - 1)) {
+                        concat = concat + args[i];
+                        continue;
+                    }
+
+                    concat = concat + args[i] + " ";
+                }
+
+                pw.append(d.toString() + " Command: " + command.getName()
+                        + ", Player: " + p.getName()
+                        + ", Location: [" + p.getLocation().getWorld().getName() + "] (" + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ()
+                        + "), Arguments: \"" + concat + "\""
+                        + ", Status: " + ((status) ? "EXECUTED" : "FAILED"));
+
+                pw.close();
+            } else {
+                String concat = "";
+
+                for (int i = 0; i < args.length; i++) {
+                    if (i == (args.length - 1)) {
+                        concat = concat + args[i];
+                        continue;
+                    }
+
+                    concat = concat + args[i] + " ";
+                }
+
+                pw.append(d.toString() + " Command: " + command.getName()
+                        + ", Sender: [CONSOLE]"
+                        + ", Arguments: \"" + concat + "\""
+                        + ", Status: " + ((status) ? "EXECUTED" : "FAILED"));
+
+                pw.close();
+            }
+        } catch (IOException ex) {
+            VoxelGuest.log("Could not create command log file", 1);
         }
     }
 }

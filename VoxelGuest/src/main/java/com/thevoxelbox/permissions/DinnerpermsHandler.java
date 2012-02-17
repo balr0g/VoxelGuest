@@ -1,4 +1,4 @@
-package com.thevoxelbox.voxelguest.permissions;
+package com.thevoxelbox.permissions;
 
 import java.util.ArrayList;
 import java.util.List;

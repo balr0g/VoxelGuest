@@ -1,4 +1,4 @@
-package com.thevoxelbox.voxelguest.permissions;
+package com.thevoxelbox.permissions;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;

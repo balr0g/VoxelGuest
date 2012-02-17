@@ -9,6 +9,18 @@ public class Configuration {
     private String target;
     private String destination;
     
+    public Configuration (String target) {
+        HashMap<String, Object> data = (HashMap<String, Object>) PropertyManager.load(target);
+        
+        if (data == null)
+            map.clear();
+        else
+            map = data;
+        
+        this.target = target;
+        this.destination = "";
+    }
+    
     public Configuration(String target, String destination) {
         HashMap<String, Object> data = (HashMap<String, Object>) PropertyManager.load(target, destination);
         

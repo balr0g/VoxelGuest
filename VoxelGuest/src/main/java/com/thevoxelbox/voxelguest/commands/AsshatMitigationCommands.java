@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.thevoxelbox.voxelguest.commands.commands;
+package com.thevoxelbox.voxelguest.commands;
 
-import com.thevoxelbox.voxelguest.commands.Command;
+import com.thevoxelbox.commands.Command;
 import org.bukkit.command.CommandSender;
 
 /**

@@ -1,8 +1,8 @@
-package com.thevoxelbox.voxelguest.permissions;
+package com.thevoxelbox.permissions;
 
-import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,10 +18,12 @@ import org.bukkit.event.server.PluginEnableEvent;
  */
 public class PermissionsManager implements Listener {
     private final Server server;
+    private static String tag;
     protected static PermissionsHandler handler;
     
-    public PermissionsManager(Server s) {
+    public PermissionsManager(Server s, String pluginPrefix) {
         server = s;
+        tag = pluginPrefix;
     }
     
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
@@ -52,7 +54,7 @@ public class PermissionsManager implements Listener {
                         continue;
                     
                     handler = _handler;
-                    VoxelGuest.log(handler.getDetectionMessage(), 0);
+                    log(handler.getDetectionMessage(), 0);
                     break;
                 }
                 
@@ -62,7 +64,7 @@ public class PermissionsManager implements Listener {
         }
         
         handler = new GuestPermissionsHandler(server);
-        VoxelGuest.log(handler.getDetectionMessage(), 0);
+        log(handler.getDetectionMessage(), 0);
     }
     
     public static PermissionsHandler getHandler() {
@@ -87,5 +89,22 @@ public class PermissionsManager implements Listener {
 
     public String getDetectionMessage() {
         return handler.getDetectionMessage();
+    }
+    
+    public static void log(String str, int importance) {
+        switch (importance) {
+            case 0:
+                Logger.getLogger("Mincraft").info(tag + " " + str);
+                return;
+            case 1:
+                Logger.getLogger("Mincraft").warning(tag + " " + str);
+                return;
+            case 2:
+                Logger.getLogger("Mincraft").severe(tag + " " + str);
+                return;
+            default:
+                Logger.getLogger("Mincraft").info(tag + " " + str);
+                return;
+        }
     }
 }

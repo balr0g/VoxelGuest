@@ -1,4 +1,4 @@
-package com.thevoxelbox.voxelguest.commands;
+package com.thevoxelbox.commands;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

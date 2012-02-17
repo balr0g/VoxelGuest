@@ -1,4 +1,4 @@
-package com.thevoxelbox.voxelguest.permissions;
+package com.thevoxelbox.permissions;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.io.File;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.thevoxelbox.voxelguest.permissions;
+package com.thevoxelbox.permissions;
 
 import org.bukkit.Server;
 
