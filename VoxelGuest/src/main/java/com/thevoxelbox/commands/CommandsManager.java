@@ -163,9 +163,9 @@ public class CommandsManager {
 
         Command cmd = method.getAnnotation(Command.class);
         
-        String help = "&6===Help: " + command.getName() + "===\n" + cmd.help() + "\n" + "&6=========================";
+        String help = "§6===Help: " + command.getName() + "===\n" + cmd.help() + "\n" + "§6=========================";
         
-        for (String str : encodeMessage(help)) {
+        for (String str : getMessageLines(help)) {
             cs.sendMessage(str);
         }
     }
@@ -187,10 +187,7 @@ public class CommandsManager {
         }
     }
     
-    private static String[] encodeMessage(String message) {
-        for (FormatColors color : FormatColors.values())
-            message = message.replace(color.getColorCode(), color.getBukkitColorCode());
-        
+    private static String[] getMessageLines(String message) {
         String[] split = message.split("\n");
         return split;
     }
@@ -214,36 +211,3 @@ public class CommandsManager {
  * 
  * 
  */
-
-enum FormatColors {
-    WHITE("&f"),
-    DARK_BLUE("&1"),
-    DARK_GREEN("&2"),
-    TEAL("&3"),
-    DARK_RED("&4"),
-    PURPLE("&5"),
-    ORANGE("&6"),
-    LIGHT_GREY("&7"),
-    DARK_GREY("&8"),
-    INDIGO("&9"),
-    LIGHT_GREEN("&a"),
-    CYAN("&b"),
-    RED("&c"),
-    PINK("&d"),
-    YELLOW("&e"),
-    BLACK("&0");
-    
-    private String color;
-    
-    private FormatColors(String c) {
-        color = c;
-    }
-    
-    public String getColorCode() {
-        return color;
-    }
-    
-    public String getBukkitColorCode() {
-        return color.replace("&", "\u00A7");
-    }
- }
