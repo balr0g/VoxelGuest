@@ -6,10 +6,10 @@ import com.thevoxelbox.commands.CommandMethodInvocationException;
 import com.thevoxelbox.commands.CommandsManager;
 import com.thevoxelbox.commands.MalformattedCommandException;
 import com.thevoxelbox.voxelguest.commands.AsshatMitigationCommands;
-import com.thevoxelbox.voxelguest.listeners.ChatEventListener;
-import com.thevoxelbox.voxelguest.listeners.LoginEventListener;
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
 import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import com.thevoxelbox.voxelguest.players.GroupManager;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 
@@ -37,18 +37,22 @@ public class VoxelGuest extends JavaPlugin {
 
     private static VoxelGuest instance;
     protected static CommandsManager commandsManager = new CommandsManager("[VoxelGuest]");
-    protected static ChatEventListener chatListener = new ChatEventListener();
     protected static LoginEventListener loginListener = new LoginEventListener();
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
     protected static GroupManager groupManager;
     protected static PermissionsManager perms;
+    protected static ModuleManager moduleManager;
     
     protected final Configuration config = new Configuration("VoxelGuest");
+    
+    protected Class<? extends Module>[] availableModules = new Class[] {
+        OfflineModeModule.class
+    };
 
     @Override
     public void onDisable() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
 
     @Override
@@ -56,14 +60,17 @@ public class VoxelGuest extends JavaPlugin {
         instance = this;
         perms = new PermissionsManager(this.getServer(), "[VoxelGuest]");
         groupManager = new GroupManager();
+        moduleManager = new ModuleManager(this);
         registerPluginIds();
-
-        Bukkit.getPluginManager().registerEvents(chatListener, this);
+        
+        // Load system event listeners
         Bukkit.getPluginManager().registerEvents(loginListener, this);
         Bukkit.getPluginManager().registerEvents(perms, this);
 
+        // Load system commands
         commandsManager.registerCommands(AsshatMitigationCommands.class);
 
+        // Load players
         for (Player player : Bukkit.getOnlinePlayers()) {
             GuestPlayer gp = new GuestPlayer(player);
 
@@ -73,6 +80,9 @@ public class VoxelGuest extends JavaPlugin {
 
             guestPlayers.add(gp); // KEEP THIS LAST
         }
+        
+        // Load modules
+        moduleManager.loadModules(availableModules);
     }
 
     @Override

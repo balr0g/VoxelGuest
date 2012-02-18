@@ -1,19 +1,36 @@
 package com.thevoxelbox.voxelguest;
 
+import com.thevoxelbox.commands.Command;
+import com.thevoxelbox.commands.CommandPermission;
+import com.thevoxelbox.voxelguest.modules.MetaData;
+import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-public class OfflineModeManager {
+@MetaData(name="Offline Mode", description="Manage your server in offline mode!")
+public class OfflineModeModule extends Module {
+    protected List<String> needsUnlock = new ArrayList<String>();
     
     protected YamlConfiguration tempBan = new YamlConfiguration();
     protected static HashMap<String, Long> timemap = new HashMap<String, Long>();
@@ -21,7 +38,18 @@ public class OfflineModeManager {
     
     private static File f = new File("plugins/VoxelGuest/tempban.yml");
     
-    public OfflineModeManager() {
+    @Override
+    public Module install() {
+        return new OfflineModeModule();
+    }
+    
+    @Override
+    public String getLoadMessage() {
+        return "Offline mode manager loaded";
+    }
+    
+    @Override
+    public void enable() {
         if (!f.exists()) {
             try {
                 f.createNewFile();
@@ -31,6 +59,7 @@ public class OfflineModeManager {
                 return;
             }
         }
+        
         try {
             tempBan.load(f);
         } catch (FileNotFoundException ex) {
@@ -40,10 +69,97 @@ public class OfflineModeManager {
         } catch (InvalidConfigurationException ex) {
             return;
         }
+        
+        setEnabled(true);
+    }
+    
+    class Commands {
+        @Command(aliases={"opass", "offlinepass"},
+                bounds={0, -1},
+                help="For a player, set your offline password using §c/opass [password]\n" +
+                "On the console, set another's password using §c/opass [player] [password]",
+                playerOnly=false)
+        @CommandPermission(permission="voxelguest.offline.opass")
+        public void offlinePass(CommandSender cs, String[] args) {
+            if (cs instanceof Player) {
+                Player p = (Player) cs;
+                GuestPlayer gp = VoxelGuest.getGuestPlayer(p);
+                String concat = "";
+                
+                for (int i = 0; i < args.length; i++) {
+                    concat = concat + args[i] + " ";
+                }
+                
+                concat = concat.trim();
+                
+                try {
+                    setPassword(gp.getPlayer().getName(), concat);
+                    cs.sendMessage(ChatColor.GRAY + "Offline password set to: " + ChatColor.GREEN + concat);
+                } catch (CouldNotStoreOfflinePasswordException ex) {
+                    cs.sendMessage(ex.getMessage());
+                }
+            }
+        }
+        
+        @Command(aliases={"opardon", "offlinepardon"},
+                bounds={1, 1},
+                help="To pardon an offline mode ban on the console, use §/opardon [player]"
+        )
+        public void offlinePardon(CommandSender cs, String[] args) {
+            if (cs instanceof Player) {
+                cs.sendMessage("§cConsole-only command");
+                return;
+            }
+            
+            removeTempBan(args[0]);
+            cs.sendMessage("Removed temporary ban on " + args[0]);
+        }
+    }
+    
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        if (isActive() && !needsUnlock.contains(event.getPlayer().getName())) {
+            GuestPlayer gp = new GuestPlayer(event.getPlayer());
+            
+            if (gp.get(VoxelGuest.getPluginId(VoxelGuest.getInstance()), "offline-password") == null) {
+                event.getPlayer().kickPlayer("You do not have an offline mode account.");
+                return;
+            } else if (isTempBanned(event.getPlayer().getName())) {
+                event.getPlayer().kickPlayer("You have been banned for hacking this account.");
+                return;
+            }
+            
+            needsUnlock.add(event.getPlayer().getName());
+            event.getPlayer().sendMessage(ChatColor.RED + "Please enter your offline password.");
+        }
+    }
+    
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
+            needsUnlock.remove(event.getPlayer().getName());
+    }
+    
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onPlayerKick(PlayerKickEvent event) {
+        if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
+            needsUnlock.remove(event.getPlayer().getName());
+    }
+    
+    @EventHandler
+    public void onPlayerChat(PlayerChatEvent event) {
+        if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
+            if (isPassword(event.getPlayer().getName(), event.getFormat())) {
+                needsUnlock.remove(event.getPlayer().getName());
+                event.getPlayer().sendMessage(ChatColor.GREEN + "You have unlocked your player.");
+            } else {
+                event.getPlayer().kickPlayer("You have entered your password incorrectly.");
+                logTempBan(event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().toString(), System.currentTimeMillis());
+            }   
     }
     
     public boolean isActive() {
-        return VoxelGuest.getInstance().getConfigData().getBoolean("offline-mode");
+        return !Bukkit.getServer().getOnlineMode();
     }
     
     public boolean isPassword(String name, String input) {
@@ -165,5 +281,5 @@ public class OfflineModeManager {
             } while(two_halfs++ < 1);
         } 
         return buf.toString();
-    } 
+    }
 }

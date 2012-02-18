@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.thevoxelbox.voxelguest.listeners;
+package com.thevoxelbox.voxelguest;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
