@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.commands.ArgumentOutOfBoundsException;
@@ -29,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -86,27 +81,27 @@ public class VoxelGuest extends JavaPlugin {
             commandsManager.executeCommand(command, cs, args);
             commandLog(command, cs, args, true);
         } catch (CommandException ex) {
-            String report = "&c" + ex.getReason();
+            String report = "&c" + ex.getMessage();
             
             for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report)) {
                 cs.sendMessage(str);
             }
             
             if (ex instanceof CommandMethodInvocationException || ex instanceof MalformattedCommandException) {
-                log(ex.getReason(), 2);
+                log(ex.getMessage(), 2);
                 ex.printStackTrace();
                 return true;
             } else if (ex instanceof ArgumentOutOfBoundsException) {
                 try {
                     commandsManager.sendHelp(cs, command);
                 } catch (MalformattedCommandException ex1) {
-                    String _report = "&c" + ex1.getReason();
+                    String _report = "&c" + ex1.getMessage();
             
                     for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(_report)) {
                         cs.sendMessage(str);
                     }
                     
-                    log(ex.getReason(), 2);
+                    log(ex.getMessage(), 2);
                     ex.printStackTrace();
                     return true;
                 }
@@ -114,7 +109,7 @@ public class VoxelGuest extends JavaPlugin {
             
             commandLog(command, cs, args, false);
         } catch (InsufficientPermissionsException ex) {
-            String report = "&c" + ex.getReason();
+            String report = "&c" + ex.getMessage();
             
             for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report)) {
                 cs.sendMessage(str);
