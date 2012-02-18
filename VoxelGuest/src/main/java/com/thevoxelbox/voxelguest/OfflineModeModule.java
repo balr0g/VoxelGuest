@@ -4,6 +4,7 @@ import com.thevoxelbox.commands.Command;
 import com.thevoxelbox.commands.CommandPermission;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,7 +23,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -40,7 +40,16 @@ public class OfflineModeModule extends Module {
     
     @Override
     public Module install() {
-        return new OfflineModeModule();
+        if (OfflineModeModule.class.isAnnotationPresent(MetaData.class)) {
+            MetaData md = OfflineModeModule.class.getAnnotation(MetaData.class);
+            return new OfflineModeModule(md.name(), md.description());
+        } else
+            return null;
+    }
+    
+    public OfflineModeModule(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
     
     @Override
@@ -116,7 +125,7 @@ public class OfflineModeModule extends Module {
         }
     }
     
-    @EventHandler(priority=EventPriority.HIGH)
+    @ModuleEvent(event=PlayerJoinEvent.class)
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (isActive() && !needsUnlock.contains(event.getPlayer().getName())) {
             GuestPlayer gp = new GuestPlayer(event.getPlayer());
@@ -134,13 +143,13 @@ public class OfflineModeModule extends Module {
         }
     }
     
-    @EventHandler(priority=EventPriority.HIGH)
+    @ModuleEvent(event=PlayerQuitEvent.class)
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
             needsUnlock.remove(event.getPlayer().getName());
     }
     
-    @EventHandler(priority=EventPriority.HIGH)
+    @ModuleEvent(event=PlayerKickEvent.class)
     public void onPlayerKick(PlayerKickEvent event) {
         if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
             needsUnlock.remove(event.getPlayer().getName());

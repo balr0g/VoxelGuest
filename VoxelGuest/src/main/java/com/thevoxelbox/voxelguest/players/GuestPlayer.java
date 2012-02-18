@@ -60,6 +60,13 @@ public class GuestPlayer {
         }
     }
     
+    public void saveData(String pluginID) {
+        HashMap<String, Object> map = storage.get(pluginID);
+        
+        if (map != null)
+            PropertyManager.save(p.getName(), map, "/players");
+    }
+    
     public String[] getGroups() {
         return groups;
     }

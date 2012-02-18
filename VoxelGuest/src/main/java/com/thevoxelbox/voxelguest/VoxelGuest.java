@@ -37,7 +37,7 @@ public class VoxelGuest extends JavaPlugin {
 
     private static VoxelGuest instance;
     protected static CommandsManager commandsManager = new CommandsManager("[VoxelGuest]");
-    protected static LoginEventListener loginListener = new LoginEventListener();
+    protected static SystemListener loginListener = new SystemListener();
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
     protected static GroupManager groupManager;
@@ -148,6 +148,18 @@ public class VoxelGuest extends JavaPlugin {
 
         return new GuestPlayer(player);
     }
+    
+    public static void registerPlayer(Player player) {
+        GuestPlayer gp = new GuestPlayer(player);
+        
+        if (!isPlayerRegistered(gp))
+            guestPlayers.add(gp);
+    }
+    
+    public static void unregsiterPlayer(GuestPlayer gp) {
+        if (isPlayerRegistered(gp))
+            guestPlayers.remove(gp);
+    }
 
     public static GuestPlayer[] getRegisteredPlayers() {
         GuestPlayer[] gps = new GuestPlayer[guestPlayers.size()];
@@ -200,6 +212,10 @@ public class VoxelGuest extends JavaPlugin {
         return groupManager;
     }
     
+    public static Module[] getModules() {
+        return moduleManager.getModules();
+    }
+    
     public static void log(String str) {
         log(str, 0);
     }
@@ -217,6 +233,23 @@ public class VoxelGuest extends JavaPlugin {
                 return;
             default:
                 Logger.getLogger("Mincraft").info("[VoxelGuest] " + str);
+                return;
+        }
+    }
+    
+    public static void log(String module, String str, int importance) {
+        switch (importance) {
+            case 0:
+                Logger.getLogger("Mincraft").info("[VoxelGuest:" + module + "] " + str);
+                return;
+            case 1:
+                Logger.getLogger("Mincraft").warning("[VoxelGuest:" + module + "] " + str);
+                return;
+            case 2:
+                Logger.getLogger("Mincraft").severe("[VoxelGuest:" + module + "] " + str);
+                return;
+            default:
+                Logger.getLogger("Mincraft").info("[VoxelGuest:" + module + "] " + str);
                 return;
         }
     }

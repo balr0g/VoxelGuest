@@ -3,6 +3,7 @@ package com.thevoxelbox.voxelguest.modules;
 import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ public class ModuleManager {
     private static Plugin plugin;
     
     protected List<Module> activeModules = new LinkedList<Module>();
+    protected HashMap<Class<? extends Module>, Module> classInstanceMap = new HashMap<Class<? extends Module>, Module>();
     
     public ModuleManager(Plugin p) {
         plugin = p;
@@ -37,6 +39,9 @@ public class ModuleManager {
     public synchronized void loadModule(Class<? extends Module> cls) throws ModuleException {
         Module module = null;
         
+        if (!cls.isAnnotationPresent(MetaData.class))
+                throw new MalformattedModuleException("Malformatted Module: " + cls.getCanonicalName());
+        
         try {
             Method install = cls.getMethod("install");
             module = (Module) install.invoke(null);
@@ -52,10 +57,10 @@ public class ModuleManager {
             throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
         }
         
-        if (module != null || activeModules.contains(module)) {
-            if (!cls.isAnnotationPresent(MetaData.class))
-                throw new MalformattedModuleException("Malformatted Module: " + cls.getCanonicalName());
-            
+        if (activeModules.contains(module))
+            throw new ModuleException("Module already registered: " + cls.getCanonicalName());
+        
+        if (module != null) {
             // Find and register commands and events
             VoxelGuest.getCommandsManager().registerCommands(cls);
             
@@ -69,10 +74,23 @@ public class ModuleManager {
             
             module.enable();
             activeModules.add(module);
+            classInstanceMap.put(cls, module);
             log(getName(module), module.getLoadMessage(), 0);
         } else {
             throw new ModuleException("Module is null or already registered"); // Only in weird cases would this happen
         }
+    }
+    
+    public Module getModule(Class<? extends Module> cls) throws ModuleException {
+        if (classInstanceMap.containsKey(cls))
+            return classInstanceMap.get(cls);
+        
+        throw new ModuleException("Module not found: " + cls.getCanonicalName());
+    }
+    
+    public Module[] getModules() {
+        Module[] modules = new Module[activeModules.size()];
+        return activeModules.toArray(modules);
     }
     
     public String getName(Module mod) {
