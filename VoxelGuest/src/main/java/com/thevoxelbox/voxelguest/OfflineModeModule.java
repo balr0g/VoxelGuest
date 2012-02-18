@@ -126,33 +126,39 @@ public class OfflineModeModule extends Module {
     }
     
     @ModuleEvent(event=PlayerJoinEvent.class)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public boolean onPlayerJoin(PlayerJoinEvent event) {
         if (isActive() && !needsUnlock.contains(event.getPlayer().getName())) {
             GuestPlayer gp = new GuestPlayer(event.getPlayer());
             
             if (gp.get(VoxelGuest.getPluginId(VoxelGuest.getInstance()), "offline-password") == null) {
                 event.getPlayer().kickPlayer("You do not have an offline mode account.");
-                return;
+                return true;
             } else if (isTempBanned(event.getPlayer().getName())) {
                 event.getPlayer().kickPlayer("You have been banned for hacking this account.");
-                return;
+                return true;
             }
             
             needsUnlock.add(event.getPlayer().getName());
             event.getPlayer().sendMessage(ChatColor.RED + "Please enter your offline password.");
         }
+        
+        return false;
     }
     
     @ModuleEvent(event=PlayerQuitEvent.class)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public boolean onPlayerQuit(PlayerQuitEvent event) {
         if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
             needsUnlock.remove(event.getPlayer().getName());
+        
+        return false;
     }
     
     @ModuleEvent(event=PlayerKickEvent.class)
-    public void onPlayerKick(PlayerKickEvent event) {
+    public boolean onPlayerKick(PlayerKickEvent event) {
         if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
             needsUnlock.remove(event.getPlayer().getName());
+        
+        return false;
     }
     
     @EventHandler
