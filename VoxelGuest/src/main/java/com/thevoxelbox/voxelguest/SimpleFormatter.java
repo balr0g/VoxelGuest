@@ -3,6 +3,7 @@ package com.thevoxelbox.voxelguest;
 import com.thevoxelbox.voxelguest.util.Formatter;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.Configuration;
+import org.bukkit.Bukkit;
 
 public class SimpleFormatter extends Formatter {
     
@@ -15,6 +16,7 @@ public class SimpleFormatter extends Formatter {
      * $g = group (INDEX 0) of the player
      * $group = long form of $g
      * $gc = code for that group (if desired)
+     * $nonline = number of people online
      * 
      * Would be best to extend from this implementation
      * so you don't have to rewrite the group crap again
@@ -22,15 +24,6 @@ public class SimpleFormatter extends Formatter {
      */
     
     @Override
-    public Formatter install() {
-        return new SimpleFormatter();
-    }
-    
-    @Override
-    public String[] format(String in) {
-        return format(in, null);
-    }
-    
     public String[] format(String input, GuestPlayer gp) {
         String copy = input;
         boolean guestPlayerParcing;
@@ -49,13 +42,18 @@ public class SimpleFormatter extends Formatter {
                 copy = copy.replace("$g", group);
             }
             
+            copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
             copy = copy.replace("$name", gp.getPlayer().getName());
             copy = copy.replace("$n", gp.getPlayer().getName());
         }
         
         copy = encodeColors(copy);
         
-        String[] copies = copy.split("\n");
-        return copies;
+        if (copy.contains("\n")) {
+            String[] copies = copy.split("\n");
+            return copies;
+        } else {
+            return new String[] {copy};
+        }
     }
 }

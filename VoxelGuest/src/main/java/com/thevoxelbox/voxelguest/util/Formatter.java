@@ -1,14 +1,12 @@
 package com.thevoxelbox.voxelguest.util;
 
-import java.lang.reflect.Method;
+import com.thevoxelbox.voxelguest.players.GuestPlayer;
 
 public abstract class Formatter {
     
     public static Formatter selectFormatter(Class<? extends Formatter> cls) {
         try {
-            Method method = cls.getMethod("install");
-            
-            Formatter formatter = (Formatter) method.invoke(null);
+            Formatter formatter = cls.newInstance();
             return formatter;
         } catch (Throwable t) {
             return null;
@@ -23,9 +21,7 @@ public abstract class Formatter {
         return input;
     }
     
-    public abstract Formatter install();
-    
-    public abstract String[] format(String in);
+    public abstract String[] format(String in, GuestPlayer gp);
 }
 
 enum FormatColors {

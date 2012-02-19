@@ -74,8 +74,8 @@ public class OfflineModeModule extends Module {
         setEnabled(true);
     }
     
-    @Command(aliases={"opass", "offlinepass"},
-            bounds={0, -1},
+    @Command(aliases={"opass", "offlinepass", "offlinepassword"},
+            bounds={1, -1},
             help="For a player, set your offline password using §c/opass [password]\n" +
             "On the console, set another's password using §c/opass [player] [password]",
             playerOnly=false)

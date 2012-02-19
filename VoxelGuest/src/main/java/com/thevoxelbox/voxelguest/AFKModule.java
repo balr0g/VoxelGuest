@@ -40,9 +40,9 @@ public class AFKModule extends Module {
         for (Player player : Bukkit.getOnlinePlayers())
             timeMap.put(player, System.currentTimeMillis());
         
-        if (VoxelGuest.getInstance().getConfigData().getBoolean("afk-timeout-enabled")) {
-            if (VoxelGuest.getInstance().getConfigData().getInt("afk-timeout-minutes") >= 0) {
-                final long timeout = 60000L * VoxelGuest.getInstance().getConfigData().getInt("afk-timeout-minutes");
+        if (VoxelGuest.getConfigData().getBoolean("afk-timeout-enabled")) {
+            if (VoxelGuest.getConfigData().getInt("afk-timeout-minutes") >= 0) {
+                final long timeout = 60000L * VoxelGuest.getConfigData().getInt("afk-timeout-minutes");
                 
                 afkTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(VoxelGuest.getInstance(), new Runnable() {
 
@@ -76,7 +76,7 @@ public class AFKModule extends Module {
 
     @Override
     public String getLoadMessage() {
-        return "AFK module enabled - Auto-AFK timout is " + (VoxelGuest.getInstance().getConfigData().getBoolean("afk-timeout-enabled") ? "enabled" : "disabled");
+        return "AFK module enabled - Auto-AFK timeout is " + (VoxelGuest.getConfigData().getBoolean("afk-timeout-enabled") ? "enabled" : "disabled");
     }
     
     public boolean isAFK(Player player) {

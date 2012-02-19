@@ -13,12 +13,21 @@ import org.bukkit.plugin.Plugin;
 
 public class ModuleManager {
     private static Plugin plugin;
+    private static ModuleManager instance;
     
     protected List<Module> activeModules = new LinkedList<Module>();
     protected HashMap<Class<? extends Module>, Module> classInstanceMap = new HashMap<Class<? extends Module>, Module>();
     
     public ModuleManager(Plugin p) {
         plugin = p;
+    }
+    
+    public static void setActiveModuleManager(ModuleManager manager) {
+        instance = manager;
+    }
+    
+    public static ModuleManager getManager() {
+        return instance;
     }
     
     public void loadModules(Class<? extends Module>[] classes) {

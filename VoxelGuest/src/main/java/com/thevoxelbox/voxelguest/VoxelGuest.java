@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -36,34 +37,48 @@ public class VoxelGuest extends JavaPlugin {
 
     private static VoxelGuest instance;
     protected static CommandsManager commandsManager = new CommandsManager("[VoxelGuest]");
-    protected static SystemListener loginListener = new SystemListener();
+    protected static SystemListener listener = new SystemListener();
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
     protected static GroupManager groupManager;
     protected static PermissionsManager perms;
     protected static ModuleManager moduleManager;
     
-    protected final Configuration config = new Configuration("VoxelGuest");
+    protected static final Configuration config = new Configuration("VoxelGuest");
     
     protected Class<? extends Module>[] availableModules = new Class[] {
-        OfflineModeModule.class
+        OfflineModeModule.class,
+        AFKModule.class
     };
 
     @Override
     public void onDisable() {
+        ListIterator<GuestPlayer> it = guestPlayers.listIterator();
         
+        while (it.hasNext()) {
+            GuestPlayer gp = it.next();
+            gp.saveData(getPluginId(this));
+        }
+        
+        guestPlayers.clear();
+        
+        getConfigData().save();
     }
 
     @Override
     public void onEnable() {
         instance = this;
+        
+        if (getConfigData().getString("reset") == null || getConfigData().getString("reset").equalsIgnoreCase("yes"))
+            loadFactorySettings();
+        
         perms = new PermissionsManager(this.getServer(), "[VoxelGuest]");
         groupManager = new GroupManager();
         moduleManager = new ModuleManager(this);
         registerPluginIds();
         
         // Load system event listeners
-        Bukkit.getPluginManager().registerEvents(loginListener, this);
+        Bukkit.getPluginManager().registerEvents(listener, this);
         Bukkit.getPluginManager().registerEvents(perms, this);
         
         // Load permissions system
@@ -82,6 +97,10 @@ public class VoxelGuest extends JavaPlugin {
         
         // Load modules
         moduleManager.loadModules(availableModules);
+        ModuleManager.setActiveModuleManager(moduleManager);
+        
+        // Load module events into the system listener
+        listener.registerModuleEvents();
     }
 
     @Override
@@ -92,7 +111,7 @@ public class VoxelGuest extends JavaPlugin {
         } catch (CommandException ex) {
             String report = "&c" + ex.getMessage();
             
-            for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report)) {
+            for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report, null)) {
                 cs.sendMessage(str);
             }
             
@@ -106,7 +125,7 @@ public class VoxelGuest extends JavaPlugin {
                 } catch (MalformattedCommandException ex1) {
                     String _report = "&c" + ex1.getMessage();
             
-                    for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(_report)) {
+                    for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(_report, null)) {
                         cs.sendMessage(str);
                     }
                     
@@ -120,7 +139,7 @@ public class VoxelGuest extends JavaPlugin {
         } catch (InsufficientPermissionsException ex) {
             String report = "&c" + ex.getMessage();
             
-            for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report)) {
+            for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(report, null)) {
                 cs.sendMessage(str);
             }
             
@@ -130,7 +149,7 @@ public class VoxelGuest extends JavaPlugin {
         return true;
     }
     
-    public Configuration getConfigData() {
+    public static Configuration getConfigData() {
         return config;
     }
 
@@ -148,11 +167,13 @@ public class VoxelGuest extends JavaPlugin {
         return new GuestPlayer(player);
     }
     
-    public static void registerPlayer(Player player) {
+    public static GuestPlayer registerPlayer(Player player) {
         GuestPlayer gp = new GuestPlayer(player);
         
         if (!isPlayerRegistered(gp))
             guestPlayers.add(gp);
+        
+        return gp;
     }
     
     public static void unregsiterPlayer(GuestPlayer gp) {
@@ -215,8 +236,23 @@ public class VoxelGuest extends JavaPlugin {
         return moduleManager.getModules();
     }
     
-    private void writeFactorySettings() {
-        // Write factory settings in here for the config
+    private void loadFactorySettings() {
+        getConfigData().setString("join-message-format", "&8(&6$nonline&8) &3$n &7joined");
+        getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
+        getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");
+        getConfigData().setBoolean("afk-timeout-enabled", false);
+        getConfigData().setInt("afk-timeout-minutes", 5);
+        
+        getConfigData().setString("reset", "no");
+        log("==========================================");
+        log("* VOXELGUEST");
+        log("*");
+        log("* The premiere server adminstration suite");
+        log("*");
+        log("* Built by: psanker & VoxelPlugineering");
+        log("* Licensed by GPL - 2012");
+        log("==========================================");
+        log("Factory settings loaded");
     }
     
     public static void log(String str) {
