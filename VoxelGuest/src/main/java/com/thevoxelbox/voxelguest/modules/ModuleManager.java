@@ -1,13 +1,13 @@
 package com.thevoxelbox.voxelguest.modules;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
@@ -40,20 +40,17 @@ public class ModuleManager {
         Module module = null;
         
         if (!cls.isAnnotationPresent(MetaData.class))
-                throw new MalformattedModuleException("Malformatted Module: " + cls.getCanonicalName());
+            throw new MalformattedModuleException("Malformatted Module: " + cls.getCanonicalName());
         
         try {
-            Method install = cls.getMethod("install");
-            module = (Module) install.invoke(null);
+            module = (Module) cls.newInstance();
         } catch (IllegalAccessException ex) {
             throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
         } catch (IllegalArgumentException ex) {
             throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
-        } catch (InvocationTargetException ex) {
-            throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
-        } catch (NoSuchMethodException ex) {
-            throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
         } catch (SecurityException ex) {
+            throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
+        } catch (InstantiationException ex) {
             throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
         }
         
@@ -65,12 +62,13 @@ public class ModuleManager {
             VoxelGuest.getCommandsManager().registerCommands(cls);
             
             if (cls.isAssignableFrom(Listener.class)) {
-                Bukkit.getPluginManager().registerEvents(module, plugin);
-            }
-            
-            for (Class<?> clazz : cls.getDeclaredClasses()) {
-                VoxelGuest.getCommandsManager().registerCommands(clazz);
-            }
+                for (Method method : cls.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(EventHandler.class)) {
+                        Bukkit.getPluginManager().registerEvents(module, plugin);
+                        break;
+                    }    
+                }
+            } 
             
             module.enable();
             activeModules.add(module);

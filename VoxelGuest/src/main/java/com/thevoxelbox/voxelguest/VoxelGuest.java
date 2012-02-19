@@ -5,7 +5,6 @@ import com.thevoxelbox.commands.CommandException;
 import com.thevoxelbox.commands.CommandMethodInvocationException;
 import com.thevoxelbox.commands.CommandsManager;
 import com.thevoxelbox.commands.MalformattedCommandException;
-import com.thevoxelbox.voxelguest.commands.AsshatMitigationCommands;
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
 import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.modules.Module;
@@ -66,9 +65,9 @@ public class VoxelGuest extends JavaPlugin {
         // Load system event listeners
         Bukkit.getPluginManager().registerEvents(loginListener, this);
         Bukkit.getPluginManager().registerEvents(perms, this);
-
-        // Load system commands
-        commandsManager.registerCommands(AsshatMitigationCommands.class);
+        
+        // Load permissions system
+        perms.registerActiveHandler();
 
         // Load players
         for (Player player : Bukkit.getOnlinePlayers()) {

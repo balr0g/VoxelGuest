@@ -38,18 +38,8 @@ public class OfflineModeModule extends Module {
     
     private static File f = new File("plugins/VoxelGuest/tempban.yml");
     
-    @Override
-    public Module install() {
-        if (OfflineModeModule.class.isAnnotationPresent(MetaData.class)) {
-            MetaData md = OfflineModeModule.class.getAnnotation(MetaData.class);
-            return new OfflineModeModule(md.name(), md.description());
-        } else
-            return null;
-    }
-    
-    public OfflineModeModule(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public OfflineModeModule() {
+        super(OfflineModeModule.class.getAnnotation(MetaData.class));
     }
     
     @Override
@@ -82,47 +72,45 @@ public class OfflineModeModule extends Module {
         setEnabled(true);
     }
     
-    class Commands {
-        @Command(aliases={"opass", "offlinepass"},
-                bounds={0, -1},
-                help="For a player, set your offline password using §c/opass [password]\n" +
-                "On the console, set another's password using §c/opass [player] [password]",
-                playerOnly=false)
-        @CommandPermission(permission="voxelguest.offline.opass")
-        public void offlinePass(CommandSender cs, String[] args) {
-            if (cs instanceof Player) {
-                Player p = (Player) cs;
-                GuestPlayer gp = VoxelGuest.getGuestPlayer(p);
-                String concat = "";
-                
-                for (int i = 0; i < args.length; i++) {
-                    concat = concat + args[i] + " ";
-                }
-                
-                concat = concat.trim();
-                
-                try {
-                    setPassword(gp.getPlayer().getName(), concat);
-                    cs.sendMessage(ChatColor.GRAY + "Offline password set to: " + ChatColor.GREEN + concat);
-                } catch (CouldNotStoreOfflinePasswordException ex) {
-                    cs.sendMessage(ex.getMessage());
-                }
+    @Command(aliases={"opass", "offlinepass"},
+            bounds={0, -1},
+            help="For a player, set your offline password using §c/opass [password]\n" +
+            "On the console, set another's password using §c/opass [player] [password]",
+            playerOnly=false)
+    @CommandPermission(permission="voxelguest.offline.opass")
+    public void offlinePass(CommandSender cs, String[] args) {
+        if (cs instanceof Player) {
+            Player p = (Player) cs;
+            GuestPlayer gp = VoxelGuest.getGuestPlayer(p);
+            String concat = "";
+
+            for (int i = 0; i < args.length; i++) {
+                concat = concat + args[i] + " ";
+            }
+
+            concat = concat.trim();
+
+            try {
+                setPassword(gp.getPlayer().getName(), concat);
+                cs.sendMessage(ChatColor.GRAY + "Offline password set to: " + ChatColor.GREEN + concat);
+            } catch (CouldNotStoreOfflinePasswordException ex) {
+                cs.sendMessage(ex.getMessage());
             }
         }
-        
-        @Command(aliases={"opardon", "offlinepardon"},
-                bounds={1, 1},
-                help="To pardon an offline mode ban on the console, use §/opardon [player]"
-        )
-        public void offlinePardon(CommandSender cs, String[] args) {
-            if (cs instanceof Player) {
-                cs.sendMessage("§cConsole-only command");
-                return;
-            }
-            
-            removeTempBan(args[0]);
-            cs.sendMessage("Removed temporary ban on " + args[0]);
+    }
+
+    @Command(aliases={"opardon", "offlinepardon"},
+            bounds={1, 1},
+            help="To pardon an offline mode ban on the console, use §/opardon [player]"
+    )
+    public void offlinePardon(CommandSender cs, String[] args) {
+        if (cs instanceof Player) {
+            cs.sendMessage("§cConsole-only command");
+            return;
         }
+
+        removeTempBan(args[0]);
+        cs.sendMessage("Removed temporary ban on " + args[0]);
     }
     
     @ModuleEvent(event=PlayerJoinEvent.class)

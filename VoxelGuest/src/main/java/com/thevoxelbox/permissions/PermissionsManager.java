@@ -63,8 +63,10 @@ public class PermissionsManager implements Listener {
             }
         }
         
-        handler = new GuestPermissionsHandler(server);
-        log(handler.getDetectionMessage(), 0);
+        if (handler == null) {
+            handler = new GuestPermissionsHandler(server);
+            log(handler.getDetectionMessage(), 0);
+        }
     }
     
     public static PermissionsHandler getHandler() {

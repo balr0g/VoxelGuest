@@ -8,11 +8,10 @@ public abstract class Module implements Listener {
     
     protected boolean enabled = false;
     
-    // Search for necessary classes and return new Module, if all checks are good
-    //
-    // MAKE SURE YOU INCLUDE @METADATA
-    // else your module won't load
-    public abstract Module install();
+    public Module(MetaData md) {
+        this.name = md.name();
+        this.description = md.description();
+    }
     
     // Enable module
     public abstract void enable();
