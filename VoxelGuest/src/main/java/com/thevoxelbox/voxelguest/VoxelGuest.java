@@ -215,6 +215,10 @@ public class VoxelGuest extends JavaPlugin {
         return moduleManager.getModules();
     }
     
+    private void writeFactorySettings() {
+        // Write factory settings in here for the config
+    }
+    
     public static void log(String str) {
         log(str, 0);
     }

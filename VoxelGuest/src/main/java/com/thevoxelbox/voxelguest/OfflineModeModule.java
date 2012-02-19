@@ -24,8 +24,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @MetaData(name="Offline Mode", description="Manage your server in offline mode!")
@@ -159,6 +161,22 @@ public class OfflineModeModule extends Module {
                 event.getPlayer().kickPlayer("You have entered your password incorrectly.");
                 logTempBan(event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().toString(), System.currentTimeMillis());
             }   
+    }
+    
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (isActive() && needsUnlock.contains(event.getPlayer().getName())) {
+            event.getPlayer().teleport(event.getFrom());
+            event.setCancelled(true);
+        }
+    }
+    
+    @EventHandler
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        if (isActive() && needsUnlock.contains(event.getPlayer().getName())) {
+            event.setCancelled(true);
+            return;
+        }
     }
     
     public boolean isActive() {
