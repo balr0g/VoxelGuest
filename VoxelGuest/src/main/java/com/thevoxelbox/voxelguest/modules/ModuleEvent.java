@@ -15,4 +15,7 @@ public @interface ModuleEvent {
     // The event the module is searching for
     public Class<? extends Event> event();
     
+    // The level at which ModuleEvents are processed
+    public ModuleEventPriority priority() default ModuleEventPriority.NORMAL;
+    
 }

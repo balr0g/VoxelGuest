@@ -1,5 +1,7 @@
 package com.thevoxelbox.voxelguest;
 
+import com.thevoxelbox.commands.Command;
+import com.thevoxelbox.commands.CommandPermission;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -85,6 +88,33 @@ public class AFKModule extends Module {
             afkList.add(player);
         if (!bool & isAFK(player))
             afkList.remove(player);
+    }
+    
+    @Command(aliases={"afk", "vafk"},
+            bounds={0, -1},
+            help="To go AFK, type §c/afk (message)",
+            playerOnly=true)
+    @CommandPermission(permission="voxelguest.afk.afk")
+    public void afk(CommandSender cs, String[] args) {
+        Player p = (Player) cs;
+        
+        if (args.length == 0 && !isAFK(p)) {
+            setAFK(p, true);
+            broadcastAFKMessage(p);
+            return;
+        } else if (!isAFK(p)) {
+            String concat = "";
+            
+            for (int i = 0; i < args.length; i++) {
+                concat = concat + args[i] + " ";
+            }
+            
+            concat = concat.trim();
+            
+            setAFK(p, true);
+            broadcastAFKMessage(p, concat);
+            return;
+        }
     }
     
     @ModuleEvent(event=PlayerJoinEvent.class)
