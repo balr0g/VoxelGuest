@@ -239,11 +239,7 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("join-message-format", "&8(&6$nonline&8) &3$n &7joined");
         getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");
-        getConfigData().setString("gag-message-format", "&eYou have been temporarily restricted from chat. Please visit &cINSERT LINK HERE &eto find out how to undo this.");
-        getConfigData().setString("ungag-message-format", "&eYou are no longer restricted from chat.  Please note that further breaking of the rules may result in a &akick&e, or even a &cban&e!");
-        getConfigData().setString("unrestrict-chat-message", "allow me to chat");
         getConfigData().setBoolean("afk-timeout-enabled", false);
-        getConfigData().setBoolean("save-banlist-on-ban", false);
         getConfigData().setInt("afk-timeout-minutes", 5);
         
         getConfigData().setString("reset", "no");
