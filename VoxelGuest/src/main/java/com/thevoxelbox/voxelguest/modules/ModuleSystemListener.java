@@ -1,5 +1,6 @@
 package com.thevoxelbox.voxelguest.modules;
 
+import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -13,59 +14,67 @@ public class ModuleSystemListener implements Listener {
     
     public void registerModuleEvents() {
         for (Module module : ModuleManager.getManager().getModules()) {
-            for (Method method : module.getClass().getDeclaredMethods()) {
-                if (method.isAnnotationPresent(ModuleEvent.class)) {
-                    ModuleEvent moduleEvent = method.getAnnotation(ModuleEvent.class);
-                    
-                    if (!moduleEventMap.containsKey(moduleEvent.event())) {
-                        HashMap<Method, ModuleEvent> map = new HashMap<Method, ModuleEvent>();
-                        map.put(method, moduleEvent);
-                        moduleEventMap.put(moduleEvent.event(), map);
-                    } else {
-                        HashMap<Method, ModuleEvent> map = moduleEventMap.get(moduleEvent.event());
-                        map.put(method, moduleEvent);
-                        moduleEventMap.put(moduleEvent.event(), map);
-                    }
-                    
-                    instances.put(method, module);
+            registerModuleEvents(module);
+        }
+    }
+    
+    public void registerModuleEvents(Module module) {
+        for (Method method : module.getClass().getDeclaredMethods()) {
+            if (method.isAnnotationPresent(ModuleEvent.class)) {
+                Class classType = method.getParameterTypes()[0];
+                if (!BukkitEventWrapper.class.isAssignableFrom(classType) || method.getParameterTypes().length != 1)
+                    continue;
+                
+                if (!void.class.isAssignableFrom(method.getReturnType()))
+                    continue;
+                
+                ModuleEvent moduleEvent = method.getAnnotation(ModuleEvent.class);
+
+                if (!moduleEventMap.containsKey(moduleEvent.event())) {
+                    HashMap<Method, ModuleEvent> map = new HashMap<Method, ModuleEvent>();
+                    map.put(method, moduleEvent);
+                    moduleEventMap.put(moduleEvent.event(), map);
+                } else {
+                    HashMap<Method, ModuleEvent> map = moduleEventMap.get(moduleEvent.event());
+                    map.put(method, moduleEvent);
+                    moduleEventMap.put(moduleEvent.event(), map);
                 }
+
+                instances.put(method, module);
             }
         }
     }
     
     public void processModuleEvents(Event event) {
         HashMap<Method, ModuleEvent> map = moduleEventMap.get(event.getClass());
-        boolean cancelled = false;
+        BukkitEventWrapper wrapper = new BukkitEventWrapper(event);
         
         if (map == null)
             return;
         
         for (int i = 4; i >= 0; i--) {
             for (Map.Entry<Method, ModuleEvent> entry : map.entrySet()) {
-                if (entry.getValue().event() != event.getClass())
-                    continue;
-                
                 if (entry.getValue().priority().getIntValue() < i)
                     continue;
                 
                 Method method = entry.getKey();
+                boolean ignoreCancelled = entry.getValue().ignoreCancelledEvents();
+                
+                if (wrapper.isCancelled() && ignoreCancelled)
+                    continue;
                 
                 try {
-                    cancelled = ((Boolean) method.invoke(instances.get(method), event)).booleanValue();
+                    method.invoke(instances.get(method), wrapper);
                 } catch (IllegalAccessException ex) {
-                    continue;
+                    ex.printStackTrace();
                 } catch (IllegalArgumentException ex) {
-                    continue;
+                    ex.printStackTrace();
                 } catch (InvocationTargetException ex) {
-                    continue;
+                    ex.printStackTrace();
                 } catch (ClassCastException ex) {
-                    continue;
+                    ex.printStackTrace();
                 }
-                
-                if (cancelled) break;
             }
-            
-            if (cancelled) break;
         }
     }
 }

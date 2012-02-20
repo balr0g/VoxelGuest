@@ -2,6 +2,7 @@ package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.commands.Command;
 import com.thevoxelbox.commands.CommandPermission;
+import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
@@ -22,7 +23,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -116,43 +116,45 @@ public class OfflineModeModule extends Module {
     }
     
     @ModuleEvent(event=PlayerJoinEvent.class)
-    public boolean onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(BukkitEventWrapper wrapper) {
+        PlayerJoinEvent event = (PlayerJoinEvent) wrapper.getEvent();
+        
         if (isActive() && !needsUnlock.contains(event.getPlayer().getName())) {
             GuestPlayer gp = new GuestPlayer(event.getPlayer());
             
             if (gp.get(VoxelGuest.getPluginId(VoxelGuest.getInstance()), "offline-password") == null) {
                 event.getPlayer().kickPlayer("You do not have an offline mode account.");
-                return true;
+                wrapper.setCancelled(true);
             } else if (isTempBanned(event.getPlayer().getName())) {
                 event.getPlayer().kickPlayer("You have been banned for hacking this account.");
-                return true;
+                wrapper.setCancelled(true);
             }
             
             needsUnlock.add(event.getPlayer().getName());
             event.getPlayer().sendMessage(ChatColor.RED + "Please enter your offline password.");
         }
-        
-        return false;
     }
     
     @ModuleEvent(event=PlayerQuitEvent.class)
-    public boolean onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(BukkitEventWrapper wrapper) {
+        PlayerQuitEvent event = (PlayerQuitEvent) wrapper.getEvent();
+        
         if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
             needsUnlock.remove(event.getPlayer().getName());
-        
-        return false;
     }
     
     @ModuleEvent(event=PlayerKickEvent.class)
-    public boolean onPlayerKick(PlayerKickEvent event) {
+    public void onPlayerKick(BukkitEventWrapper wrapper) {
+        PlayerKickEvent event = (PlayerKickEvent) wrapper.getEvent();
+        
         if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
             needsUnlock.remove(event.getPlayer().getName());
-        
-        return false;
     }
     
-    @EventHandler
-    public void onPlayerChat(PlayerChatEvent event) {
+    @ModuleEvent(event=PlayerChatEvent.class)
+    public void onPlayerChat(BukkitEventWrapper wrapper) {
+        PlayerChatEvent event = (PlayerChatEvent) wrapper.getEvent();
+        
         if (isActive() && needsUnlock.contains(event.getPlayer().getName()))
             if (isPassword(event.getPlayer().getName(), event.getFormat())) {
                 needsUnlock.remove(event.getPlayer().getName());
@@ -163,18 +165,24 @@ public class OfflineModeModule extends Module {
             }   
     }
     
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
+    @ModuleEvent(event=PlayerMoveEvent.class)
+    public void onPlayerMove(BukkitEventWrapper wrapper) {
+        PlayerMoveEvent event = (PlayerMoveEvent) wrapper.getEvent();
+        
         if (isActive() && needsUnlock.contains(event.getPlayer().getName())) {
             event.getPlayer().teleport(event.getFrom());
             event.setCancelled(true);
+            wrapper.setCancelled(true);
         }
     }
     
-    @EventHandler
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+    @ModuleEvent(event=PlayerCommandPreprocessEvent.class)
+    public void onPlayerCommandPreprocess(BukkitEventWrapper wrapper) {
+        PlayerCommandPreprocessEvent event = (PlayerCommandPreprocessEvent) wrapper.getEvent();
+        
         if (isActive() && needsUnlock.contains(event.getPlayer().getName())) {
             event.setCancelled(true);
+            wrapper.setCancelled(true);
             return;
         }
     }

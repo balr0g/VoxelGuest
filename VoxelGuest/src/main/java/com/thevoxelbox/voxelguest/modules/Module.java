@@ -1,8 +1,6 @@
 package com.thevoxelbox.voxelguest.modules;
 
-import org.bukkit.event.Listener;
-
-public abstract class Module implements Listener {
+public abstract class Module {
     protected String name;
     protected String description;
     

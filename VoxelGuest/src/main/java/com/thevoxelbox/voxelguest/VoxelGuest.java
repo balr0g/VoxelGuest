@@ -15,6 +15,7 @@ import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.Configuration;
 import com.thevoxelbox.voxelguest.util.Formatter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
@@ -61,6 +62,8 @@ public class VoxelGuest extends JavaPlugin {
         }
         
         guestPlayers.clear();
+        
+        moduleManager.shutDownModules();
         
         getConfigData().save();
     }
@@ -232,10 +235,6 @@ public class VoxelGuest extends JavaPlugin {
         return groupManager;
     }
     
-    public static Module[] getModules() {
-        return moduleManager.getModules();
-    }
-    
     private void loadFactorySettings() {
         getConfigData().setString("join-message-format", "&8(&6$nonline&8) &3$n &7joined");
         getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
@@ -303,7 +302,7 @@ public class VoxelGuest extends JavaPlugin {
                 f.createNewFile();
             }
 
-            pw = new PrintWriter(f);
+            pw = new PrintWriter(new FileWriter(f, true));
             Date d = new Date();
 
             if (cs instanceof Player) {

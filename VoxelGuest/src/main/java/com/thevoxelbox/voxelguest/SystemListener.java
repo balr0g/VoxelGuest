@@ -7,8 +7,11 @@ import com.thevoxelbox.voxelguest.util.Formatter;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class SystemListener extends ModuleSystemListener {
@@ -27,7 +30,7 @@ public class SystemListener extends ModuleSystemListener {
             ex.printStackTrace();
         }
         
-        processModuleEvents(event);
+        super.processModuleEvents(event);
     }
     
     @EventHandler(priority = EventPriority.HIGH)
@@ -45,7 +48,7 @@ public class SystemListener extends ModuleSystemListener {
             event.setQuitMessage(ChatColor.YELLOW + gp.getPlayer().getName() + " left");
         }
         
-        processModuleEvents(event);
+        super.processModuleEvents(event);
     }
     
     @EventHandler(priority = EventPriority.HIGH)
@@ -63,7 +66,22 @@ public class SystemListener extends ModuleSystemListener {
             event.setLeaveMessage(ChatColor.YELLOW + gp.getPlayer().getName() + " was kicked out");
         }
         
-        processModuleEvents(event);
+        super.processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onPlayerChat(PlayerChatEvent event) {
+        super.processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        super.processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        super.processModuleEvents(event);
     }
     
     private String formatJoinQuitKickMessage(String format, GuestPlayer gp) throws FormatException {

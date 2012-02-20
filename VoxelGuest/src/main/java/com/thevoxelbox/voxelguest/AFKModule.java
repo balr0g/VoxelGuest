@@ -2,6 +2,7 @@ package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.commands.Command;
 import com.thevoxelbox.commands.CommandPermission;
+import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
@@ -13,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -118,25 +118,26 @@ public class AFKModule extends Module {
     }
     
     @ModuleEvent(event=PlayerJoinEvent.class)
-    public boolean onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(BukkitEventWrapper wrapper) {
+        PlayerJoinEvent event = (PlayerJoinEvent) wrapper.getEvent();
         updateTimeEntry(event.getPlayer());
-        return false;
     }
     
     @ModuleEvent(event=PlayerQuitEvent.class)
-    public boolean onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(BukkitEventWrapper wrapper) {
+        PlayerQuitEvent event = (PlayerQuitEvent) wrapper.getEvent();
         timeMap.remove(event.getPlayer());
-        return false;
     }
     
     @ModuleEvent(event=PlayerKickEvent.class)
-    public boolean onPlayerKick(PlayerKickEvent event) {
+    public void onPlayerKick(BukkitEventWrapper wrapper) {
+        PlayerKickEvent event = (PlayerKickEvent) wrapper.getEvent();
         timeMap.remove(event.getPlayer());
-        return false;
     }
     
-    @EventHandler
-    public void onPlayerChat(PlayerChatEvent event) {
+    @ModuleEvent(event=PlayerChatEvent.class)
+    public void onPlayerChat(BukkitEventWrapper wrapper) {
+        PlayerChatEvent event = (PlayerChatEvent) wrapper.getEvent();
         Player p = event.getPlayer();
         
         if (isAFK(p)) {
@@ -147,8 +148,9 @@ public class AFKModule extends Module {
         updateTimeEntry(p);
     }
     
-    @EventHandler
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+    @ModuleEvent(event=PlayerCommandPreprocessEvent.class)
+    public void onPlayerCommandPreprocess(BukkitEventWrapper wrapper) {
+        PlayerCommandPreprocessEvent event = (PlayerCommandPreprocessEvent) wrapper.getEvent();
         Player p = event.getPlayer();
         
         if (isAFK(p)) {
@@ -159,8 +161,9 @@ public class AFKModule extends Module {
         updateTimeEntry(p);
     }
     
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
+    @ModuleEvent(event=PlayerMoveEvent.class)
+    public void onPlayerMove(BukkitEventWrapper wrapper) {
+        PlayerMoveEvent event = (PlayerMoveEvent) wrapper.getEvent();
         Player p = event.getPlayer();
         
         if (isAFK(p)) {
@@ -181,9 +184,9 @@ public class AFKModule extends Module {
     
     private void broadcastAFKMessage(Player player, String message) {
         if (message == null) {
-            Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.DARK_GRAY + ((isAFK(player)) ? "has gone AFK" : "has returned"));
+            Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.DARK_GRAY + ((isAFK(player)) ? " has gone AFK" : " has returned"));
         } else {
-            Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.DARK_GRAY + ((isAFK(player)) ? message : "has returned"));
+            Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA + player.getName() + ChatColor.DARK_GRAY + ((isAFK(player)) ? " " + message : " has returned"));
         }
     }
 }

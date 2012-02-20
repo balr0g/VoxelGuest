@@ -18,4 +18,5 @@ public @interface ModuleEvent {
     // The level at which ModuleEvents are processed
     public ModuleEventPriority priority() default ModuleEventPriority.NORMAL;
     
+    public boolean ignoreCancelledEvents() default true;
 }

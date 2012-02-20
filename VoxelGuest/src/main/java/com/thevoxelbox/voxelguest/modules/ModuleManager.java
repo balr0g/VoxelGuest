@@ -1,14 +1,11 @@
 package com.thevoxelbox.voxelguest.modules;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
-import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 public class ModuleManager {
@@ -70,15 +67,6 @@ public class ModuleManager {
             // Find and register commands and events
             VoxelGuest.getCommandsManager().registerCommands(cls);
             
-            if (cls.isAssignableFrom(Listener.class)) {
-                for (Method method : cls.getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(EventHandler.class)) {
-                        Bukkit.getPluginManager().registerEvents(module, plugin);
-                        break;
-                    }    
-                }
-            } 
-            
             module.enable();
             activeModules.add(module);
             classInstanceMap.put(cls, module);
@@ -86,6 +74,17 @@ public class ModuleManager {
         } else {
             throw new ModuleException("Module is null or already registered"); // Only in weird cases would this happen
         }
+    }
+    
+    public void shutDownModules() {
+        Iterator<Module> it = activeModules.listIterator();
+        
+        while (it.hasNext()) {
+            Module module = it.next();
+            module.disable();
+        }
+        
+        activeModules.clear();
     }
     
     public Module getModule(Class<? extends Module> cls) throws ModuleException {
