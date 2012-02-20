@@ -61,6 +61,8 @@ public class AFKModule extends Module {
                 }, 0L, 1800L);
             }
         }
+        
+        setEnabled(true);
     }
     
     @Override

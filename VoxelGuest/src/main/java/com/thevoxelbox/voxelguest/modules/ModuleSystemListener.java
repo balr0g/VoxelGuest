@@ -1,6 +1,5 @@
 package com.thevoxelbox.voxelguest.modules;
 
-import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -59,6 +58,9 @@ public class ModuleSystemListener implements Listener {
                 
                 Method method = entry.getKey();
                 boolean ignoreCancelled = entry.getValue().ignoreCancelledEvents();
+                
+                if (!instances.get(method).isEnabled())
+                    continue;
                 
                 if (wrapper.isCancelled() && ignoreCancelled)
                     continue;

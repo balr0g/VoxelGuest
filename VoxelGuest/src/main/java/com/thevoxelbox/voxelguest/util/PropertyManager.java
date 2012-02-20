@@ -56,7 +56,7 @@ public class PropertyManager {
                         }
 
                         if (entry.getValue().toString().toLowerCase().startsWith("%list={") && entry.getValue().toString().toLowerCase().endsWith("}%")) {
-                            map.put(key, parseList(entry.getValue().toString().toLowerCase().replaceFirst("%list={", "").replace("}%", "")));
+                            map.put(key, parseList(entry.getValue().toString().toLowerCase().replaceFirst("\\%list=\\{", "").replace("}%", "")));
                             continue;
                         }
 
