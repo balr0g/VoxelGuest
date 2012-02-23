@@ -48,8 +48,9 @@ public class VoxelGuest extends JavaPlugin {
     protected static final Configuration config = new Configuration("VoxelGuest");
     
     protected Class<? extends Module>[] availableModules = new Class[] {
-        OfflineModeModule.class,
-        AFKModule.class
+        AFKModule.class,
+        GreylistModule.class,
+        OfflineModeModule.class
     };
 
     @Override

@@ -236,6 +236,9 @@ public class GreylistModule extends Module {
     }
     
     private void injectGreylist(String[] strs) {
+        if (strs == null)
+            return;
+        
         for (String str : strs) {
             if (!greylist.contains(str))
                 greylist.add(str);
@@ -261,6 +264,9 @@ public class GreylistModule extends Module {
     }
     
     private void injectGreylist(List<String> list) {
+        if (list.isEmpty() || list == null)
+            return;
+        
         Iterator<String> it = list.listIterator();
         
         while (it.hasNext()) {
