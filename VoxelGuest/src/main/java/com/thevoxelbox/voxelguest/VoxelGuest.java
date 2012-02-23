@@ -241,15 +241,23 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");
         getConfigData().setBoolean("afk-timeout-enabled", false);
         getConfigData().setInt("afk-timeout-minutes", 5);
+        getConfigData().setBoolean("enable-greylist", false);
+        getConfigData().setBoolean("enable-greylist-stream", false);
+        getConfigData().setString("greylist-stream-password", "changeme");
+        getConfigData().setInt("greylist-stream-port", 8080);
+        getConfigData().setInt("greylist-online-limit", 10);
+        getConfigData().setString("greylist-not-greylisted-kick-message", "You are not greylisted on this server");
+        getConfigData().setString("greylist-over-capacity-kick-message", "The server is temporarily over greylist capacity. Check back later.");
+        getConfigData().setBoolean("exploration-mode", false);
         
         getConfigData().setString("reset", "no");
         log("==========================================");
-        log("* VOXELGUEST");
+        log("* VOXELGUEST 4");
         log("*");
         log("* The premiere server adminstration suite");
         log("*");
         log("* Built by: psanker & VoxelPlugineering");
-        log("* Licensed by GPL - 2012");
+        log("* Licensed by the GPL (Version 3, 29 June 2007) - 2012");
         log("==========================================");
         log("Factory settings loaded");
     }

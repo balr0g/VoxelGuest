@@ -213,7 +213,7 @@ public class OfflineModeModule extends Module {
         return false;
     }
     
-    public void setPassword(String name, String input) throws CouldNotStoreEncryptedPasswordException {
+    private void setPassword(String name, String input) throws CouldNotStoreEncryptedPasswordException {
         byte[] shhash = new byte[40];
         String store = "";
         
