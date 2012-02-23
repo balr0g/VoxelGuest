@@ -1,5 +1,6 @@
 package com.thevoxelbox.permissions;
 
+import com.thevoxelbox.voxelguest.util.Configuration;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -19,11 +20,19 @@ import org.bukkit.event.server.PluginEnableEvent;
 public class PermissionsManager implements Listener {
     private final Server server;
     private static String tag;
+    private final Configuration configuration;
     protected static PermissionsHandler handler;
     
-    public PermissionsManager(Server s, String pluginPrefix) {
+    protected static boolean multigroup = false;
+    protected static boolean multiworld = false;
+    
+    public PermissionsManager(Server s, String pluginPrefix, Configuration config) {
         server = s;
         tag = pluginPrefix;
+        configuration = config;
+        
+        multigroup = configuration.getBoolean("permissions-multigroup");
+        multiworld = configuration.getBoolean("permissions-multiworld");
     }
     
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
@@ -91,6 +100,14 @@ public class PermissionsManager implements Listener {
 
     public String getDetectionMessage() {
         return handler.getDetectionMessage();
+    }
+    
+    public static boolean hasMultiGroupSupport() {
+        return multigroup;
+    }
+    
+    public static boolean hasMultiWorldSupport() {
+        return multiworld;
     }
     
     public static void log(String str, int importance) {

@@ -2,6 +2,8 @@ package com.thevoxelbox.permissions;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -52,6 +54,7 @@ public class GuestPermissionsHandler extends PermissionsHandler {
             
             yamlPerms.load(file);
             yamlPerms.options().header(header);
+            queueSave();
             
         } catch (Throwable t) {
             VoxelGuest.log("Error in loading permissions file", 2);
@@ -140,5 +143,104 @@ public class GuestPermissionsHandler extends PermissionsHandler {
         }
         
         return false;
+    }
+
+    @Override
+    public void givePermission(String world, String name, String permission) {
+        givePermission(name, permission);
+    }
+
+    @Override
+    public void givePermission(String name, String permission) {
+        List<String> list = yamlPerms.getStringList("user." + name + ".permissions");
+        
+        if (!list.isEmpty() || list != null) {
+            list.add(permission);
+            queueSave("user." + name + ".permissions", list);
+        } else {
+            List<String> l = new ArrayList<String>();
+            l.add(permission);
+            queueSave("user." + name + ".permissions", l);
+        }
+    }
+
+    @Override
+    public void removePermission(String world, String name, String permission) {
+        removePermission(name, permission);
+    }
+
+    @Override
+    public void removePermission(String name, String permission) {
+        List<String> list = yamlPerms.getStringList("user." + name + ".permissions");
+        
+        if (!list.isEmpty() || list != null) {
+            if (list.contains(permission)) {
+                list.remove(permission);
+                queueSave("user." + name + ".permissions", list);
+            }
+        }
+    }
+
+    @Override
+    public void addGroup(String username, String groupname) {
+        queueSave("user." + username + ".group", groupname);
+    }
+
+    @Override
+    public void removeGroup(String username, String groupname) {
+        return; // Overwrite provided in addGroup()
+    }
+
+    @Override
+    public void giveGroupPermission(String world, String name, String permission) {
+        giveGroupPermission(name, permission);
+    }
+
+    @Override
+    public void giveGroupPermission(String name, String permission) {
+        List<String> list = yamlPerms.getStringList("group." + name + ".permissions");
+        
+        if (!list.isEmpty() || list != null) {
+            list.add(permission);
+            queueSave("group." + name + ".permissions", list);
+        } else {
+            List<String> l = new ArrayList<String>();
+            l.add(permission);
+            queueSave("group." + name + ".permissions", l);
+        }
+    }
+
+    @Override
+    public void removeGroupPermission(String world, String name, String permission) {
+        removeGroupPermission(name, permission);
+    }
+
+    @Override
+    public void removeGroupPermission(String name, String permission) {
+        List<String> list = yamlPerms.getStringList("group." + name + ".permissions");
+        
+        if (!list.isEmpty() || list != null) {
+            if (list.contains(permission)) {
+                list.remove(permission);
+                queueSave("group." + name + ".permissions", list);
+            }
+        }
+    }
+    
+    private synchronized void queueSave() {
+        try {
+            yamlPerms.save(file);
+        } catch (IOException ex) {
+            return;
+        }
+    }
+    
+    private synchronized void queueSave(String key, Object value) {
+        try {
+            yamlPerms.set(key, value);
+            yamlPerms.save(file);
+        } catch (IOException ex) {
+            return;
+        }
     }
 }

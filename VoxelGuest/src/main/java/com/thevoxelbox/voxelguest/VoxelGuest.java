@@ -75,7 +75,7 @@ public class VoxelGuest extends JavaPlugin {
         if (getConfigData().getString("reset") == null || getConfigData().getString("reset").equalsIgnoreCase("yes"))
             loadFactorySettings();
         
-        perms = new PermissionsManager(this.getServer(), "[VoxelGuest]");
+        perms = new PermissionsManager(this.getServer(), "[VoxelGuest]", config);
         groupManager = new GroupManager();
         moduleManager = new ModuleManager(this);
         registerPluginIds();

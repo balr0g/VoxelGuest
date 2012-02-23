@@ -130,4 +130,56 @@ public class DinnerpermsHandler extends PermissionsHandler {
         }
     }
     
+    // WOO NO DYNAMIC PERMISSION INSERTIONS!!! >_>
+
+    @Override
+    public void givePermission(String world, String name, String permission) {
+        return;
+    }
+
+    @Override
+    public void givePermission(String name, String permission) {
+        return;
+    }
+
+    @Override
+    public void removePermission(String world, String name, String permission) {
+        return;
+    }
+
+    @Override
+    public void removePermission(String name, String permission) {
+        return;
+    }
+
+    @Override
+    public void addGroup(String username, String groupname) {
+        return;
+    }
+
+    @Override
+    public void removeGroup(String username, String groupname) {
+        return;
+    }
+
+    @Override
+    public void giveGroupPermission(String world, String name, String permission) {
+        return;
+    }
+
+    @Override
+    public void giveGroupPermission(String name, String permission) {
+        return;
+    }
+
+    @Override
+    public void removeGroupPermission(String world, String name, String permission) {
+        return;
+    }
+
+    @Override
+    public void removeGroupPermission(String name, String permission) {
+        return;
+    }
+    
 }
