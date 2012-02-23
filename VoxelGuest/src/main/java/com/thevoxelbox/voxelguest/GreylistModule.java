@@ -16,8 +16,11 @@ import com.thevoxelbox.voxelguest.util.FlatFileManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +31,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 @MetaData(name="Greylist", description="Allows for the setup of a greylist system!")
 public class GreylistModule extends Module {
@@ -40,8 +45,10 @@ public class GreylistModule extends Module {
     private int streamPort;
     private boolean couldNotConnect = false;
     private long disconnectTimestamp = -1;
+    
+    private int onlineGreylistLimit = -1;
     private boolean explorationMode = false;
-
+    
     public GreylistModule() {
         super(GreylistModule.class.getAnnotation(MetaData.class));
     }
@@ -100,6 +107,7 @@ public class GreylistModule extends Module {
             }, 0L, 200L);
             
             explorationMode = VoxelGuest.getConfigData().getBoolean("exploration-mode");
+            onlineGreylistLimit = VoxelGuest.getConfigData().getInt("greylist-online-limit");
         }
     }
     
@@ -117,13 +125,47 @@ public class GreylistModule extends Module {
         return "Greylist module loaded";
     }
     
-    @Command(aliases={"greylist", "gl"},
+    @Command(aliases={"greylist", "gl", "graylist"},
             bounds={1, -1})
     @CommandPermission(permission="voxelguest.greylist.admin.add")
     @Subcommands(arguments={"limit", "password"},
             permission={"voxelguest.greylist.admin.limit", "voxelguest.greylist.admin.password"})
     public void greylist(CommandSender cs, String[] args) {
+        if (args[0].equalsIgnoreCase("limit")) {
+            try {
+                int newLimit = Integer.parseInt(args[1]);
+                onlineGreylistLimit = newLimit;
+                VoxelGuest.getConfigData().setInt("greylist-online-limit", onlineGreylistLimit);
+                cs.sendMessage(ChatColor.GREEN + "Reset the online greylist limit to " + onlineGreylistLimit);
+                return;
+            } catch (NumberFormatException ex) {
+                cs.sendMessage("Incorrect format. Try /gl limit [number]");
+                return;
+            }
+        } else if (args[0].equalsIgnoreCase("password")) {
+            String concat = "";
+            
+            for (int i = 1; i < args.length; i++) {
+                if (i == (args.length - 1))
+                    concat = concat + args[i];
+                else
+                    concat = concat + args[i] + " ";
+            }
+            
+            String reverse = (new StringBuilder(concat)).reverse().toString();
+            
+            try {
+                setPassword(name, reverse);
+                cs.sendMessage(ChatColor.GREEN + "Set the greylist stream password to \"" + concat + "\"");
+                return;
+            } catch (CouldNotStoreEncryptedPasswordException ex) {
+                cs.sendMessage(ChatColor.RED + "Could not store the greylist stream password");
+            }
+        }
         
+        String user = args[0];
+        injectGreylist(new String[] {user});
+        cs.sendMessage(ChatColor.GREEN + "Added " + args[0] + " to the greylist");
     }
     
     @Command(aliases={"explorationmode"},
@@ -151,10 +193,33 @@ public class GreylistModule extends Module {
                 wrapper.setCancelled(true);
                 return;
             } else if (greylist.contains(gp.getPlayer().getName()) && !PermissionsManager.getHandler().hasPermission(gp.getPlayer().getName(), "voxelguest.greylist.bypass")) {
+                if (onlineGreylistLimit > -1 && onlineGreys.size() >= onlineGreylistLimit) {
+                    String str = VoxelGuest.getConfigData().getString("greylist-over-capacity-kick-message");
+                    gp.getPlayer().kickPlayer((str != null) ? str : "The server is temporarily over guest capacity. Check back later.");
+                    wrapper.setCancelled(true);
+                    return;
+                }
+                
                 if (!onlineGreys.contains(gp.getPlayer().getName()))
                     onlineGreys.add(gp.getPlayer().getName());
             }
         }
+    }
+    
+    @ModuleEvent(event=PlayerQuitEvent.class)
+    public void onPlayerQuit(BukkitEventWrapper wrapper) {
+        PlayerQuitEvent event = (PlayerQuitEvent) wrapper.getEvent();
+        
+        if (!explorationMode && onlineGreys.contains(event.getPlayer().getName()))
+            onlineGreys.remove(event.getPlayer().getName());
+    }
+    
+    @ModuleEvent(event=PlayerKickEvent.class)
+    public void onPlayerKick(BukkitEventWrapper wrapper) {
+        PlayerKickEvent event = (PlayerKickEvent) wrapper.getEvent();
+        
+        if (!explorationMode && onlineGreys.contains(event.getPlayer().getName()))
+            onlineGreys.remove(event.getPlayer().getName());
     }
     
     private void announceGreylist(String user) {
@@ -203,6 +268,24 @@ public class GreylistModule extends Module {
             
             if (!greylist.contains(user))
                 greylist.add(user);
+            
+            try {
+                String[] groups = PermissionsManager.getHandler().getGroups(user);
+                String group = GroupManager.findGroup("greylist", true);
+                
+                if (!PermissionsManager.hasMultiGroupSupport()) {
+                    for (String _group : groups) {
+                        PermissionsManager.getHandler().removeGroup(user, _group);
+                    }
+                    
+                    PermissionsManager.getHandler().addGroup(user, group);
+                } else {
+                    PermissionsManager.getHandler().addGroup(user, group);
+                }
+                
+            } catch (GroupNotFoundException ex) {
+                // Just leave in greylist ... no group defined
+            }
         }
     }
     
@@ -251,5 +334,39 @@ public class GreylistModule extends Module {
                 return null;
             }
         }
+    }
+    
+    public void setPassword(String name, String input) throws CouldNotStoreEncryptedPasswordException {
+        byte[] shhash = new byte[40];
+        String store = "";
+        
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            md.update(input.getBytes("iso-8859-1"), 0, input.length());
+            shhash = md.digest();
+            store = convertToHex(shhash);
+            
+            VoxelGuest.getConfigData().setString("greylist-stream-password", store);
+        } catch (NoSuchAlgorithmException e) {
+            throw new CouldNotStoreEncryptedPasswordException("Fatal error in storage - NoSuchAlgorithmException");
+        } catch (UnsupportedEncodingException e) {
+            throw new CouldNotStoreEncryptedPasswordException("Fatal error in storage - UnsupportedEncodingException");
+        }
+    }
+    
+    private static String convertToHex(byte[] data) { 
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < data.length; i++) { 
+            int halfbyte = (data[i] >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do { 
+                if ((0 <= halfbyte) && (halfbyte <= 9)) 
+                    buf.append((char) ('0' + halfbyte));
+                else 
+                    buf.append((char) ('a' + (halfbyte - 10)));
+                halfbyte = data[i] & 0x0F;
+            } while(two_halfs++ < 1);
+        } 
+        return buf.toString();
     }
 }

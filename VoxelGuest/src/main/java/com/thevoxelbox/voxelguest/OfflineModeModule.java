@@ -95,7 +95,7 @@ public class OfflineModeModule extends Module {
             try {
                 setPassword(gp.getPlayer().getName(), concat);
                 cs.sendMessage(ChatColor.GRAY + "Offline password set to: " + ChatColor.GREEN + concat);
-            } catch (CouldNotStoreOfflinePasswordException ex) {
+            } catch (CouldNotStoreEncryptedPasswordException ex) {
                 cs.sendMessage(ex.getMessage());
             }
         }
@@ -213,7 +213,7 @@ public class OfflineModeModule extends Module {
         return false;
     }
     
-    public void setPassword(String name, String input) throws CouldNotStoreOfflinePasswordException {
+    public void setPassword(String name, String input) throws CouldNotStoreEncryptedPasswordException {
         byte[] shhash = new byte[40];
         String store = "";
         
@@ -225,9 +225,9 @@ public class OfflineModeModule extends Module {
             
             VoxelGuest.getGuestPlayer(Bukkit.getPlayer(name)).store(VoxelGuest.getPluginId(VoxelGuest.getInstance()), "offline-password", store);
         } catch (NoSuchAlgorithmException e) {
-            throw new CouldNotStoreOfflinePasswordException("Fatal error in storage - NoSuchAlgorithmException");
+            throw new CouldNotStoreEncryptedPasswordException("Fatal error in storage - NoSuchAlgorithmException");
         } catch (UnsupportedEncodingException e) {
-            throw new CouldNotStoreOfflinePasswordException("Fatal error in storage - UnsupportedEncodingException");
+            throw new CouldNotStoreEncryptedPasswordException("Fatal error in storage - UnsupportedEncodingException");
         }
     }
     
