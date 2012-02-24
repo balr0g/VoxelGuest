@@ -204,7 +204,7 @@ public class GreylistModule extends Module {
         
         if (!explorationMode) {
             if (!greylist.contains(gp.getPlayer().getName())) {
-                gp.getPlayer().kickPlayer((VoxelGuest.getConfigData().getString("greylist-not-greylisted-kick-message") != null) ? VoxelGuest.getConfigData().getString("greylist-not-greylisted-kick-message") : "You are not greylisted on this server");
+                gp.getPlayer().kickPlayer((VoxelGuest.getConfigData().getString("greylist-not-greylisted-kick-message") != null) ? VoxelGuest.getConfigData().getString("greylist-not-greylisted-kick-message") : "You are not greylisted on this server.");
                 event.setJoinMessage("");
                 wrapper.setCancelled(true);
                 return;
@@ -239,7 +239,7 @@ public class GreylistModule extends Module {
     }
     
     private void announceGreylist(String user) {
-        Bukkit.getServer().broadcastMessage(ChatColor.GRAY + user + ChatColor.DARK_GRAY + " has been accepted to the greylist");
+        Bukkit.getServer().broadcastMessage(ChatColor.GRAY + user + ChatColor.DARK_GRAY + " was added to the greylist.");
     }
     
     private void announceGreylist(List<String> users) {
