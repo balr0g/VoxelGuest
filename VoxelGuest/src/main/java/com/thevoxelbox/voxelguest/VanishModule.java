@@ -1,29 +1,106 @@
 /*
- * VoxelGuest
+ * Copyright (C) 2011 - 2012, psanker and contributors
+ * All rights reserved.
  *
- * Copyright (C) 2011, 2012 psanker and contributors
-
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Redistribution and use in source and binary forms, with or without modification, are 
+ * permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright notice, this list of 
+ *   conditions and the following 
+ * * Redistributions in binary form must reproduce the above copyright notice, this list of 
+ *   conditions and the following disclaimer in the documentation and/or other materials 
+ *   provided with the distribution.
+ * * Neither the name of The VoxelPlugineering Team nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without specific prior 
+ *   written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.thevoxelbox.voxelguest;
 
-import java.util.TreeSet;
+import com.thevoxelbox.commands.Command;
+import com.thevoxelbox.commands.CommandPermission;
+import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
+import com.thevoxelbox.voxelguest.modules.MetaData;
+import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleEvent;
+import com.thevoxelbox.voxelguest.modules.ModuleEventPriority;
+import com.thevoxelbox.voxelguest.util.FlatFileManager;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-public class VanishManager {
+@MetaData(name="Vanish", description="Vanish in front of your peers!")
+public class VanishModule extends Module {
     
-    protected static TreeSet<String> vanished = new TreeSet<String>();
-    protected static TreeSet<String> safeList = new TreeSet<String>();
+    protected static List<String> vanished = new ArrayList<String>();
+    protected static List<String> safeList = new ArrayList<String>();
+    
+    private String[] reloadVanishedList;
+    
+    public VanishModule() {
+        super(VanishModule.class.getAnnotation(MetaData.class));
+    }
+    
+    @Override
+    public void enable() {
+        reloadVanishedList = FlatFileManager.load("reload-vanished-list", "", true);
+        
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (PermissionsManager.getHandler().hasPermission(p.getName(), "voxelguest.vanish.safelist")) {
+                addMemberToSafeList(p);
+            }
+        }
+        
+        if (reloadVanishedList != null) {
+            for (String str : reloadVanishedList) {
+                hidePlayer(Bukkit.getPlayer(str));
+            }
+        }
+    }
+
+    @Override
+    public String getLoadMessage() {
+        return "Vanish module loaded";
+    }
+    
+    @Command(aliases="vanish",
+            bounds={0,0},
+            help="To toggle your vanish setting, type:\n"
+            + "§c/vanish",
+            playerOnly=true)
+    @CommandPermission(permission="voxelguest.vanish.toggle")
+    public void vanish(CommandSender cs, String[] args) {
+        Player p = (Player) cs;
+        
+        if (!vanished.contains(p.getName()))
+            hidePlayer(p);
+        else
+            revealPlayer(p);
+    }
+    
+    @ModuleEvent(event=PlayerJoinEvent.class, priority=ModuleEventPriority.LOW)
+    public void onPlayerJoin(BukkitEventWrapper wrapper) {
+        PlayerJoinEvent event = (PlayerJoinEvent) wrapper.getEvent();
+        
+        if (PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "voxelguest.vanish.safelist")) {
+            addMemberToSafeList(event.getPlayer());
+            revealVanishedToPlayer(event.getPlayer());
+        }
+    }
     
     public static void hidePlayer(Player hidden) {
         if (!vanished.contains(hidden.getName())) {
@@ -44,6 +121,17 @@ public class VanishManager {
                 if (!safeList.contains(p.getName()))
                     p.showPlayer(hidden);
             }
+        }
+    }
+    
+    public static void revealVanishedToPlayer(Player p) {
+        Iterator<String> it = vanished.listIterator();
+        
+        while (it.hasNext()) {
+            String vanishedName = it.next();
+            Player vanishedPlayer = Bukkit.getPlayer(vanishedName);
+            
+            p.showPlayer(vanishedPlayer);
         }
     }
     
