@@ -33,6 +33,7 @@ import com.thevoxelbox.commands.CommandsManager;
 import com.thevoxelbox.commands.MalformattedCommandException;
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
 import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.commands.MiscellaneousCommands;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import com.thevoxelbox.voxelguest.players.GroupManager;
@@ -90,6 +91,7 @@ public class VoxelGuest extends JavaPlugin {
         }
         
         guestPlayers.clear();
+        groupManager.saveGroupConfigurations();
         
         moduleManager.shutDownModules();
         
@@ -108,6 +110,9 @@ public class VoxelGuest extends JavaPlugin {
         moduleManager = new ModuleManager(this);
         registerPluginIds();
         
+        // Register system / miscellaneous commands
+        commandsManager.registerCommands(MiscellaneousCommands.class);
+        
         // Load system event listeners
         Bukkit.getPluginManager().registerEvents(listener, this);
         Bukkit.getPluginManager().registerEvents(perms, this);
@@ -123,6 +128,7 @@ public class VoxelGuest extends JavaPlugin {
                 continue;
             }
 
+            groupManager.addPlayerToGroupMap(player);
             guestPlayers.add(gp); // KEEP THIS LAST
         }
         

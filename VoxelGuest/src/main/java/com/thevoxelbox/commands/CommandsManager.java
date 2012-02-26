@@ -151,12 +151,16 @@ public class CommandsManager {
             if (cs instanceof Player) {
                 Player p = (Player) cs;
                 
-                if (Arrays.asList(subs.arguments()).contains(args[0])) {
-                    for (int i = 0; i < subs.arguments().length; i++) {
-                        if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !PermissionsManager.getHandler().hasPermission(p.getName(), subs.permission()[i])) {
-                            throw new InsufficientPermissionsException("You do not have sufficient privileges to access this command.");
+                try {
+                    if (Arrays.asList(subs.arguments()).contains(args[0])) {
+                        for (int i = 0; i < subs.arguments().length; i++) {
+                            if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !PermissionsManager.getHandler().hasPermission(p.getName(), subs.permission()[i])) {
+                                throw new InsufficientPermissionsException("You do not have sufficient privileges to access this command.");
+                            }
                         }
                     }
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    // Continue
                 }
             }
         }

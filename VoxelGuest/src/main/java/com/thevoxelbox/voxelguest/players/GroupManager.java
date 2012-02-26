@@ -26,14 +26,19 @@
 
 package com.thevoxelbox.voxelguest.players;
 
+import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.util.Configuration;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.bukkit.entity.Player;
 
 public class GroupManager {
     
     protected static HashMap<String, Configuration> groupMap = new HashMap<String, Configuration>();
+    protected static HashMap<String, List<String>> playerMap = new HashMap<String, List<String>>();
     
     public GroupManager() {
         File dir = new File("plugins/VoxelGuest/data/groups/");
@@ -54,18 +59,18 @@ public class GroupManager {
         }
     }
     
-    public static Configuration getGroupConfiguration(String name) {
+    public Configuration getGroupConfiguration(String name) {
         if (groupMap.containsKey(name))
             return groupMap.get(name);
         
         return null;
     }
     
-    public static void setGroupConfiguration(String name, Configuration config) {
+    public void setGroupConfiguration(String name, Configuration config) {
         groupMap.put(name, config);
     }
     
-    public static String findGroup(String key, Object value) throws GroupNotFoundException {
+    public String findGroup(String key, Object value) throws GroupNotFoundException {
         for (Map.Entry<String, Configuration> entry : groupMap.entrySet()) {
             Configuration config = entry.getValue();
             
@@ -76,14 +81,67 @@ public class GroupManager {
         throw new GroupNotFoundException("No group found for key-value pair");
     }
     
-    public static void saveGroupConfigurations() {
+    public void saveGroupConfigurations() {
         for (Map.Entry<String, Configuration> entry : groupMap.entrySet()) {
             saveGroupConfiguration(entry.getKey());
         }
     }
     
-    public static void saveGroupConfiguration(String name) {
+    public void saveGroupConfiguration(String name) {
         Configuration config = groupMap.get(name);
         config.save();
+    }
+    
+    public void addPlayerToGroupMap(Player p) {
+        String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
+        
+        if (group == null)
+            group = "Unknown";
+        
+        List<String> list = playerMap.get(group);
+        
+        if (list == null || list.isEmpty()) {
+            List<String> newList = new ArrayList<String>();
+            newList.add(p.getName());
+            playerMap.put(group, newList);
+        } else {
+            if (!list.contains(p.getName())) {
+                list.add(p.getName());
+                playerMap.put(group, list);
+            }
+        }
+    }
+    
+    public void removePlayerFromGroupMap(Player p) {
+        String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
+        
+        if (group == null)
+            group = "Unknown";
+        
+        List<String> list = playerMap.get(group);
+        
+        if (list.isEmpty() || list == null) {
+            // Do nothing
+        } else {
+            if (list.contains(p.getName())) {
+                list.remove(p.getName());
+                playerMap.put(group, list);
+            }
+        }
+    }
+    
+    public List<String> getPlayerListForGroup(String group) {
+        return playerMap.get(group);
+    }
+    
+    public List<String> getRegisteredGroups() {
+        List<String> l = new ArrayList<String>();
+        
+        for (Map.Entry<String, Configuration> entry : groupMap.entrySet()) {
+            if (!l.contains(entry.getKey()))
+                l.add(entry.getKey());
+        }
+        
+        return l;
     }
 }

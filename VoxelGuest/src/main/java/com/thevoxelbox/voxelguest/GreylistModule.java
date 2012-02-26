@@ -271,7 +271,7 @@ public class GreylistModule extends Module {
             
             try {
                 String[] groups = PermissionsManager.getHandler().getGroups(str);
-                String group = GroupManager.findGroup("greylist", true);
+                String group = VoxelGuest.getGroupManager().findGroup("greylist", true);
                 
                 if (!PermissionsManager.hasMultiGroupSupport()) {
                     for (String _group : groups) {
@@ -303,7 +303,7 @@ public class GreylistModule extends Module {
             
             try {
                 String[] groups = PermissionsManager.getHandler().getGroups(user);
-                String group = GroupManager.findGroup("greylist", true);
+                String group = VoxelGuest.getGroupManager().findGroup("greylist", true);
                 
                 if (!PermissionsManager.hasMultiGroupSupport()) {
                     for (String _group : groups) {

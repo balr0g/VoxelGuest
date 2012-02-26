@@ -58,7 +58,7 @@ public @interface Command {
      * Prints this out when person does "/<command> ?", "/<command> help", or "/<command> h"
      * 
      */
-    String help() default "";
+    String help() default "§cNo help is provided for this command";
 
     /**
      * 

@@ -39,7 +39,7 @@ public abstract class Formatter {
         }
     }
     
-    public String encodeColors(String input) {
+    public static String encodeColors(String input) {
         for (FormatColors color : FormatColors.values()) {
             input = input.replace(color.getColorCode(), color.getBukkitColorCode());
         }
