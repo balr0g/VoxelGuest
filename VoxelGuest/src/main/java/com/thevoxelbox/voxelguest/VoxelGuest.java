@@ -1,3 +1,29 @@
+/*
+ * Copyright (C) 2011 - 2012, psanker and contributors
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are 
+ * permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright notice, this list of 
+ *   conditions and the following 
+ * * Redistributions in binary form must reproduce the above copyright notice, this list of 
+ *   conditions and the following disclaimer in the documentation and/or other materials 
+ *   provided with the distribution.
+ * * Neither the name of The VoxelPlugineering Team nor the names of its contributors may be 
+ *   used to endorse or promote products derived from this software without specific prior 
+ *   written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.commands.ArgumentOutOfBoundsException;
@@ -7,6 +33,7 @@ import com.thevoxelbox.commands.CommandsManager;
 import com.thevoxelbox.commands.MalformattedCommandException;
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
 import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.commands.MiscellaneousCommands;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import com.thevoxelbox.voxelguest.players.GroupManager;
@@ -48,8 +75,10 @@ public class VoxelGuest extends JavaPlugin {
     protected static final Configuration config = new Configuration("VoxelGuest");
     
     protected Class<? extends Module>[] availableModules = new Class[] {
+        AFKModule.class,
+        GreylistModule.class,
         OfflineModeModule.class,
-        AFKModule.class
+        VanishModule.class
     };
 
     @Override
@@ -62,6 +91,7 @@ public class VoxelGuest extends JavaPlugin {
         }
         
         guestPlayers.clear();
+        groupManager.saveGroupConfigurations();
         
         moduleManager.shutDownModules();
         
@@ -75,10 +105,13 @@ public class VoxelGuest extends JavaPlugin {
         if (getConfigData().getString("reset") == null || getConfigData().getString("reset").equalsIgnoreCase("yes"))
             loadFactorySettings();
         
-        perms = new PermissionsManager(this.getServer(), "[VoxelGuest]");
+        perms = new PermissionsManager(this.getServer(), "[VoxelGuest]", config);
         groupManager = new GroupManager();
         moduleManager = new ModuleManager(this);
         registerPluginIds();
+        
+        // Register system / miscellaneous commands
+        commandsManager.registerCommands(MiscellaneousCommands.class);
         
         // Load system event listeners
         Bukkit.getPluginManager().registerEvents(listener, this);
@@ -95,6 +128,7 @@ public class VoxelGuest extends JavaPlugin {
                 continue;
             }
 
+            groupManager.addPlayerToGroupMap(player);
             guestPlayers.add(gp); // KEEP THIS LAST
         }
         
@@ -245,15 +279,23 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setBoolean("afk-timeout-enabled", false);
         getConfigData().setBoolean("save-banlist-on-ban", false);
         getConfigData().setInt("afk-timeout-minutes", 5);
+        getConfigData().setBoolean("enable-greylist", false);
+        getConfigData().setBoolean("enable-greylist-stream", false);
+        getConfigData().setString("greylist-stream-password", "changeme");
+        getConfigData().setInt("greylist-stream-port", 8080);
+        getConfigData().setInt("greylist-online-limit", 10);
+        getConfigData().setString("greylist-not-greylisted-kick-message", "You are not greylisted on this server");
+        getConfigData().setString("greylist-over-capacity-kick-message", "The server is temporarily over greylist capacity. Check back later.");
+        getConfigData().setBoolean("exploration-mode", false);
         
         getConfigData().setString("reset", "no");
         log("==========================================");
-        log("* VOXELGUEST");
+        log("* VOXELGUEST 4");
         log("*");
         log("* The premiere server adminstration suite");
         log("*");
         log("* Built by: psanker & VoxelPlugineering");
-        log("* Licensed by GPL - 2012");
+        log("* Licensed by the GPL (Version 3, 29 June 2007) - 2012");
         log("==========================================");
         log("Factory settings loaded");
     }

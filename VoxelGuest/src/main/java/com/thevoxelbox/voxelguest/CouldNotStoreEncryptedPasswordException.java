@@ -24,13 +24,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.voxelguest.modules;
+package com.thevoxelbox.voxelguest;
 
-public class ModuleInitialisationException extends ModuleException {
-    private static final long serialVersionUID = -956061634023208200L;
+public class CouldNotStoreEncryptedPasswordException extends Exception {
+    private static final long serialVersionUID = 6084439435116546L;
     
-    public ModuleInitialisationException(String reason) {
-        super(reason);
+    private String reason;
+    
+    public CouldNotStoreEncryptedPasswordException(String string) {
+        super(string);
+        
+        this.reason = string;
     }
     
+    public String getReason() {
+        return this.reason;
+    }
 }

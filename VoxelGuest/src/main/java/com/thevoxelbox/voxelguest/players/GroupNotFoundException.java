@@ -24,13 +24,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.voxelguest.modules;
+package com.thevoxelbox.voxelguest.players;
 
-public class ModuleInitialisationException extends ModuleException {
-    private static final long serialVersionUID = -956061634023208200L;
+public class GroupNotFoundException extends Exception {
+    private static final long serialVersionUID = -640627620741724L;
     
-    public ModuleInitialisationException(String reason) {
+    public GroupNotFoundException(String reason) {
         super(reason);
     }
-    
 }
