@@ -8,9 +8,9 @@ import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.util.PropertyManager;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -26,8 +26,9 @@ import org.bukkit.event.player.PlayerPreLoginEvent;
 @MetaData(name="Asshat Mitigator", description="Major asshat handling.")
 public class AsshatMitigationModule extends Module {
     
-    public HashMap<String, Object> banned = new HashMap();
+    public Map<String, Object> banned = PropertyManager.load("banned", "/asshatmitigation");
     public HashSet<String> gagged = new HashSet();
+    public HashSet<Object> muted = new HashSet();
     private Server s = Bukkit.getServer();
     
     public AsshatMitigationModule(){
@@ -38,8 +39,6 @@ public class AsshatMitigationModule extends Module {
     public void enable() {
         banned.clear();
         gagged.clear();
-        
-        PropertyManager.load("banned", "/asshatmitigation");
     }
     
     @Override
@@ -52,6 +51,13 @@ public class AsshatMitigationModule extends Module {
         return "Asshat Mitigator has been loaded.";
     }
     
+    /*
+     * Asshat Mitigation - Ban
+     * Written by: Razorcane
+     * 
+     * Handles the banning of both online and offline players.  However,
+     * exact player names must be given when banning offline players.
+     */
     @Command(aliases = {"ban", "vban", "vbano", "bano"},
             bounds = {1, -1},
             help = "To ban someone, simply type\n"
@@ -68,7 +74,7 @@ public class AsshatMitigationModule extends Module {
             }
         }
         
-        if(l.size() < 1){
+        if(l.size() > 1){
             cs.sendMessage(ChatColor.RED + "Partial match.");
         }
         else if(l.isEmpty()){
@@ -102,6 +108,13 @@ public class AsshatMitigationModule extends Module {
         }
     }
     
+    /*
+     * Asshat Mitigation - Unban
+     * Written by: Razorcane
+     * 
+     * Controls the unbanning of banned players.  Name must be exact, and
+     * player must be banned, in order to be unbanned.
+     */
     @Command(aliases = {"unban", "vunban"},
             bounds = {1, -1},
             help = "To unban someone, simply type\n"
@@ -119,6 +132,7 @@ public class AsshatMitigationModule extends Module {
             String player = args[0];
             if(banned.containsKey(player)){
                 banned.remove(player);
+                s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + "has been unbanned by " + ChatColor.RED + cs.getName());
             }
             else{
                 cs.sendMessage(ChatColor.RED + "Player isn't banned.");
@@ -126,6 +140,13 @@ public class AsshatMitigationModule extends Module {
         }
     }
     
+    /*
+     * Asshat Mitigation - Gag
+     * Written by: Razorcane
+     * 
+     * Gags a player, or prevents them from talking until they are ungagged,
+     * there is a server restart, or they type the designated phrase.
+     */
     @Command(aliases={"gag","vgag"},
             bounds= {1, -1},
             help="To gag someone, simply type\n"
@@ -142,7 +163,7 @@ public class AsshatMitigationModule extends Module {
             }
         }
         
-        if(l.size() < 1){
+        if(l.size() > 1){
             cs.sendMessage(ChatColor.RED + "Partial match.");
         }
         else if(l.isEmpty()){
@@ -169,6 +190,13 @@ public class AsshatMitigationModule extends Module {
         }
     }
     
+    /*
+     * Asshat Mitigation - Kick
+     * Written by: Razorcane
+     * 
+     * Kicks a player from the server.  Entering no reason defaults to the
+     * default asshat reason, which is "Asshat".
+     */
     @Command(aliases={"kick","vkick"},
             bounds= {1, -1},
             help="To kick someone, simply type\n"
@@ -185,7 +213,7 @@ public class AsshatMitigationModule extends Module {
             }
         }
         
-        if(l.size() < 1){
+        if(l.size() > 1){
             cs.sendMessage(ChatColor.RED + "Partial match.");
         }
         else if(l.isEmpty()){
@@ -202,18 +230,6 @@ public class AsshatMitigationModule extends Module {
                 s.broadcastMessage(VoxelGuest.getConfigData().getString("default-asshat-reason"));
             }
         }
-    }
-    
-    @Command(aliases={"mute","vmute"},
-            bounds= {2, 2},
-            help="To mute someone, simply type\n"
-            + "§c/mute -p [player]\n"
-            + "To mute a group, simply type\n"
-            + "§c/mute -g [group name]",
-            playerOnly=false)
-    @CommandPermission(permission="voxelguest.asshat.mute")
-    public void mute(CommandSender cs, String[] args) {
-        //TODO
     }
     
     @ModuleEvent(event=PlayerPreLoginEvent.class)

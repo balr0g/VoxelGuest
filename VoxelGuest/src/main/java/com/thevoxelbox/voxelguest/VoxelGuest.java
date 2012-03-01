@@ -279,6 +279,7 @@ public class VoxelGuest extends JavaPlugin {
 //      getConfigData().setString("asshat-ban-message", "&8Player &c$asshat &8has been banned by &c$n &8for:");
 //      getConfigData().setString("asshat-kick-message", "&8Player &c$asshat &8has been kicked by &c$n &8for:");
 //      getConfigData().setString("asshat-gag-message", "&8Player &c$asshat &8has been gagged by &c$n &8for:");
+//      getConfigData().setString("asshat-unban-message", "&8Player &c$asshat &8has been unbanned by &c$n &8.");
         getConfigData().setString("gag-message-format", "&eYou have been temporarily restricted from chat. Please visit &cINSERT LINK HERE &eto find out how to undo this.");
         getConfigData().setString("ungag-message-format", "&eYou are no longer restricted from chat.  Please note that further breaking of the rules may result in a &akick&e, or even a &cban&e!");
         getConfigData().setString("unrestrict-chat-message", "allow me to chat");
