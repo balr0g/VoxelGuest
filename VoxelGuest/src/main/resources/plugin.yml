@@ -17,3 +17,15 @@ commands:
   who:
     aliases: [online, list, readlist]
     usage: /<command>
+  ban:
+    aliases: [vban, vbano, bano]
+    usage: /<command> [user] [reason]
+  unban:
+    aliases: [vunban]
+    usage: /<command> [user]
+  gag:
+    aliases: [vgag]
+    usage: /<command> [user] [reason]
+  kick:
+    aliases: [vkick]
+    usage: /<command> [user] [reason]

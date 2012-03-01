@@ -38,6 +38,8 @@ public class AsshatMitigationModule extends Module {
     public void enable() {
         banned.clear();
         gagged.clear();
+        
+        PropertyManager.load("banned", "/asshatmitigation");
     }
     
     @Override
@@ -78,7 +80,8 @@ public class AsshatMitigationModule extends Module {
                 s.broadcastMessage(ChatColor.BLUE + reason);
             }
             else{
-                s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + ".");
+                s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                s.broadcastMessage(VoxelGuest.getConfigData().getString("default-asshat-reason"));
             }
         }
         else{
@@ -89,7 +92,8 @@ public class AsshatMitigationModule extends Module {
                 s.broadcastMessage(ChatColor.BLUE + reason);
             }
             else{
-                s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + ".");
+                s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                s.broadcastMessage(VoxelGuest.getConfigData().getString("default-asshat-reason"));
             }
         }
         
@@ -157,7 +161,8 @@ public class AsshatMitigationModule extends Module {
                     l.get(0).sendMessage(VoxelGuest.getConfigData().getString("gag-message-format"));
                 }
                 else{
-                    s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been gagged by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + ".");
+                    s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been gagged by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                    s.broadcastMessage(VoxelGuest.getConfigData().getString("default-asshat-reason"));
                     l.get(0).sendMessage(VoxelGuest.getConfigData().getString("gag-message-format"));
                 }
             }
@@ -193,7 +198,8 @@ public class AsshatMitigationModule extends Module {
                 s.broadcastMessage(ChatColor.BLUE + reason);
             }
             else{
-                s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been kicked by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + ".");
+                s.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been kicked by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                s.broadcastMessage(VoxelGuest.getConfigData().getString("default-asshat-reason"));
             }
         }
     }
