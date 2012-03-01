@@ -26,6 +26,7 @@
 
 package com.thevoxelbox.voxelguest;
 
+import com.thevoxelbox.voxelguest.commands.AsshatMitigationModule;
 import com.thevoxelbox.voxelguest.util.Formatter;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.Configuration;
@@ -53,6 +54,7 @@ public class SimpleFormatter extends Formatter {
     public String[] format(String input, GuestPlayer gp) {
         String copy = input;
         boolean guestPlayerParcing;
+        AsshatMitigationModule amm;
         
         guestPlayerParcing = (gp == null) ? false : true;
         
