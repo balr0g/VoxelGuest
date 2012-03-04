@@ -314,6 +314,9 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setBoolean("disable-block-burning", false);
         getConfigData().setBoolean("disable-fire-spread", false);
         getConfigData().setBoolean("disable-enchanting", false);
+        getConfigData().setBoolean("disable-food-changes", false);
+        getConfigData().setString("unplacable-blocks", "8,9,10,11,46");
+        getConfigData().setString("unusable-items", "325,326,327");
         
         //Creature Protection Module Data
         getConfigData().setBoolean("disable-blaze-spawning", false);
@@ -338,6 +341,25 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setBoolean("disable-villager-spawning", false);
         getConfigData().setBoolean("disable-wolf-spawning", false);
         getConfigData().setBoolean("disable-zombie-spawning", false);
+        getConfigData().setBoolean("disable-creeper-explosion", false);
+        
+        //Player Protection Module Data
+        getConfigData().setBoolean("disable-tnt-damage", false);
+        getConfigData().setBoolean("disable-cactus-damage", false);
+        getConfigData().setBoolean("disable-drowning-damage", false);
+        getConfigData().setBoolean("disable-pvp-damage", false);
+        getConfigData().setBoolean("disable-explosion-damage", false);
+        getConfigData().setBoolean("disable-fall-damage", false);
+        getConfigData().setBoolean("disable-fire-damage", false);
+        getConfigData().setBoolean("disable-firetick-damage", false);
+        getConfigData().setBoolean("disable-lava-damage", false);
+        getConfigData().setBoolean("disable-lightning-damage", false);
+        getConfigData().setBoolean("disable-potion-damage", false);
+        getConfigData().setBoolean("disable-magic-damage", false);
+        getConfigData().setBoolean("disable-projectile-damage", false);
+        getConfigData().setBoolean("disable-starvation-damage", false);
+        getConfigData().setBoolean("disable-suffocation-damage", false);
+        getConfigData().setBoolean("disable-void-damage", false);
         
         getConfigData().setString("reset", "no");
         log("==========================================");

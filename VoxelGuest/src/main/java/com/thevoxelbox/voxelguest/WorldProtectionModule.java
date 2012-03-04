@@ -4,6 +4,7 @@ import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
+import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -13,13 +14,14 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 
 /**
- * The Server Protection Module was created to help maintain various server
- * aspects, such as grief prevention. The Server Protection Module offers
+ * The World Protection Module was created to help maintain various server
+ * aspects, such as grief prevention. The World Protection Module offers
  * extreme amounts of customization based on config variables.  Please refer
  * to VoxelGuest.java for variables.
  * 
@@ -69,6 +71,29 @@ public class WorldProtectionModule extends Module{
         
         if(VoxelGuest.getConfigData().getBoolean("diable-block-drops")){
             b.setType(Material.AIR);
+            event.setCancelled(true);
+        }
+    }
+    
+    /*
+     * World Protection - BlockPlace Event
+     * Written by: Razorcane
+     * 
+     * Handles prevention of certain blocks from being placed.
+     */
+    @ModuleEvent(event=BlockPlaceEvent.class)
+    public void onBlockPlace(BukkitEventWrapper wrapper){
+        BlockPlaceEvent event = (BlockPlaceEvent) wrapper.getEvent();
+        HashSet<Integer> bannedblocks = new HashSet<Integer>();
+        Block b = event.getBlock();
+        
+        bannedblocks.clear();
+        String[] i = VoxelGuest.getConfigData().getString("unplacable-blocks").split(",");
+        for(String str : i){
+            bannedblocks.add(Integer.parseInt(str));
+        }
+        
+        if(bannedblocks.contains(b.getTypeId())){
             event.setCancelled(true);
         }
     }

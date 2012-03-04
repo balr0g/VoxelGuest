@@ -8,10 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.CreatureType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 /**
- * The Server Protection Module was created to help maintain various server
- * aspects, such as grief prevention. The Server Protection Module offers
+ * The Creature Protection Module was created to help maintain various creature
+ * aspects, such as mob spawning. The Creature Protection Module offers
  * extreme amounts of customization based on config variables.  Please refer
  * to VoxelGuest.java for variables.
  * 
@@ -39,7 +40,7 @@ public class CreatureProtectionModule extends Module{
     
         
     /*
-     * World Protection - CreatureSpawn Event
+     * Creature Protection - CreatureSpawn Event
      * Written by: Razorcane
      * 
      * Handles creature spawning event.
@@ -134,6 +135,21 @@ public class CreatureProtectionModule extends Module{
         }
         
         if(mob.equals(CreatureType.ZOMBIE) && VoxelGuest.getConfigData().getBoolean("disable-zombie-spawning")){
+            event.setCancelled(true);
+        }
+    }
+    
+    /*
+     * Creature Protection - EntityExplode Event
+     * Written by: Razorcane
+     * 
+     * Handles mob explosions, such as creepers.
+     */
+    @ModuleEvent(event=EntityExplodeEvent.class)
+    public void onEntityExplode(BukkitEventWrapper wrapper){
+        EntityExplodeEvent event = (EntityExplodeEvent) wrapper.getEvent();
+        
+        if(VoxelGuest.getConfigData().getBoolean("disable-creeper-explosion")){
             event.setCancelled(true);
         }
     }
