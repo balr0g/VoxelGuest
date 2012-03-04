@@ -26,7 +26,6 @@
 
 package com.thevoxelbox.voxelguest;
 
-import com.thevoxelbox.voxelguest.commands.AsshatMitigationModule;
 import com.thevoxelbox.voxelguest.util.Formatter;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.Configuration;

@@ -32,6 +32,7 @@ import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
+import com.thevoxelbox.voxelguest.modules.Setting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,10 @@ public class AFKModule extends Module {
     
     protected HashMap<Player, Long> timeMap = new HashMap<Player, Long>();
     protected List<Player> afkList = new ArrayList<Player>();
+    
+    @Setting("afk-timeout-enabled") boolean timeoutEnabled = false;
+    @Setting("afk-timeout-minutes") int timeoutMinutes = -1;
+    
     
     private int afkTaskID = -1;
     

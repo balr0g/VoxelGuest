@@ -24,55 +24,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.voxelguest.modules;
+package com.thevoxelbox.voxelguest.regions;
 
-public abstract class Module {
-    protected String name;
-    protected String description;
-    private ModuleConfiguration configuration;
-    
-    protected boolean enabled = false;
-    
-    public Module(MetaData md) {
-        this.name = md.name();
-        this.description = md.description();
-    }
-    
-    public abstract void enable();
-    
-    public abstract String getLoadMessage();
-    
-    public void disable() {
-        setEnabled(false);
-    }
-    
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-    
-    public void setEnabled(boolean bool) {
-        this.enabled = bool;
-    }
-    
-    public String getName() {
-        return this.name;
-    }
-    
-    public String getDescription() {
-        return this.description;
-    }
-    
-    public void setConfiguration(ModuleConfiguration config) {
-        if (config != null) {
-            configuration = config;
-            configuration.load();
-        }
-    }
-    
-    public ModuleConfiguration getConfiguration() {
-        if (configuration != null)
-            return configuration;
-        
-        return null;
-    }
+public class Region {
+    private String name;
+    private Vector min;
+    private Vector max;
 }
