@@ -17,6 +17,7 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 
 /**
@@ -29,6 +30,7 @@ public class AsshatMitigationModule extends Module {
     public Map<String, Object> banned = PropertyManager.load("banned", "/asshatmitigation");
     public HashSet<String> gagged = new HashSet();
     public HashSet<Object> muted = new HashSet();
+    public HashSet<Object> frozen = new HashSet();
     private Server s = Bukkit.getServer();
     
     public AsshatMitigationModule(){
@@ -232,6 +234,46 @@ public class AsshatMitigationModule extends Module {
         }
     }
     
+    /*
+     * Asshat Mitigation - Freeze
+     * Written by: Razorcane
+     * 
+     * Freezes a player, preventing them from moving. Useful for investigating
+     * possible asshattery before taking other action.
+     */
+    @Command(aliases={"freeze", "vfreeze"},
+            bounds= {1, 1},
+            help="To freeze someone, simply type\n"
+            + "§c/freeze [player]",
+            playerOnly=true)
+    @CommandPermission(permission="voxelguest.asshat.freeze")
+    public void freeze(CommandSender cs, String[] args){
+        List<Player> l = s.matchPlayer(args[0]);
+        
+        if(l.size() > 1){
+            cs.sendMessage(ChatColor.RED + "Partial match.");
+        }
+        else if(l.isEmpty()){
+            cs.sendMessage(ChatColor.RED + "No player to match.");
+        }
+        else{
+            if(frozen.contains(l.get(0).getName())){
+                frozen.remove(l.get(0).getName());
+                cs.sendMessage(ChatColor.RED + l.get(0).getName() + " has been unfrozen.");
+                l.get(0).sendMessage(ChatColor.BLUE + "You have been unfrozen.");
+            }
+            else{
+                frozen.add(l.get(0).getName());
+                cs.sendMessage(ChatColor.RED + l.get(0).getName() + " has been frozen.");
+                l.get(0).sendMessage(ChatColor.BLUE + "You have been frozen in place.");
+            }
+        }
+    }
+    
+    /*
+     * Asshat Mitigation - PlayerPreLogin Event
+     * Used for the custom ban system, implemented by the Asshat Mitigator.
+     */
     @ModuleEvent(event=PlayerPreLoginEvent.class)
     public void onPlayerPreLogin(BukkitEventWrapper wrapper){
         PlayerPreLoginEvent event = (PlayerPreLoginEvent) wrapper.getEvent();
@@ -243,6 +285,10 @@ public class AsshatMitigationModule extends Module {
         }
     }
     
+    /*
+     * Asshat Mitigation - PlayerChat Event
+     * Used to control the chatting of gagged players.
+     */
     @ModuleEvent(event=PlayerChatEvent.class)
     public void onPlayerChat(BukkitEventWrapper wrapper){
         PlayerChatEvent event = (PlayerChatEvent) wrapper.getEvent();
@@ -258,6 +304,20 @@ public class AsshatMitigationModule extends Module {
                 p.sendMessage(VoxelGuest.getConfigData().getString("gag-message-format"));
                 event.setCancelled(true);
             }
+        }
+    }
+    
+    /*
+     * Asshat Mitigation - PlayerMove Event
+     * Used to determine whether a player is frozen in place.
+     */
+    @ModuleEvent(event=PlayerMoveEvent.class)
+    public void onPlayerMove(BukkitEventWrapper wrapper){
+        PlayerMoveEvent event = (PlayerMoveEvent) wrapper.getEvent();
+        Player p = event.getPlayer();
+        
+        if(frozen.contains(p.getName())){
+            event.setCancelled(true);
         }
     }
 }

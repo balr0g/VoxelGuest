@@ -272,9 +272,14 @@ public class VoxelGuest extends JavaPlugin {
     }
     
     private void loadFactorySettings() {
+        /*
+         * This needs major sorting options. - Razorcane
+         */
         getConfigData().setString("join-message-format", "&8(&6$nonline&8) &3$n &7joined");
         getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");
+        
+        //Asshat Mitigation Module Data
         getConfigData().setString("default-asshat-reason", "&9Asshat");
 //      getConfigData().setString("asshat-ban-message", "&8Player &c$asshat &8has been banned by &c$n &8for:");
 //      getConfigData().setString("asshat-kick-message", "&8Player &c$asshat &8has been kicked by &c$n &8for:");
@@ -283,9 +288,13 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("gag-message-format", "&eYou have been temporarily restricted from chat. Please visit &cINSERT LINK HERE &eto find out how to undo this.");
         getConfigData().setString("ungag-message-format", "&eYou are no longer restricted from chat.  Please note that further breaking of the rules may result in a &akick&e, or even a &cban&e!");
         getConfigData().setString("unrestrict-chat-message", "allow me to chat");
-        getConfigData().setBoolean("afk-timeout-enabled", false);
         getConfigData().setBoolean("save-banlist-on-ban", false);
+        
+        //AFK Module Data
+        getConfigData().setBoolean("afk-timeout-enabled", false);
         getConfigData().setInt("afk-timeout-minutes", 5);
+        
+        //Greylist Module Data
         getConfigData().setBoolean("enable-greylist", false);
         getConfigData().setBoolean("enable-greylist-stream", false);
         getConfigData().setString("greylist-stream-password", "changeme");
@@ -294,6 +303,41 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("greylist-not-greylisted-kick-message", "You are not greylisted on this server");
         getConfigData().setString("greylist-over-capacity-kick-message", "The server is temporarily over greylist capacity. Check back later.");
         getConfigData().setBoolean("exploration-mode", false);
+        
+        //World Protection Module Data
+        getConfigData().setBoolean("disable-block-drops", false);
+        getConfigData().setBoolean("disable-leaf-decay", false);
+        getConfigData().setBoolean("disable-ice-melting", false);
+        getConfigData().setBoolean("disable-snow-melting", false);
+        getConfigData().setBoolean("disable-ice-formation", false);
+        getConfigData().setBoolean("disable-snow-formatin", false);
+        getConfigData().setBoolean("disable-block-burning", false);
+        getConfigData().setBoolean("disable-fire-spread", false);
+        getConfigData().setBoolean("disable-enchanting", false);
+        
+        //Creature Protection Module Data
+        getConfigData().setBoolean("disable-blaze-spawning", false);
+        getConfigData().setBoolean("disable-cavespider-spawning", false);
+        getConfigData().setBoolean("disable-chicken-spawning", false);
+        getConfigData().setBoolean("disable-cow-spawning", false);
+        getConfigData().setBoolean("disable-creeper-spawning", false);
+        getConfigData().setBoolean("disable-enderman-spawning", false);
+        getConfigData().setBoolean("disable-enderdragon-spawning", false);
+        getConfigData().setBoolean("disable-ghast-spawning", false);
+        getConfigData().setBoolean("disable-magmacube-spawning", false);
+        getConfigData().setBoolean("disable-mushroomcow-spawning", false);
+        getConfigData().setBoolean("disable-pig-spawning", false);
+        getConfigData().setBoolean("disable-pigzombie-spawning", false);
+        getConfigData().setBoolean("disable-sheep-spawning", false);
+        getConfigData().setBoolean("disable-silverfish-spawning", false);
+        getConfigData().setBoolean("disable-skeleton-spawning", false);
+        getConfigData().setBoolean("disable-slime-spawning", false);
+        getConfigData().setBoolean("disable-snowman-spawning", false);
+        getConfigData().setBoolean("disable-spider-spawning", false);
+        getConfigData().setBoolean("disable-squid-spawning", false);
+        getConfigData().setBoolean("disable-villager-spawning", false);
+        getConfigData().setBoolean("disable-wolf-spawning", false);
+        getConfigData().setBoolean("disable-zombie-spawning", false);
         
         getConfigData().setString("reset", "no");
         log("==========================================");
