@@ -100,7 +100,7 @@ public class MiscellaneousCommands {
                         // continue
                     }
                     
-                    str = ((fakequit) ? "§8[§cFQ§8]" : "") + ((afk) ? "§8[§9AFK§8]" : "") + ((colorSwitch) ? "§f" : "§7") + str;
+                    str = ((fakequit) ? FAKEQUIT : "") + ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
                     colorSwitch = !colorSwitch;
                     list[i] = str;
                     
@@ -173,7 +173,7 @@ public class MiscellaneousCommands {
                     // continue
                 }
 
-                str = ((afk) ? "§8[§9AFK§8]" : "") + ((colorSwitch) ? "§f" : "§7") + str;
+                str = ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
                 colorSwitch = !colorSwitch;
                 list[i] = str;
 

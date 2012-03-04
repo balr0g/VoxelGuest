@@ -40,6 +40,10 @@ public class GroupManager {
     protected static HashMap<String, Configuration> groupMap = new HashMap<String, Configuration>();
     protected static HashMap<String, List<String>> playerMap = new HashMap<String, List<String>>();
     
+    // Basic group defaults
+    private final String groupName = "Group";
+    private final String groupIcon = "§fG";
+    
     public GroupManager() {
         File dir = new File("plugins/VoxelGuest/data/groups/");
         

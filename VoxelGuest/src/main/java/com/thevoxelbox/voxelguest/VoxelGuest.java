@@ -33,7 +33,6 @@ import com.thevoxelbox.commands.CommandsManager;
 import com.thevoxelbox.commands.MalformattedCommandException;
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
 import com.thevoxelbox.permissions.PermissionsManager;
-import com.thevoxelbox.voxelguest.commands.AsshatMitigationModule;
 import com.thevoxelbox.voxelguest.commands.MiscellaneousCommands;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleManager;
@@ -109,7 +108,7 @@ public class VoxelGuest extends JavaPlugin {
         
         perms = new PermissionsManager(this.getServer(), "[VoxelGuest]", config);
         groupManager = new GroupManager();
-        moduleManager = new ModuleManager(this);
+        moduleManager = new ModuleManager(this, commandsManager);
         registerPluginIds();
         
         // Register system / miscellaneous commands
@@ -460,7 +459,7 @@ public class VoxelGuest extends JavaPlugin {
                 pw.append(d.toString() + " Command: " + command.getName()
                         + ", Sender: [CONSOLE]"
                         + ", Arguments: \"" + concat + "\""
-                        + ", Status: " + ((status) ? "EXECUTED" : "FAILED"));
+                        + ", Status: " + (((status) ? "EXECUTED" : "FAILED") + "\n"));
 
                 pw.close();
             }

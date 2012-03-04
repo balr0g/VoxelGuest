@@ -26,7 +26,7 @@
 
 package com.thevoxelbox.voxelguest.modules;
 
-import com.thevoxelbox.voxelguest.VoxelGuest;
+import com.thevoxelbox.commands.CommandsManager;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,13 +36,15 @@ import org.bukkit.plugin.Plugin;
 
 public class ModuleManager {
     private static Plugin plugin;
+    private final CommandsManager commandsManager;
     private static ModuleManager instance;
-    
+        
     protected List<Module> activeModules = new LinkedList<Module>();
     protected HashMap<Class<? extends Module>, Module> classInstanceMap = new HashMap<Class<? extends Module>, Module>();
     
-    public ModuleManager(Plugin p) {
+    public ModuleManager(Plugin p, CommandsManager manager) {
         plugin = p;
+        commandsManager = manager;
     }
     
     public static void setActiveModuleManager(ModuleManager manager) {
@@ -91,7 +93,7 @@ public class ModuleManager {
         
         if (module != null) {
             // Find and register commands and events
-            VoxelGuest.getCommandsManager().registerCommands(cls);
+            commandsManager.registerCommands(cls);
             
             module.enable();
             activeModules.add(module);
