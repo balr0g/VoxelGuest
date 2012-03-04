@@ -3,7 +3,9 @@ package com.thevoxelbox.voxelguest;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
+import com.thevoxelbox.voxelguest.modules.Setting;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -29,6 +31,29 @@ public class PlayerProtectionModule extends Module {
         super(PlayerProtectionModule.class.getAnnotation(MetaData.class));
     }
     
+    class PlayerProtectionConfiguration extends ModuleConfiguration {
+        @Setting("disable-tnt-damage") public boolean tnt = false;
+        @Setting("disable-cactus-damage") public boolean cactus = false;
+        @Setting("disable-drowning-damage") public boolean drowning = false;
+        @Setting("disable-pvp-damage") public boolean pvp = false;
+        @Setting("disable-explosion-damage") public boolean explosion = false;
+        @Setting("disable-fall-damage") public boolean fall = false;
+        @Setting("disable-fire-damage") public boolean fire = false;
+        @Setting("disable-firetick-damage") public boolean firetick = false;
+        @Setting("disable-lava-damage") public boolean lava = false;
+        @Setting("disable-lightning-damage") public boolean lightning = false;
+        @Setting("disable-potion-damage") public boolean potion = false;
+        @Setting("disable-magic-damage") public boolean magic = false;
+        @Setting("disable-projectile-damage") public boolean projectile = false;
+        @Setting("disable-starvation-damage") public boolean starvation = false;
+        @Setting("disable-suffocation-damage") public boolean suffocation = false;
+        @Setting("disable-void-damage") public boolean voiddamage = false;
+        
+        public PlayerProtectionConfiguration(PlayerProtectionModule parent) {
+            super(parent);
+        }
+    }
+    
     @Override
     public void enable() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -51,52 +76,52 @@ public class PlayerProtectionModule extends Module {
         DamageCause dc = event.getCause();
         
         if(e instanceof Player){
-            if(dc.equals(DamageCause.BLOCK_EXPLOSION) && VoxelGuest.getConfigData().getBoolean("disable-tnt-damage")){
+            if(dc.equals(DamageCause.BLOCK_EXPLOSION) && getConfiguration().getBoolean("disable-tnt-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.CONTACT) && VoxelGuest.getConfigData().getBoolean("disable-cactus-damage")){
+            else if(dc.equals(DamageCause.CONTACT) && getConfiguration().getBoolean("disable-cactus-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.DROWNING) && VoxelGuest.getConfigData().getBoolean("disable-drowning-damage")){
+            else if(dc.equals(DamageCause.DROWNING) && getConfiguration().getBoolean("disable-drowning-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.ENTITY_ATTACK) && VoxelGuest.getConfigData().getBoolean("disable-pvp-damage")){
+            else if(dc.equals(DamageCause.ENTITY_ATTACK) && getConfiguration().getBoolean("disable-pvp-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.ENTITY_EXPLOSION) && VoxelGuest.getConfigData().getBoolean("disable-explosion-damage")){
+            else if(dc.equals(DamageCause.ENTITY_EXPLOSION) && getConfiguration().getBoolean("disable-explosion-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.FALL) && VoxelGuest.getConfigData().getBoolean("disable-fall-damage")){
+            else if(dc.equals(DamageCause.FALL) && getConfiguration().getBoolean("disable-fall-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.FIRE) && VoxelGuest.getConfigData().getBoolean("disable-fire-damage")){
+            else if(dc.equals(DamageCause.FIRE) && getConfiguration().getBoolean("disable-fire-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.FIRE_TICK) && VoxelGuest.getConfigData().getBoolean("disable-firetick-damage")){
+            else if(dc.equals(DamageCause.FIRE_TICK) && getConfiguration().getBoolean("disable-firetick-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.LAVA) && VoxelGuest.getConfigData().getBoolean("disable-lava-damage")){
+            else if(dc.equals(DamageCause.LAVA) && getConfiguration().getBoolean("disable-lava-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.LIGHTNING) && VoxelGuest.getConfigData().getBoolean("disable-lightning-damage")){
+            else if(dc.equals(DamageCause.LIGHTNING) && getConfiguration().getBoolean("disable-lightning-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.MAGIC) && VoxelGuest.getConfigData().getBoolean("disable-magic-damage")){
+            else if(dc.equals(DamageCause.MAGIC) && getConfiguration().getBoolean("disable-magic-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.POISON) && VoxelGuest.getConfigData().getBoolean("disable-poison-damage")){
+            else if(dc.equals(DamageCause.POISON) && getConfiguration().getBoolean("disable-poison-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.PROJECTILE) && VoxelGuest.getConfigData().getBoolean("disable-projectile-damage")){
+            else if(dc.equals(DamageCause.PROJECTILE) && getConfiguration().getBoolean("disable-projectile-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.STARVATION) && VoxelGuest.getConfigData().getBoolean("disable-starvation-damage")){
+            else if(dc.equals(DamageCause.STARVATION) && getConfiguration().getBoolean("disable-starvation-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.SUFFOCATION) && VoxelGuest.getConfigData().getBoolean("disable-suffocation-damage")){
+            else if(dc.equals(DamageCause.SUFFOCATION) && getConfiguration().getBoolean("disable-suffocation-damage")){
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.VOID) && VoxelGuest.getConfigData().getBoolean("disable-void-damage")){
+            else if(dc.equals(DamageCause.VOID) && getConfiguration().getBoolean("disable-void-damage")){
                 event.setCancelled(true);
             }
         }
@@ -112,7 +137,7 @@ public class PlayerProtectionModule extends Module {
     public void onFoodLevelChange(BukkitEventWrapper wrapper){
         FoodLevelChangeEvent event = (FoodLevelChangeEvent) wrapper.getEvent();
         
-        if(event.getFoodLevel() < 20 && VoxelGuest.getConfigData().getBoolean("disable-food-changes")){
+        if(event.getFoodLevel() < 20 && getConfiguration().getBoolean("disable-food-changes")){
             event.setFoodLevel(20);
         }
     }

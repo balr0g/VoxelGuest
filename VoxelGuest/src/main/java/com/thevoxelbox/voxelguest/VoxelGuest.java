@@ -303,63 +303,6 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("greylist-over-capacity-kick-message", "The server is temporarily over greylist capacity. Check back later.");
         getConfigData().setBoolean("exploration-mode", false);
         
-        //World Protection Module Data
-        getConfigData().setBoolean("disable-block-drops", false);
-        getConfigData().setBoolean("disable-leaf-decay", false);
-        getConfigData().setBoolean("disable-ice-melting", false);
-        getConfigData().setBoolean("disable-snow-melting", false);
-        getConfigData().setBoolean("disable-ice-formation", false);
-        getConfigData().setBoolean("disable-snow-formatin", false);
-        getConfigData().setBoolean("disable-block-burning", false);
-        getConfigData().setBoolean("disable-fire-spread", false);
-        getConfigData().setBoolean("disable-enchanting", false);
-        getConfigData().setBoolean("disable-food-changes", false);
-        getConfigData().setString("unplacable-blocks", "8,9,10,11,46");
-        getConfigData().setString("unusable-items", "325,326,327");
-        
-        //Creature Protection Module Data
-        getConfigData().setBoolean("disable-blaze-spawning", false);
-        getConfigData().setBoolean("disable-cavespider-spawning", false);
-        getConfigData().setBoolean("disable-chicken-spawning", false);
-        getConfigData().setBoolean("disable-cow-spawning", false);
-        getConfigData().setBoolean("disable-creeper-spawning", false);
-        getConfigData().setBoolean("disable-enderman-spawning", false);
-        getConfigData().setBoolean("disable-enderdragon-spawning", false);
-        getConfigData().setBoolean("disable-ghast-spawning", false);
-        getConfigData().setBoolean("disable-magmacube-spawning", false);
-        getConfigData().setBoolean("disable-mushroomcow-spawning", false);
-        getConfigData().setBoolean("disable-pig-spawning", false);
-        getConfigData().setBoolean("disable-pigzombie-spawning", false);
-        getConfigData().setBoolean("disable-sheep-spawning", false);
-        getConfigData().setBoolean("disable-silverfish-spawning", false);
-        getConfigData().setBoolean("disable-skeleton-spawning", false);
-        getConfigData().setBoolean("disable-slime-spawning", false);
-        getConfigData().setBoolean("disable-snowman-spawning", false);
-        getConfigData().setBoolean("disable-spider-spawning", false);
-        getConfigData().setBoolean("disable-squid-spawning", false);
-        getConfigData().setBoolean("disable-villager-spawning", false);
-        getConfigData().setBoolean("disable-wolf-spawning", false);
-        getConfigData().setBoolean("disable-zombie-spawning", false);
-        getConfigData().setBoolean("disable-creeper-explosion", false);
-        
-        //Player Protection Module Data
-        getConfigData().setBoolean("disable-tnt-damage", false);
-        getConfigData().setBoolean("disable-cactus-damage", false);
-        getConfigData().setBoolean("disable-drowning-damage", false);
-        getConfigData().setBoolean("disable-pvp-damage", false);
-        getConfigData().setBoolean("disable-explosion-damage", false);
-        getConfigData().setBoolean("disable-fall-damage", false);
-        getConfigData().setBoolean("disable-fire-damage", false);
-        getConfigData().setBoolean("disable-firetick-damage", false);
-        getConfigData().setBoolean("disable-lava-damage", false);
-        getConfigData().setBoolean("disable-lightning-damage", false);
-        getConfigData().setBoolean("disable-potion-damage", false);
-        getConfigData().setBoolean("disable-magic-damage", false);
-        getConfigData().setBoolean("disable-projectile-damage", false);
-        getConfigData().setBoolean("disable-starvation-damage", false);
-        getConfigData().setBoolean("disable-suffocation-damage", false);
-        getConfigData().setBoolean("disable-void-damage", false);
-        
         getConfigData().setString("reset", "no");
         log("==========================================");
         log("* VOXELGUEST 4");

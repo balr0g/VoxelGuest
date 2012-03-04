@@ -3,7 +3,9 @@ package com.thevoxelbox.voxelguest;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
+import com.thevoxelbox.voxelguest.modules.Setting;
 import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,7 +35,6 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
  *      All Fire/Explosion Events
  *      Enchanting(allow or disallow)
  *      Food Level Management
- *      Player XP Management
  *      Vehicle Damage
  *      Vehicle Creation
  *      Weather Controls
@@ -45,6 +46,25 @@ public class WorldProtectionModule extends Module{
 
     public WorldProtectionModule(){
         super(WorldProtectionModule.class.getAnnotation(MetaData.class));
+    }
+    
+    class WorldProtectionConfiguration extends ModuleConfiguration {
+        @Setting("disable-block-drops") public boolean blockdrops = false;
+        @Setting("disable-leaf-decay") public boolean leafdecay = false;
+        @Setting("disable-ice-melting") public boolean icemelt = false;
+        @Setting("disable-snow-melting") public boolean snowmelt = false;
+        @Setting("disable-ice-formation") public boolean iceform = false;
+        @Setting("disable-snow-formatin") public boolean snowform = false;
+        @Setting("disable-block-burning") public boolean blockburn = false;
+        @Setting("disable-fire-spread") public boolean firespred = false;
+        @Setting("disable-enchanting") public boolean enchanting = false;
+        @Setting("disable-food-changes") public boolean foodchange = false;
+        @Setting("unplacable-blocks") public String unplacable = "8,9,10,11,46";
+        @Setting("unusable-items") public String unusableitems = "325,326,327";
+        
+        public WorldProtectionConfiguration(WorldProtectionModule parent) {
+            super(parent);
+        }
     }
     
     @Override
@@ -69,7 +89,7 @@ public class WorldProtectionModule extends Module{
         Player p = event.getPlayer();
         Block b = event.getBlock();
         
-        if(VoxelGuest.getConfigData().getBoolean("diable-block-drops")){
+        if(getConfiguration().getBoolean("diable-block-drops")){
             b.setType(Material.AIR);
             event.setCancelled(true);
         }
@@ -88,7 +108,7 @@ public class WorldProtectionModule extends Module{
         Block b = event.getBlock();
         
         bannedblocks.clear();
-        String[] i = VoxelGuest.getConfigData().getString("unplacable-blocks").split(",");
+        String[] i = getConfiguration().getString("unplacable-blocks").split(",");
         for(String str : i){
             bannedblocks.add(Integer.parseInt(str));
         }
@@ -108,7 +128,7 @@ public class WorldProtectionModule extends Module{
     public void onLeavesDecay(BukkitEventWrapper wrapper){
         LeavesDecayEvent event = (LeavesDecayEvent) wrapper.getEvent();
         
-        if(VoxelGuest.getConfigData().getBoolean("disable-leaf-decay")){
+        if(getConfiguration().getBoolean("disable-leaf-decay")){
             event.setCancelled(true);
         }
     }
@@ -124,11 +144,11 @@ public class WorldProtectionModule extends Module{
         BlockFadeEvent event = (BlockFadeEvent) wrapper.getEvent();
         Block b = event.getBlock();
         
-        if(b.getType().equals(Material.ICE) && VoxelGuest.getConfigData().getBoolean("disable-ice-melting")){
+        if(b.getType().equals(Material.ICE) && getConfiguration().getBoolean("disable-ice-melting")){
             event.setCancelled(true);
         }
         
-        if(b.getType().equals(Material.SNOW) && VoxelGuest.getConfigData().getBoolean("disable-snow-melting")){
+        if(b.getType().equals(Material.SNOW) && getConfiguration().getBoolean("disable-snow-melting")){
             event.setCancelled(true);
         }
     }
@@ -144,11 +164,11 @@ public class WorldProtectionModule extends Module{
         BlockFormEvent event = (BlockFormEvent) wrapper.getEvent();
         Block b = event.getBlock();
         
-        if(b.getType().equals(Material.ICE) && VoxelGuest.getConfigData().getBoolean("disable-ice-formation")){
+        if(b.getType().equals(Material.ICE) && getConfiguration().getBoolean("disable-ice-formation")){
             event.setCancelled(true);
         }
         
-        if(b.getType().equals(Material.SNOW) && VoxelGuest.getConfigData().getBoolean("disable-snow-formation")){
+        if(b.getType().equals(Material.SNOW) && getConfiguration().getBoolean("disable-snow-formation")){
             event.setCancelled(true);
         }
     }
@@ -163,7 +183,7 @@ public class WorldProtectionModule extends Module{
     public void onBlockBurn(BukkitEventWrapper wrapper){
         BlockBurnEvent event = (BlockBurnEvent) wrapper.getEvent();
         
-        if(VoxelGuest.getConfigData().getBoolean("disable-block-burning")){
+        if(getConfiguration().getBoolean("disable-block-burning")){
             event.setCancelled(true);
         }
     }
@@ -179,7 +199,7 @@ public class WorldProtectionModule extends Module{
         BlockSpreadEvent event = (BlockSpreadEvent) wrapper.getEvent();
         Block b = event.getBlock();
         
-        if(b.getType().equals(Material.FIRE) && VoxelGuest.getConfigData().getBoolean("disable-fire-spread")){
+        if(b.getType().equals(Material.FIRE) && getConfiguration().getBoolean("disable-fire-spread")){
             event.setCancelled(true);
         }
     }
@@ -194,7 +214,7 @@ public class WorldProtectionModule extends Module{
     public void onEnchantItem(BukkitEventWrapper wrapper){
         EnchantItemEvent event = (EnchantItemEvent) wrapper.getEvent();
         
-        if(VoxelGuest.getConfigData().getBoolean("disable-enchanting")){
+        if(getConfiguration().getBoolean("disable-enchanting")){
             event.setCancelled(true);
         }
     }
