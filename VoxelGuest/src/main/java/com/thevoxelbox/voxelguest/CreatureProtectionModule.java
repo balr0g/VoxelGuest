@@ -15,8 +15,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 /**
  * The Creature Protection Module was created to help maintain various creature
  * aspects, such as mob spawning. The Creature Protection Module offers
- * extreme amounts of customization based on config variables.  Please refer
- * to VoxelGuest.java for variables.
+ * extreme amounts of customization based on config variables.
  * 
  * Handles:
  *      Mob Spawning

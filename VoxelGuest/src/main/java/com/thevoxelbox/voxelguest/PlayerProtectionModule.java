@@ -15,8 +15,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 /**
  * The Player Protection Module was created to help maintain various player
  * aspects, such as death prevention. The Player Protection Module offers
- * extreme amounts of customization based on config variables.  Please refer
- * to VoxelGuest.java for variables.
+ * extreme amounts of customization based on config variables.
  * 
  * Handles:
  *      Food Level Changes

@@ -1,5 +1,6 @@
 package com.thevoxelbox.voxelguest;
 
+import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
@@ -20,12 +21,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * The World Protection Module was created to help maintain various server
  * aspects, such as grief prevention. The World Protection Module offers
- * extreme amounts of customization based on config variables.  Please refer
- * to VoxelGuest.java for variables.
+ * extreme amounts of customization based on config variables.
  * 
  * Handles:
  *      Block Drops
@@ -42,7 +44,10 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
  */
 @MetaData(name="World Protection", description="Various world protection methods.")
 public class WorldProtectionModule extends Module{
-    Server s = Bukkit.getServer();
+    public Server s = Bukkit.getServer();
+    public HashSet<Integer> bannedblocks = new HashSet<Integer>();
+    public HashSet<Integer> banneditems = new HashSet<Integer>();
+    
 
     public WorldProtectionModule(){
         super(WorldProtectionModule.class.getAnnotation(MetaData.class));
@@ -69,7 +74,23 @@ public class WorldProtectionModule extends Module{
     
     @Override
     public void enable() {
-        return;
+        bannedblocks.clear();
+        banneditems.clear();
+        
+        String[] st1 = getConfiguration().getString("unplacable-blocks").split(",");
+        String[] st2 = getConfiguration().getString("unusable-items").split(",");
+        try{
+            for(String str : st1){
+                bannedblocks.add(Integer.parseInt(str));
+            }
+            
+            for(String str : st2){
+                banneditems.add(Integer.parseInt(str));
+            }
+        }
+        catch(Exception e){
+            VoxelGuest.log("Corrupted or invalidate configuration file. Cannot parse unsuable blocks/items", 1);
+        }
     }
 
     @Override
@@ -104,18 +125,45 @@ public class WorldProtectionModule extends Module{
     @ModuleEvent(event=BlockPlaceEvent.class)
     public void onBlockPlace(BukkitEventWrapper wrapper){
         BlockPlaceEvent event = (BlockPlaceEvent) wrapper.getEvent();
-        HashSet<Integer> bannedblocks = new HashSet<Integer>();
+        Player[] p = Bukkit.getOnlinePlayers();
+        int onlinecount = Bukkit.getOnlinePlayers().length;
         Block b = event.getBlock();
-        
-        bannedblocks.clear();
-        String[] i = getConfiguration().getString("unplacable-blocks").split(",");
-        for(String str : i){
-            bannedblocks.add(Integer.parseInt(str));
-        }
         
         if(bannedblocks.contains(b.getTypeId())){
             event.setCancelled(true);
+            
+            for(int i = 0; i < onlinecount; i++){
+                if(PermissionsManager.getHandler().hasPermission(p[i].getName(), "voxelguest.protection.bannedblocks.warning")){
+                    p[i].sendMessage("§9[VG] §8Player §c" + event.getPlayer().getName() + " §8tried to §bplace §9" + b.getType().toString() + "§8(§9" + b.getTypeId() + "§8)");
+                }
+            }
         }
+    }
+    
+    /*
+     * World Protection - PlayerInteract Event
+     * Written by: Razorcane
+     * 
+     * Handles the prevention of using restricted items.
+     */
+    @ModuleEvent(event=PlayerInteractEvent.class)
+    public void onPlayerInteract(BukkitEventWrapper wrapper){
+        PlayerInteractEvent event = (PlayerInteractEvent) wrapper.getEvent();
+        Player[] p = Bukkit.getOnlinePlayers();
+        int onlinecount = Bukkit.getOnlinePlayers().length;
+        ItemStack is = event.getItem();
+        
+        if(banneditems.contains(is.getTypeId())){
+            event.setCancelled(true);
+            
+            for(int i = 0; i < onlinecount; i++){
+                if(PermissionsManager.getHandler().hasPermission(p[i].getName(), "voxelguest.protection.bannedblocks.warning")){
+                    p[i].sendMessage("§9[VG] §8Player &c" + event.getPlayer().getName() + " §8tried to §buse §9" + is.getType().toString() + "§8(§9" + is.getTypeId() + "§8)");
+                }
+            }
+        }
+        
+        
     }
     
     /*
