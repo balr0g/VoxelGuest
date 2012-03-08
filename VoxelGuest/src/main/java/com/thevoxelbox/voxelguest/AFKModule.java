@@ -31,6 +31,7 @@ import com.thevoxelbox.commands.CommandPermission;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.modules.Setting;
 import java.util.ArrayList;
@@ -54,26 +55,32 @@ public class AFKModule extends Module {
     protected HashMap<Player, Long> timeMap = new HashMap<Player, Long>();
     protected List<Player> afkList = new ArrayList<Player>();
     
-    @Setting("afk-timeout-enabled") boolean timeoutEnabled = false;
-    @Setting("afk-timeout-minutes") int timeoutMinutes = -1;
-    
-    
     private int afkTaskID = -1;
     
     public AFKModule() {
         super(AFKModule.class.getAnnotation(MetaData.class));
     }
+    
+    class AFKConfiguration extends ModuleConfiguration {
+        @Setting("afk-timeout-enabled") public boolean timeoutEnabled = false;
+        @Setting("afk-timeout-minutes") public int timeoutMinutes = 5;
+        
+        public AFKConfiguration(AFKModule parent) {
+            super(parent);
+        }
+    }
 
     @Override
     public void enable() {
+        setConfiguration(new AFKConfiguration(this));
         timeMap.clear();
         
         for (Player player : Bukkit.getOnlinePlayers())
             timeMap.put(player, System.currentTimeMillis());
         
-        if (VoxelGuest.getConfigData().getBoolean("afk-timeout-enabled")) {
-            if (VoxelGuest.getConfigData().getInt("afk-timeout-minutes") >= 0) {
-                final long timeout = 60000L * VoxelGuest.getConfigData().getInt("afk-timeout-minutes");
+        if (getConfiguration().getBoolean("afk-timeout-enabled")) {
+            if (getConfiguration().getInt("afk-timeout-minutes") >= 0) {
+                final long timeout = 60000L * getConfiguration().getInt("afk-timeout-minutes");
                 
                 afkTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(VoxelGuest.getInstance(), new Runnable() {
 
@@ -92,8 +99,6 @@ public class AFKModule extends Module {
                 }, 0L, 1800L);
             }
         }
-        
-        setEnabled(true);
     }
     
     @Override

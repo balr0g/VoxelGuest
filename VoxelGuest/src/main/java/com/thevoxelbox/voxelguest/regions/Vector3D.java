@@ -26,28 +26,36 @@
 
 package com.thevoxelbox.voxelguest.regions;
 
-public class Vector {
+import org.bukkit.Location;
+
+public class Vector3D {
     private final double x, y, z;
     
-    public Vector(double x, double y, double z) {
+    public Vector3D(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
     
-    public Vector(int x, int y, int z) {
+    public Vector3D(int x, int y, int z) {
         this.x = (double) x;
         this.y = (double) y;
         this.z = (double) z;
     }
     
-    public Vector(float x, float y, float z) {
+    public Vector3D(float x, float y, float z) {
         this.x = (double) x;
         this.y = (double) y;
         this.z = (double) z;
     }
     
-    public Vector(Vector vec) {
+    public Vector3D(Location loc) {
+        this.x = loc.getX();
+        this.y = loc.getY();
+        this.z = loc.getZ();
+    }
+    
+    public Vector3D(Vector3D vec) {
         this.x = vec.x;
         this.y = vec.y;
         this.z = vec.z;
@@ -65,44 +73,52 @@ public class Vector {
         return this.z;
     }
     
-    public Vector setX(double x) {
-        return new Vector(x, this.y, this.z);
+    public Vector3D setX(double x) {
+        return new Vector3D(x, this.y, this.z);
     }
     
-    public Vector setX(int x) {
-        return new Vector((double) x, this.y, this.z);
+    public Vector3D setX(int x) {
+        return new Vector3D((double) x, this.y, this.z);
     }
     
-    public Vector setY(double y) {
-        return new Vector(this.x, y, this.z);
+    public Vector3D setY(double y) {
+        return new Vector3D(this.x, y, this.z);
     }
     
-    public Vector setY(int y) {
-        return new Vector(this.x, (double) y, this.z);
+    public Vector3D setY(int y) {
+        return new Vector3D(this.x, (double) y, this.z);
     }
     
-    public Vector setZ(double z) {
-        return new Vector(this.x, this.y, z);
+    public Vector3D setZ(double z) {
+        return new Vector3D(this.x, this.y, z);
     }
     
-    public Vector setZ(int z) {
-        return new Vector(this.x, this.y, (double) z);
+    public Vector3D setZ(int z) {
+        return new Vector3D(this.x, this.y, (double) z);
     }
     
-    public Vector add(Vector vec) {
-        return new Vector(this.x + vec.x, this.y + vec.y, this.z + vec.z);
+    public Vector3D add(Vector3D vec) {
+        return new Vector3D(this.x + vec.x, this.y + vec.y, this.z + vec.z);
     }
     
-    public Vector subtract(Vector vec) {
-        return new Vector(this.x - vec.x, this.y - vec.y, this.z - vec.z);
+    public Vector3D subtract(Vector3D vec) {
+        return new Vector3D(this.x - vec.x, this.y - vec.y, this.z - vec.z);
     }
     
-    public double getDistanceSquared(Vector vec) {
+    public double getDistanceSquared(Vector3D vec) {
         return (vec.x - this.x)*(vec.x - this.x) + (vec.y - this.y)*(vec.y - this.y) + (vec.z - this.z)*(vec.z - this.z);
     }
     
-    public double getDistance(Vector vec) {
+    public double getDistance(Vector3D vec) {
         return Math.sqrt(getDistanceSquared(vec));
+    }
+    
+    public static Vector3D getMinimum(Vector3D vec1, Vector3D vec2) {
+        return new Vector3D(Math.min(vec1.x, vec2.x), Math.min(vec1.y, vec2.y), Math.min(vec1.z, vec2.z));
+    }
+    
+    public static Vector3D getMaximum(Vector3D vec1, Vector3D vec2) {
+        return new Vector3D(Math.max(vec1.x, vec2.x), Math.max(vec1.y, vec2.y), Math.max(vec1.z, vec2.z));
     }
     
     @Override
@@ -126,7 +142,7 @@ public class Vector {
             return false;
         }
         
-        final Vector other = (Vector) obj;
+        final Vector3D other = (Vector3D) obj;
         
         if (Double.doubleToLongBits(this.x) != Double.doubleToLongBits(other.x)) {
             return false;

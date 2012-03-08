@@ -33,8 +33,11 @@ import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.modules.ModuleEventPriority;
+import com.thevoxelbox.voxelguest.modules.ModuleException;
+import com.thevoxelbox.voxelguest.modules.Setting;
 import com.thevoxelbox.voxelguest.players.GroupNotFoundException;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.FlatFileManager;
@@ -78,27 +81,41 @@ public class GreylistModule extends Module {
         super(GreylistModule.class.getAnnotation(MetaData.class));
     }
     
+    class GreylistConfiguration extends ModuleConfiguration {
+        @Setting("enable-greylist") public boolean enableGreylist = false;
+        @Setting("enable-greylist-stream") public boolean enableGreylistStream = false;
+        @Setting("greylist-stream-password") public String streamPassword = "changeme";
+        @Setting("greylist-stream-port") public int streamPort = 8080;
+        @Setting("exploration-mode") public boolean explorationMode = false;
+        @Setting("greylist-online-limit") public int onlineLimit = 10;
+        @Setting("greylist-not-greylisted-kick-message") public String notGreylistedKickMessage = "You are not greylisted on this server.";
+        @Setting("greylist-over-capacity-kick-message") public String overCapacityKickMessage = "The server is temporarily over guest capacity. Check back later.";
+        
+        public GreylistConfiguration(GreylistModule parent) {
+            super(parent);
+        }
+    }
+    
     @Override
-    public void enable() {
+    public void enable() throws ModuleException {
+        setConfiguration(new GreylistConfiguration(this));
         String[] list = FlatFileManager.load("greylist");
         
         if (list == null) {
-            VoxelGuest.getConfigData().setBoolean("enable-greylist", false);
-            super.disable();
-            return;
-        } else if (!VoxelGuest.getConfigData().getBoolean("enable-greylist")) {
-            disable();
-            return;
+            getConfiguration().setBoolean("enable-greylist", false);
+            throw new ModuleException("Empty greylist");
+        } else if (!getConfiguration().getBoolean("enable-greylist")) {
+            throw new ModuleException("Greylist is disabled in config");
         }
         
         injectGreylist(list);
         
-        if (VoxelGuest.getConfigData().getBoolean("enable-greylist-stream") && 
-                VoxelGuest.getConfigData().getString("greylist-stream-password") != null &&
-                VoxelGuest.getConfigData().getInt("greylist-stream-port") != -1) {
+        if (getConfiguration().getBoolean("enable-greylist-stream") && 
+                getConfiguration().getString("greylist-stream-password") != null &&
+                getConfiguration().getInt("greylist-stream-port") != -1) {
             
-            streamPort = VoxelGuest.getConfigData().getInt("greylist-stream-port");
-            streamPasswordHash = VoxelGuest.getConfigData().getString("greylist-stream-password");
+            streamPort = getConfiguration().getInt("greylist-stream-port");
+            streamPasswordHash = getConfiguration().getString("greylist-stream-password");
             streamTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(VoxelGuest.getInstance(), new Runnable() {
 
                 @Override
@@ -131,8 +148,8 @@ public class GreylistModule extends Module {
                 }
             }, 0L, 200L);
             
-            explorationMode = VoxelGuest.getConfigData().getBoolean("exploration-mode");
-            onlineGreylistLimit = VoxelGuest.getConfigData().getInt("greylist-online-limit");
+            explorationMode = getConfiguration().getBoolean("exploration-mode");
+            onlineGreylistLimit = getConfiguration().getInt("greylist-online-limit");
         }
     }
     
@@ -160,7 +177,7 @@ public class GreylistModule extends Module {
             try {
                 int newLimit = Integer.parseInt(args[1]);
                 onlineGreylistLimit = newLimit;
-                VoxelGuest.getConfigData().setInt("greylist-online-limit", onlineGreylistLimit);
+                getConfiguration().setInt("greylist-online-limit", onlineGreylistLimit);
                 cs.sendMessage(ChatColor.GREEN + "Reset the online greylist limit to " + onlineGreylistLimit);
                 return;
             } catch (NumberFormatException ex) {
@@ -198,7 +215,7 @@ public class GreylistModule extends Module {
     @CommandPermission(permission="voxelguest.greylist.admin.exploration")
     public void explorationMode(CommandSender cs, String[] args) {
         explorationMode = !explorationMode;
-        VoxelGuest.getConfigData().setBoolean("exploration-mode", explorationMode);
+        getConfiguration().setBoolean("exploration-mode", explorationMode);
         cs.sendMessage(ChatColor.GREEN + "Exploration mode has been " + ((explorationMode) ? "enabled" : "disabled"));
     }
     
@@ -213,13 +230,13 @@ public class GreylistModule extends Module {
         
         if (!explorationMode) {
             if (!greylist.contains(gp.getPlayer().getName())) {
-                gp.getPlayer().kickPlayer((VoxelGuest.getConfigData().getString("greylist-not-greylisted-kick-message") != null) ? VoxelGuest.getConfigData().getString("greylist-not-greylisted-kick-message") : "You are not greylisted on this server.");
+                gp.getPlayer().kickPlayer((getConfiguration().getString("greylist-not-greylisted-kick-message") != null) ? getConfiguration().getString("greylist-not-greylisted-kick-message") : "You are not greylisted on this server.");
                 event.setJoinMessage("");
                 wrapper.setCancelled(true);
                 return;
             } else if (greylist.contains(gp.getPlayer().getName()) && !PermissionsManager.getHandler().hasPermission(gp.getPlayer().getName(), "voxelguest.greylist.bypass")) {
                 if (onlineGreylistLimit > -1 && onlineGreys.size() >= onlineGreylistLimit) {
-                    String str = VoxelGuest.getConfigData().getString("greylist-over-capacity-kick-message");
+                    String str = getConfiguration().getString("greylist-over-capacity-kick-message");
                     gp.getPlayer().kickPlayer((str != null) ? str : "The server is temporarily over guest capacity. Check back later.");
                     wrapper.setCancelled(true);
                     return;
@@ -377,7 +394,7 @@ public class GreylistModule extends Module {
             shhash = md.digest();
             store = convertToHex(shhash);
             
-            VoxelGuest.getConfigData().setString("greylist-stream-password", store);
+            getConfiguration().setString("greylist-stream-password", store);
         } catch (NoSuchAlgorithmException e) {
             throw new CouldNotStoreEncryptedPasswordException("Fatal error in storage - NoSuchAlgorithmException");
         } catch (UnsupportedEncodingException e) {

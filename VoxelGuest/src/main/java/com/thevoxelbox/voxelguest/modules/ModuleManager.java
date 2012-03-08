@@ -39,7 +39,8 @@ public class ModuleManager {
     private final CommandsManager commandsManager;
     private static ModuleManager instance;
         
-    protected List<Module> activeModules = new LinkedList<Module>();
+    protected List<Module> activeModules   = new LinkedList<Module>();
+    protected List<Module> inactiveModules = new LinkedList<Module>();
     protected HashMap<Class<? extends Module>, Module> classInstanceMap = new HashMap<Class<? extends Module>, Module>();
     
     public ModuleManager(Plugin p, CommandsManager manager) {
@@ -88,17 +89,25 @@ public class ModuleManager {
             throw new ModuleInitialisationException("Failed to load Module instance: " + cls.getCanonicalName());
         }
         
-        if (activeModules.contains(module))
+        if (activeModules.contains(module) || inactiveModules.contains(module))
             throw new ModuleException("Module already registered: " + cls.getCanonicalName());
         
         if (module != null) {
             // Find and register commands and events
             commandsManager.registerCommands(cls);
             
-            module.enable();
-            activeModules.add(module);
-            classInstanceMap.put(cls, module);
-            log(getName(module), module.getLoadMessage(), 0);
+            try {
+                module.enable();
+                module.setEnabled(true);
+                activeModules.add(module);
+                classInstanceMap.put(cls, module);
+                log(getName(module), module.getLoadMessage(), 0);
+            } catch (ModuleException ex) {
+                log(module.getName(), "Did not enable: " + ex.getMessage(), 0);
+                module.setEnabled(false);
+                inactiveModules.add(module);
+                return;
+            }
         } else {
             throw new ModuleException("Module is null or already registered"); // Only in weird cases would this happen
         }
@@ -113,6 +122,7 @@ public class ModuleManager {
         }
         
         activeModules.clear();
+        inactiveModules.clear();
     }
     
     public Module getModule(Class<? extends Module> cls) throws ModuleException {

@@ -159,6 +159,10 @@ public class ModuleConfiguration {
         loadWrittenSettings();
     }
     
+    public void reset() {
+        registerFieldSettings(getClass());
+    }
+    
     public void save() {
         PropertyManager.save(parentModule.getName(), settings, "/modules");
     }

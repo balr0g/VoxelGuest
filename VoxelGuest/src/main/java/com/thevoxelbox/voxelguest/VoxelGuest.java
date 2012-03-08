@@ -274,25 +274,10 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("join-message-format", "&8(&6$nonline&8) &3$n &7joined");
         getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");
-        getConfigData().setString("default-asshat-reason", "&9Asshat");
-//      getConfigData().setString("asshat-ban-message", "&8Player &c$asshat &8has been banned by &c$n &8for:");
-//      getConfigData().setString("asshat-kick-message", "&8Player &c$asshat &8has been kicked by &c$n &8for:");
-//      getConfigData().setString("asshat-gag-message", "&8Player &c$asshat &8has been gagged by &c$n &8for:");
-//      getConfigData().setString("asshat-unban-message", "&8Player &c$asshat &8has been unbanned by &c$n &8.");
-        getConfigData().setString("gag-message-format", "&eYou have been temporarily restricted from chat. Please visit &cINSERT LINK HERE &eto find out how to undo this.");
-        getConfigData().setString("ungag-message-format", "&eYou are no longer restricted from chat.  Please note that further breaking of the rules may result in a &akick&e, or even a &cban&e!");
-        getConfigData().setString("unrestrict-chat-message", "allow me to chat");
-        getConfigData().setBoolean("afk-timeout-enabled", false);
-        getConfigData().setBoolean("save-banlist-on-ban", false);
-        getConfigData().setInt("afk-timeout-minutes", 5);
-        getConfigData().setBoolean("enable-greylist", false);
-        getConfigData().setBoolean("enable-greylist-stream", false);
-        getConfigData().setString("greylist-stream-password", "changeme");
-        getConfigData().setInt("greylist-stream-port", 8080);
-        getConfigData().setInt("greylist-online-limit", 10);
-        getConfigData().setString("greylist-not-greylisted-kick-message", "You are not greylisted on this server");
-        getConfigData().setString("greylist-over-capacity-kick-message", "The server is temporarily over greylist capacity. Check back later.");
-        getConfigData().setBoolean("exploration-mode", false);
+        
+        for (Module module : ModuleManager.getManager().getModules()) {
+            module.getConfiguration().reset();
+        }
         
         getConfigData().setString("reset", "no");
         log("==========================================");
@@ -301,7 +286,7 @@ public class VoxelGuest extends JavaPlugin {
         log("* The premiere server adminstration suite");
         log("*");
         log("* Built by: psanker & VoxelPlugineering");
-        log("* Licensed by the GPL (Version 3, 29 June 2007) - 2012");
+        log("* Licensed by the BSD License - 2012");
         log("==========================================");
         log("Factory settings loaded");
     }
@@ -375,7 +360,7 @@ public class VoxelGuest extends JavaPlugin {
                         + ", Player: " + p.getName()
                         + ", Location: [" + p.getLocation().getWorld().getName() + "] (" + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ()
                         + "), Arguments: \"" + concat + "\""
-                        + ", Status: " + ((status) ? "EXECUTED" : "FAILED"));
+                        + ", Status: " + (((status) ? "EXECUTED" : "FAILED")) + "\n");
 
                 pw.close();
             } else {

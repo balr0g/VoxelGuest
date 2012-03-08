@@ -139,6 +139,17 @@ public class Configuration {
             return ((Integer) map.get(key)).intValue();
     }
     
+    public double getDouble(String key) {
+        if (map == null)
+            return -1;
+        else if (!map.containsKey(key))
+            return -1;
+        else if (!(map.get(key) instanceof Double))
+            return -1;
+        else
+            return ((Double) map.get(key)).doubleValue();
+    }
+    
     public void setEntry(String key, Object value) {
         if (map == null)
             return;

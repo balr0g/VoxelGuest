@@ -32,6 +32,19 @@ public class AsshatMitigationModule extends Module {
     public AsshatMitigationModule() {
         super(AsshatMitigationModule.class.getAnnotation(MetaData.class));
     }
+    
+    class AsshatMitigationConfiguration extends ModuleConfiguration {
+        @Setting("default-asshat-reason") public String defaultAsshatReason = "§cAsshat";
+        @Setting("save-banlist-on-ban") public boolean saveBanlistOnBan = false;
+        @Setting("unrestrict-chat-message") public String unrestrictChatMessage = "I agree. Allow me to chat.";
+        @Setting("gag-message-format") public String gagMessageFormat = "§cYou have been gagged. You cannot chat until you say\n"
+                + "§c6the ungag key phrase.";
+        @Setting("ungag-message-format") public String ungagMessageFormat = "§aYou have been ungagged.";
+        
+        public AsshatMitigationConfiguration(AsshatMitigationModule parent) {
+            super(parent);
+        }
+    }
 
     @Override
     public void enable() {
@@ -48,19 +61,6 @@ public class AsshatMitigationModule extends Module {
     @Override
     public String getLoadMessage() {
         return "Asshat Mitigator has been loaded.";
-    }
-    
-    class AsshatMitigationConfiguration extends ModuleConfiguration {
-        @Setting("default-asshat-reason") public String defaultAsshatReason = "§cAsshat";
-        @Setting("save-banlist-on-ban") public boolean saveBanlistOnBan = false;
-        @Setting("unrestrict-chat-message") public String unrestrictChatMessage = "I agree. Allow me to chat.";
-        @Setting("gag-message-format") public String gagMessageFormat = "§cYou have been gagged. You cannot chat until you say\n"
-                + "§c6the ungag key phrase.";
-        @Setting("ungag-message-format") public String ungagMessageFormat = "§aYou have been ungagged.";
-        
-        public AsshatMitigationConfiguration(AsshatMitigationModule parent) {
-            super(parent);
-        }
     }
 
     /*

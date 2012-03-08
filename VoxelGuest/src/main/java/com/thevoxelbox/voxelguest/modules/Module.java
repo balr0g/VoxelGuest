@@ -38,7 +38,7 @@ public abstract class Module {
         this.description = md.description();
     }
     
-    public abstract void enable();
+    public abstract void enable() throws ModuleException;
     
     public abstract String getLoadMessage();
     

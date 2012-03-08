@@ -40,7 +40,7 @@ import com.thevoxelbox.voxelguest.VoxelGuest;
 
 public class PropertyManager {
 
-    private static String directory = "plugins/VoxelGuest/data";
+    private static String directory = "plugins/VoxelGuest";
 
     public PropertyManager(String dir) {
         directory = dir;
@@ -72,6 +72,12 @@ public class PropertyManager {
                     String key = entry.getKey().toString();
 
                     try {
+                        if (entry.getValue().toString().contains(".") || (Double.parseDouble(entry.getValue().toString()) > 2147483647 || Double.parseDouble(entry.getValue().toString()) < -2147483648)) {
+                            Double d = Double.parseDouble(entry.getValue().toString());
+                            map.put(key, d);
+                            continue;
+                        }
+                        
                         Integer i = Integer.parseInt(entry.getValue().toString());
                         map.put(key, i);
                     } catch (NumberFormatException ex) {
@@ -165,6 +171,12 @@ public class PropertyManager {
 
         for (int i = 0; i < obj.length; i++) {
             try {
+                if (split[i].contains(".") || (Double.parseDouble(split[i]) > 2147483647 || Double.parseDouble(split[i]) < -2147483648)) {
+                    Double d = Double.parseDouble(split[i]);
+                    obj[i] = d;
+                    continue;
+                }
+                
                 Integer _i = Integer.parseInt(split[i]);
                 obj[i] = _i;
 
