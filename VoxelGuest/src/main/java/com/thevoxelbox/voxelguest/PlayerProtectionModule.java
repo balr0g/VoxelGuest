@@ -63,6 +63,11 @@ public class PlayerProtectionModule extends Module {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    @Override
+    public void disable() {
+        return;
+    }
+    
     /* Player Protection - EntityDamage Event
      * Written by: Razorcane
      * 

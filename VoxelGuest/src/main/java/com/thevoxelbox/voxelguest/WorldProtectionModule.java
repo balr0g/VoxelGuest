@@ -98,6 +98,11 @@ public class WorldProtectionModule extends Module{
         return "World Protection has been loaded.";
     }
     
+    @Override
+    public void disable() {
+        return;
+    }
+    
     /*
      * World Protection - BlockBreak Event
      * Written by: Razorcane

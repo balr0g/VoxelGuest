@@ -1,5 +1,5 @@
+package com.thevoxelbox.voxelguest;
 
-import com.thevoxelbox.voxelguest.VoxelGuest;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
@@ -69,6 +69,11 @@ public class CreatureProtectionModule extends Module{
     @Override
     public String getLoadMessage() {
         return "Creature Protection has been loaded.";
+    }
+    
+    @Override
+    public void disable() {
+        return;
     }
     
         
