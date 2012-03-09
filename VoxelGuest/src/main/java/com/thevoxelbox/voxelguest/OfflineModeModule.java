@@ -31,6 +31,7 @@ import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
+import com.thevoxelbox.voxelguest.modules.ModuleException;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -96,6 +97,15 @@ public class OfflineModeModule extends Module {
         }
 
         setEnabled(true);
+    }
+    
+    @Override
+    public void disable() {
+        try {
+            tempBan.save(f);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Command(aliases = {"opass", "offlinepass", "offlinepassword"},

@@ -45,7 +45,7 @@ public class GroupManager {
     private final String groupIcon = "§fG";
     
     public GroupManager() {
-        File dir = new File("plugins/VoxelGuest/data/groups/");
+        File dir = new File("plugins/VoxelGuest/groups/");
         
         if (!dir.isDirectory()) {
             dir.mkdirs();

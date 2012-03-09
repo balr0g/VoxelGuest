@@ -42,9 +42,7 @@ public abstract class Module {
     
     public abstract String getLoadMessage();
     
-    public void disable() {
-        setEnabled(false);
-    }
+    public abstract void disable() throws ModuleException;
     
     public boolean isEnabled() {
         return this.enabled;

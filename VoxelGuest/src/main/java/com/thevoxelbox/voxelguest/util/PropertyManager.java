@@ -31,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -149,7 +148,7 @@ public class PropertyManager {
                 props.setProperty(key, entry.getValue().toString());
             }
 
-            props.store(fo, "Last storage time: " + (new Date()).toString());
+            props.store(fo, null);
         } catch (IOException ex) {
             VoxelGuest.log("Could not create file " + f.getAbsolutePath(), 2);
         } finally {

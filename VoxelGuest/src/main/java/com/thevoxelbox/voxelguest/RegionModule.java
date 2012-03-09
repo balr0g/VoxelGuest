@@ -32,6 +32,7 @@ import com.thevoxelbox.voxelguest.modules.Setting;
 import com.thevoxelbox.voxelguest.regions.Region;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @MetaData(name="Regions", description="Manage region-based build protections on your server!")
@@ -70,6 +71,18 @@ public class RegionModule extends Module {
                 }
             }
         }
+    }
+    
+    @Override
+    public void disable() {
+        Iterator<Region> it = loadedRegions.listIterator();
+        
+        while (it.hasNext()) {
+            Region region = it.next();
+            region.save();
+        }
+        
+        loadedRegions.clear();
     }
 
     @Override

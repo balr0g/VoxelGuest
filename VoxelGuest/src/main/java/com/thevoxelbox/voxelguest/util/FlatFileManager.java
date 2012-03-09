@@ -34,7 +34,7 @@ import java.util.Scanner;
 
 public class FlatFileManager {
     
-    private static String directory = "plugins/VoxelGuest/data";
+    private static String directory = "plugins/VoxelGuest";
     
     public static String[] load(String target) {
         return load(target, "", false);

@@ -59,7 +59,7 @@ public class MiscellaneousCommands {
     public void who(CommandSender cs, String[] args) {
         HashMap<String, String[]> storage = new HashMap<String, String[]>();
         
-        if (args[0].equalsIgnoreCase("-f")) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("-f")) {
             String header = "";
             
             for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {

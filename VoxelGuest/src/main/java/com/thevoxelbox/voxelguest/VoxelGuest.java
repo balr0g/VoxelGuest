@@ -76,10 +76,11 @@ public class VoxelGuest extends JavaPlugin {
     
     protected Class<? extends Module>[] availableModules = new Class[] {
         AFKModule.class,
+        AsshatMitigationModule.class,
         GreylistModule.class,
         OfflineModeModule.class,
-        VanishModule.class,
-        AsshatMitigationModule.class
+        RegionModule.class,
+        VanishModule.class
     };
 
     @Override
@@ -102,9 +103,6 @@ public class VoxelGuest extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        
-        if (getConfigData().getString("reset") == null || getConfigData().getString("reset").equalsIgnoreCase("yes"))
-            loadFactorySettings();
         
         perms = new PermissionsManager(this.getServer(), "[VoxelGuest]", config);
         groupManager = new GroupManager();
@@ -139,6 +137,9 @@ public class VoxelGuest extends JavaPlugin {
         
         // Load module events into the system listener
         listener.registerModuleEvents();
+        
+        if (getConfigData().getString("reset") == null || getConfigData().getString("reset").equalsIgnoreCase("yes"))
+            loadFactorySettings();
     }
 
     @Override
@@ -276,7 +277,8 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");
         
         for (Module module : ModuleManager.getManager().getModules()) {
-            module.getConfiguration().reset();
+            if (module.getConfiguration() != null)
+                module.getConfiguration().reset();
         }
         
         getConfigData().setString("reset", "no");

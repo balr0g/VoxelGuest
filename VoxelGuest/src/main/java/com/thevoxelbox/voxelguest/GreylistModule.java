@@ -159,7 +159,6 @@ public class GreylistModule extends Module {
         String[] toSave = new String[greylist.size()];
         toSave = greylist.toArray(toSave);
         FlatFileManager.save(toSave, "greylist");
-        super.disable();
     }
 
     @Override

@@ -118,7 +118,17 @@ public class ModuleManager {
         
         while (it.hasNext()) {
             Module module = it.next();
-            module.disable();
+            
+            try {
+                module.disable();
+                
+                if (module.getConfiguration() != null)
+                    module.getConfiguration().save();
+                
+                module.setEnabled(false);
+            } catch (ModuleException ex) {
+                log(module.getName(), "Could not properly disable: " + ex.getMessage(), 1);
+            }
         }
         
         activeModules.clear();

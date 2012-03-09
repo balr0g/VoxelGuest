@@ -90,7 +90,7 @@ public class AFKModule extends Module {
                             Player player = entry.getKey();
                             
                             if ((System.currentTimeMillis() - entry.getValue() > timeout) && !isAFK(player)) {
-                                setAFK(player, true);
+                                cycleAFK(player);
                                 broadcastAFKMessage(player);
                             }
                         }
@@ -108,8 +108,6 @@ public class AFKModule extends Module {
         
         if (afkTaskID != -1)
             Bukkit.getScheduler().cancelTask(afkTaskID);
-        
-        super.disable();
     }
 
     @Override
@@ -121,10 +119,10 @@ public class AFKModule extends Module {
         return afkList.contains(player);
     }
     
-    public void setAFK(Player player, boolean bool) {
-        if (bool && !isAFK(player))
+    public void cycleAFK(Player player) {
+        if (!isAFK(player))
             afkList.add(player);
-        if (!bool & isAFK(player))
+        else
             afkList.remove(player);
     }
     
@@ -137,7 +135,7 @@ public class AFKModule extends Module {
         Player p = (Player) cs;
         
         if (args.length == 0 && !isAFK(p)) {
-            setAFK(p, true);
+            cycleAFK(p);
             broadcastAFKMessage(p);
             return;
         } else if (!isAFK(p)) {
@@ -149,7 +147,7 @@ public class AFKModule extends Module {
             
             concat = concat.trim();
             
-            setAFK(p, true);
+            cycleAFK(p);
             broadcastAFKMessage(p, concat);
             return;
         }
@@ -179,7 +177,7 @@ public class AFKModule extends Module {
         Player p = event.getPlayer();
         
         if (isAFK(p)) {
-            setAFK(p, false);
+            cycleAFK(p);
             broadcastAFKMessage(p);
         }
         
@@ -192,7 +190,7 @@ public class AFKModule extends Module {
         Player p = event.getPlayer();
         
         if (isAFK(p)) {
-            setAFK(p, false);
+            cycleAFK(p);
             broadcastAFKMessage(p);
         }
         
@@ -205,7 +203,8 @@ public class AFKModule extends Module {
         Player p = event.getPlayer();
         
         if (isAFK(p)) {
-            setAFK(p, false);
+            p.sendMessage("yes");
+            cycleAFK(p);
             broadcastAFKMessage(p);
         }
         

@@ -28,7 +28,9 @@ package com.thevoxelbox.voxelguest.modules;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -72,10 +74,13 @@ public class ModuleSystemListener implements Listener {
     
     public void processModuleEvents(Event event) {
         HashMap<Method, ModuleEvent> map = moduleEventMap.get(event.getClass());
+        List<Method> didProcess = new ArrayList<Method>();
         BukkitEventWrapper wrapper = new BukkitEventWrapper(event);
         
         if (map == null)
             return;
+        
+        didProcess.clear();
         
         for (int i = 4; i >= 0; i--) {
             for (Map.Entry<Method, ModuleEvent> entry : map.entrySet()) {
@@ -85,6 +90,9 @@ public class ModuleSystemListener implements Listener {
                 Method method = entry.getKey();
                 boolean ignoreCancelled = entry.getValue().ignoreCancelledEvents();
                 
+                if (didProcess.contains(method))
+                    continue;
+                
                 if (!instances.get(method).isEnabled())
                     continue;
                 
@@ -93,6 +101,7 @@ public class ModuleSystemListener implements Listener {
                 
                 try {
                     method.invoke(instances.get(method), wrapper);
+                    didProcess.add(method);
                 } catch (IllegalAccessException ex) {
                     ex.printStackTrace();
                 } catch (IllegalArgumentException ex) {
