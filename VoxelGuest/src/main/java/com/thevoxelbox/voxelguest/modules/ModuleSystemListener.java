@@ -77,7 +77,7 @@ public class ModuleSystemListener implements Listener {
         List<Method> didProcess = new ArrayList<Method>();
         BukkitEventWrapper wrapper = new BukkitEventWrapper(event);
         
-        if (map == null)
+        if (map == null || map.isEmpty())
             return;
         
         didProcess.clear();

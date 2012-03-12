@@ -33,8 +33,21 @@ import com.thevoxelbox.voxelguest.util.Formatter;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -56,7 +69,7 @@ public class SystemListener extends ModuleSystemListener {
             ex.printStackTrace();
         }
         
-        super.processModuleEvents(event);
+        processModuleEvents(event);
         
         if (event.getPlayer().isOnline())
             VoxelGuest.getGroupManager().addPlayerToGroupMap(event.getPlayer());
@@ -78,7 +91,7 @@ public class SystemListener extends ModuleSystemListener {
             event.setQuitMessage(ChatColor.YELLOW + gp.getPlayer().getName() + " left");
         }
         
-        super.processModuleEvents(event);
+        processModuleEvents(event);
     }
     
     @EventHandler(priority = EventPriority.HIGH)
@@ -97,22 +110,87 @@ public class SystemListener extends ModuleSystemListener {
             event.setLeaveMessage(ChatColor.YELLOW + gp.getPlayer().getName() + " was kicked out");
         }
         
-        super.processModuleEvents(event);
+        processModuleEvents(event);
     }
     
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
-        super.processModuleEvents(event);
-    }
-    
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        super.processModuleEvents(event);
+        processModuleEvents(event);
     }
     
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        super.processModuleEvents(event);
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onBlockFade(BlockFadeEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onBlockForm(BlockFormEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onBlockSpread(BlockSpreadEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onEnchantItem(EnchantItemEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onLeavesDecay(LeavesDecayEvent event) {
+        processModuleEvents(event);
     }
     
     private String formatJoinQuitKickMessage(String format, GuestPlayer gp) throws FormatException {

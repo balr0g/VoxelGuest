@@ -26,9 +26,7 @@
 
 package com.thevoxelbox.voxelguest.util;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class Configuration {
     private HashMap<String, Object> map = new HashMap<String, Object>();
@@ -84,17 +82,6 @@ public class Configuration {
             return map.get(key);
     }
     
-    public Object[] getArray(String key) {
-        if (map == null)
-            return null;
-        else if (!map.containsKey(key))
-            return null;
-        else if (!(map.get(key) instanceof Object[]))
-            return null;
-        else
-            return (Object[]) map.get(key);
-    }
-    
     public String getString(String key) {
         if (map == null)
             return null;
@@ -104,17 +91,6 @@ public class Configuration {
             return null;
         else
             return map.get(key).toString();
-    }
-    
-    public List<String> getStringList(String key) {
-        if (map == null)
-            return null;
-        else if (!map.containsKey(key))
-            return null;
-        else if (!(map.get(key) instanceof String[]))
-            return null;
-        else
-            return Arrays.asList((String[]) map.get(key));
     }
     
     public boolean getBoolean(String key) {
@@ -157,32 +133,11 @@ public class Configuration {
         map.put(key, value);
     }
     
-    public void setArray(String key, Object[] value) {
-        if (map == null)
-            return;
-        
-        map.put(key, value);
-    }
-    
     public void setString(String key, String value) {
         if (map == null)
             return;
         
         map.put(key, value);
-    }
-    
-    public void setStringList(String key, List<String> value) {
-        if (map == null)
-            return;
-        
-        Object[] objs = value.toArray();
-        String[] strs = new String[objs.length];
-        
-        for (int i = 0; i < strs.length; i++) {
-            strs[i] = objs[i].toString();
-        }
-        
-        map.put(key, strs);
     }
     
     public void setBoolean(String key, boolean value) {

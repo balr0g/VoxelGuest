@@ -51,15 +51,14 @@ public class MiscellaneousCommands {
     
     @Command(aliases={"who", "online", "list", "readlist"},
             bounds={0,1},
-            help="To list all online players, type §c/who",
-            playerOnly=true)
+            help="To list all online players, type §c/who")
     @Subcommands(arguments={"-f"},
             permission={"voxelguest.miscellaneous.list.admin"})
     @CommandPermission(permission="voxelguest.miscellaneous.list.list")
     public void who(CommandSender cs, String[] args) {
         HashMap<String, String[]> storage = new HashMap<String, String[]>();
         
-        if (args.length > 0 && args[0].equalsIgnoreCase("-f")) {
+        if (args != null && args.length > 0 && args[0].equalsIgnoreCase("-f")) {
             String header = "";
             
             for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
@@ -125,62 +124,66 @@ public class MiscellaneousCommands {
             List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
             String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
             
-            Iterator<String> itr = players.listIterator();
-            List<String> toRemove = new ArrayList<String>();
-            
-            while (itr.hasNext()) {
-                try {
-                    String str = itr.next();
-                    
-                    if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
-                        VanishModule vanish = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
-                        
-                        if (vanish.isInFakequit(Bukkit.getPlayer(str)))
-                            toRemove.add(str);
+            if (players != null) {
+                Iterator<String> itr = players.listIterator();
+                List<String> toRemove = new ArrayList<String>();
+
+                while (itr.hasNext()) {
+                    try {
+                        String str = itr.next();
+
+                        if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
+                            VanishModule vanish = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
+
+                            if (vanish.isInFakequit(Bukkit.getPlayer(str)))
+                                toRemove.add(str);
+                        }
+                    } catch (ModuleException ex) {
+                        break;
                     }
-                } catch (ModuleException ex) {
-                    break;
-                }
-            }
-            
-            players.removeAll(toRemove);
-
-            if (groupId == null)
-                groupId = "§fG";
-
-            String[] list = new String[players.size()];
-
-            Iterator<String> it = players.listIterator();
-            int x = 0;
-            while (it.hasNext()) {
-                String player = it.next();
-                list[x] = player;
-                x++;
-            }
-
-            boolean colorSwitch = false;
-            boolean afk = false;
-
-            for (int i = 0; i < list.length; i++) {
-                String str = list[i];
-
-                try {
-                    if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
-                        AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
-                        afk = module.isAFK(Bukkit.getPlayer(str));
-                    }
-                } catch (ModuleException ex) {
-                    // continue
                 }
 
-                str = ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
-                colorSwitch = !colorSwitch;
-                list[i] = str;
+                players.removeAll(toRemove);
 
+                if (groupId == null)
+                    groupId = "§fG";
+
+                String[] list = new String[players.size()];
+
+                Iterator<String> it = players.listIterator();
+                int x = 0;
+                while (it.hasNext()) {
+                    String player = it.next();
+                    list[x] = player;
+                    x++;
+                }
+
+                boolean colorSwitch = false;
+                boolean afk = false;
+
+                for (int i = 0; i < list.length; i++) {
+                    String str = list[i];
+
+                    try {
+                        if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
+                            AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
+                            afk = module.isAFK(Bukkit.getPlayer(str));
+                        }
+                    } catch (ModuleException ex) {
+                        // continue
+                    }
+
+                    str = ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
+                    colorSwitch = !colorSwitch;
+                    list[i] = str;
+                }
+                
+                storage.put(groupId, list);
                 header = header + "§8[" + groupId + ":" + list.length + "§8] ";
+                continue;
             }
 
-            storage.put(groupId, list);
+            header = header + "§8[" + groupId + ":0§8] ";
         }
 
         cs.sendMessage("§8------------------------------");

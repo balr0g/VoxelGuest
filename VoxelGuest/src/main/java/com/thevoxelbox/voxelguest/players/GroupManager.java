@@ -41,8 +41,9 @@ public class GroupManager {
     protected static HashMap<String, List<String>> playerMap = new HashMap<String, List<String>>();
     
     // Basic group defaults
-    private final String groupName = "Group";
-    private final String groupIcon = "§fG";
+    private final String defaultGroupName = "Group";
+    private final String defaultGroupID = "§fG";
+    private final Configuration defaultConfig = new Configuration(defaultGroupName, "/groups");
     
     public GroupManager() {
         File dir = new File("plugins/VoxelGuest/groups/");
@@ -61,13 +62,17 @@ public class GroupManager {
                 groupMap.put(f, config);
             }
         }
+        
+        defaultConfig.setString("group-id", defaultGroupID);
     }
     
     public Configuration getGroupConfiguration(String name) {
         if (groupMap.containsKey(name))
             return groupMap.get(name);
         
-        return null;
+        Configuration config = new Configuration(name, "/groups");
+        setGroupConfiguration(name, config);
+        return config;
     }
     
     public void setGroupConfiguration(String name, Configuration config) {
@@ -97,39 +102,74 @@ public class GroupManager {
     }
     
     public void addPlayerToGroupMap(Player p) {
-        String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
-        
-        if (group == null)
-            group = "Unknown";
-        
-        List<String> list = playerMap.get(group);
-        
-        if (list == null || list.isEmpty()) {
-            List<String> newList = new ArrayList<String>();
-            newList.add(p.getName());
-            playerMap.put(group, newList);
-        } else {
-            if (!list.contains(p.getName())) {
-                list.add(p.getName());
-                playerMap.put(group, list);
+        try {
+            String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
+            
+            if (!groupMap.containsKey(group)) {
+                Configuration config = new Configuration(group, "/groups");
+                config.setString("group-id", defaultGroupID);
+                setGroupConfiguration(group, config);
+            }
+
+            List<String> list = playerMap.get(group);
+
+            if (list == null || list.isEmpty()) {
+                List<String> newList = new ArrayList<String>();
+                newList.add(p.getName());
+                playerMap.put(group, newList);
+            } else {
+                if (!list.contains(p.getName())) {
+                    list.add(p.getName());
+                    playerMap.put(group, list);
+                }
+            }
+        } catch (NullPointerException e) {
+            String group = defaultGroupName;
+            
+            List<String> list = playerMap.get(group);
+
+            if (list == null || list.isEmpty()) {
+                List<String> newList = new ArrayList<String>();
+                newList.add(p.getName());
+                playerMap.put(group, newList);
+            } else {
+                if (!list.contains(p.getName())) {
+                    list.add(p.getName());
+                    playerMap.put(group, list);
+                }
             }
         }
     }
     
     public void removePlayerFromGroupMap(Player p) {
-        String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
+        try {
+            String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
         
-        if (group == null)
-            group = "Unknown";
-        
-        List<String> list = playerMap.get(group);
-        
-        if (list.isEmpty() || list == null) {
-            // Do nothing
-        } else {
-            if (list.contains(p.getName())) {
-                list.remove(p.getName());
-                playerMap.put(group, list);
+            if (group == null)
+                group = "Unknown";
+
+            List<String> list = playerMap.get(group);
+
+            if (list.isEmpty() || list == null) {
+                // Do nothing
+            } else {
+                if (list.contains(p.getName())) {
+                    list.remove(p.getName());
+                    playerMap.put(group, list);
+                }
+            }
+        } catch (NullPointerException e) {
+            String group = defaultGroupName;
+            
+            List<String> list = playerMap.get(group);
+
+            if (list.isEmpty() || list == null) {
+                // Do nothing
+            } else {
+                if (list.contains(p.getName())) {
+                    list.remove(p.getName());
+                    playerMap.put(group, list);
+                }
             }
         }
     }

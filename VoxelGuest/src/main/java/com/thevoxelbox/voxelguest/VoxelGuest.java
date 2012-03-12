@@ -77,6 +77,7 @@ public class VoxelGuest extends JavaPlugin {
     protected Class<? extends Module>[] availableModules = new Class[] {
         AFKModule.class,
         AsshatMitigationModule.class,
+        CreatureProtectionModule.class,
         GreylistModule.class,
         OfflineModeModule.class,
         RegionModule.class,
@@ -272,9 +273,6 @@ public class VoxelGuest extends JavaPlugin {
     }
     
     private void loadFactorySettings() {
-        /*
-         * This needs major sorting options. - Razorcane
-         */
         getConfigData().setString("join-message-format", "&8(&6$nonline&8) &3$n &7joined");
         getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");

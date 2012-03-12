@@ -74,6 +74,7 @@ public class WorldProtectionModule extends Module{
     
     @Override
     public void enable() {
+        setConfiguration(new WorldProtectionConfiguration(this));
         bannedblocks.clear();
         banneditems.clear();
         
@@ -89,7 +90,7 @@ public class WorldProtectionModule extends Module{
             }
         }
         catch(Exception e){
-            VoxelGuest.log("Corrupted or invalidate configuration file. Cannot parse unsuable blocks/items", 1);
+            VoxelGuest.log("Corrupted or invalid configuration file. Cannot parse unsuable blocks/items", 1);
         }
     }
 

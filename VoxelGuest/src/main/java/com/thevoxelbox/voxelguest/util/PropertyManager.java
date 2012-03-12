@@ -86,11 +86,6 @@ public class PropertyManager {
                             continue;
                         }
 
-                        if (entry.getValue().toString().toLowerCase().startsWith("%list={") && entry.getValue().toString().toLowerCase().endsWith("}%")) {
-                            map.put(key, parseList(entry.getValue().toString().toLowerCase().replaceFirst("\\%list=\\{", "").replace("}%", "")));
-                            continue;
-                        }
-
                         map.put(key, entry.getValue().toString());
                         continue;
                     }
@@ -138,13 +133,6 @@ public class PropertyManager {
             for (Map.Entry<String, Object> entry : data.entrySet()) {
                 String key = entry.getKey();
 
-                // Write out Object[]
-                if (entry.getValue() instanceof Object[]) {
-                    Object[] obj = (Object[]) entry.getValue();
-                    props.setProperty(key, writeList(obj));
-                    continue;
-                }
-
                 props.setProperty(key, entry.getValue().toString());
             }
 
@@ -161,63 +149,5 @@ public class PropertyManager {
                 ex.printStackTrace();
             }
         }
-    }
-
-    private static Object[] parseList(String input) {
-        input = input.trim();
-        String[] split = input.split(",");
-        Object[] obj = new Object[split.length];
-
-        for (int i = 0; i < obj.length; i++) {
-            try {
-                if (split[i].contains(".") || (Double.parseDouble(split[i]) > 2147483647 || Double.parseDouble(split[i]) < -2147483648)) {
-                    Double d = Double.parseDouble(split[i]);
-                    obj[i] = d;
-                    continue;
-                }
-                
-                Integer _i = Integer.parseInt(split[i]);
-                obj[i] = _i;
-
-            } catch (NumberFormatException ex) {
-                if (split[i].equals(Boolean.TRUE.toString()) || split[i].equals(Boolean.FALSE.toString())) {
-                    Boolean bool = Boolean.parseBoolean(split[i]);
-                    obj[i] = bool;
-                    continue;
-                }
-
-                if (split[i].toLowerCase().startsWith("%list={")) {
-                    VoxelGuest.log("I can't handle nested lists! Try an alternative storage method", 2);
-                    break;
-                }
-
-                obj[i] = split[i];
-                continue;
-            }
-        }
-
-        return obj;
-    }
-
-    private static String writeList(Object[] obj) {
-        String out = "%list={";
-
-        for (int i = 0; i < obj.length; i++) {
-            String toWrite = "";
-
-            if (obj[i] instanceof Object[]) {
-                toWrite = writeList((Object[]) obj[i]);
-            } else {
-                toWrite = obj[i].toString();
-            }
-
-            if (i == (obj.length - 1)) {
-                out = out + toWrite + "}%";
-            } else {
-                out = out + toWrite + ",";
-            }
-        }
-
-        return out;
     }
 }

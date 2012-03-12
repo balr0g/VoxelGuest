@@ -26,137 +26,53 @@
 
 package com.thevoxelbox.voxelguest.modules;
 
-import com.thevoxelbox.voxelguest.util.PropertyManager;
+import com.thevoxelbox.voxelguest.util.Configuration;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ModuleConfiguration {
-    protected HashMap<String, Object> settings = new HashMap<String, Object>();
+    protected final Configuration config;
     private final Module parentModule;
     
     public ModuleConfiguration(Module parent) {
         parentModule = parent;
+        config = new Configuration(parentModule.getName(), "/modules");
     }
     
     public Object getEntry(String key) {
-        if (settings == null)
-            return null;
-        else if (!settings.containsKey(key))
-            return null;
-        else
-            return settings.get(key);
-    }
-    
-    public Object[] getArray(String key) {
-        if (settings == null)
-            return null;
-        else if (!settings.containsKey(key))
-            return null;
-        else if (!(settings.get(key) instanceof Object[]))
-            return null;
-        else
-            return (Object[]) settings.get(key);
+        return config.getEntry(key);
     }
     
     public String getString(String key) {
-        if (settings == null)
-            return null;
-        else if (!settings.containsKey(key))
-            return null;
-        else if (!(settings.get(key) instanceof String))
-            return null;
-        else
-            return settings.get(key).toString();
-    }
-    
-    public List<String> getStringList(String key) {
-        if (settings == null)
-            return null;
-        else if (!settings.containsKey(key))
-            return null;
-        else if (!(settings.get(key) instanceof String[]))
-            return null;
-        else
-            return Arrays.asList((String[]) settings.get(key));
+        return config.getString(key);
     }
     
     public boolean getBoolean(String key) {
-        if (settings == null)
-            return false;
-        else if (!settings.containsKey(key))
-            return false;
-        else if (!(settings.get(key) instanceof Boolean))
-            return false;
-        else
-            return ((Boolean) settings.get(key)).booleanValue();
+        return config.getBoolean(key);
     }
     
     public int getInt(String key) {
-        if (settings == null)
-            return -1;
-        else if (!settings.containsKey(key))
-            return -1;
-        else if (!(settings.get(key) instanceof Integer))
-            return -1;
-        else
-            return ((Integer) settings.get(key)).intValue();
+        return config.getInt(key);
     }
     
     public void setEntry(String key, Object value) {
-        if (settings == null)
-            return;
-        
-        settings.put(key, value);
-    }
-    
-    public void setArray(String key, Object[] value) {
-        if (settings == null)
-            return;
-        
-        settings.put(key, value);
+        config.setEntry(key, value);
     }
     
     public void setString(String key, String value) {
-        if (settings == null)
-            return;
-        
-        settings.put(key, value);
-    }
-    
-    public void setStringList(String key, List<String> value) {
-        if (settings == null)
-            return;
-        
-        Object[] objs = value.toArray();
-        String[] strs = new String[objs.length];
-        
-        for (int i = 0; i < strs.length; i++) {
-            strs[i] = objs[i].toString();
-        }
-        
-        settings.put(key, strs);
+        config.setString(key, value);
     }
     
     public void setBoolean(String key, boolean value) {
-        if (settings == null)
-            return;
-        
-        settings.put(key, Boolean.valueOf(value));
+        config.setBoolean(key, value);
     }
     
     public void setInt(String key, int value) {
-        if (settings == null)
-            return;
-        
-        settings.put(key, Integer.valueOf(value));
+        config.setInt(key, value);
     }
     
-    public void load() {
-        registerFieldSettings(getClass());
-        loadWrittenSettings();
+    public void load(Class<? extends ModuleConfiguration> cls) {
+        registerFieldSettings(cls);
+        config.load();
     }
     
     public void reset() {
@@ -164,23 +80,13 @@ public class ModuleConfiguration {
     }
     
     public void save() {
-        PropertyManager.save(parentModule.getName(), settings, "/modules");
-    }
-    
-    private void loadWrittenSettings() {
-        HashMap<String, Object> map = (HashMap<String, Object>) PropertyManager.load(parentModule.getName(), "/modules");
-        
-        if (map == null || map.isEmpty())
-            return;
-        
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            setEntry(entry.getKey(), entry.getValue());
-        }
+        config.save();
     }
     
     private void registerFieldSettings(Class<? extends ModuleConfiguration> cls) {
         for (Field field : cls.getDeclaredFields()) {
             try {
+                field.setAccessible(true);
                 registerFieldSetting(field);
             } catch (IllegalArgumentException ex) {
                 continue;

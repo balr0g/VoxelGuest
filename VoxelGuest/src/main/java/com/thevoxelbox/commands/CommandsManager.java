@@ -176,10 +176,13 @@ public class CommandsManager {
         try {
             method.invoke(instance, commandMethodArgs);
         } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
             throw new CommandMethodInvocationException("Internal error. Could not execute command.");
         } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
            throw new CommandMethodInvocationException("Internal error. Could not execute command.");
         } catch (InvocationTargetException ex) {
+            ex.printStackTrace();
             throw new CommandMethodInvocationException("Internal error. Could not execute command.");
         }
     }
