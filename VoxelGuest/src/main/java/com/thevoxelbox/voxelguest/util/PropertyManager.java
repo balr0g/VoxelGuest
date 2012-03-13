@@ -39,10 +39,10 @@ import com.thevoxelbox.voxelguest.VoxelGuest;
 
 public class PropertyManager {
 
-    private static String directory = "plugins/VoxelGuest";
+    public static String BASE = "plugins/VoxelGuest";
 
     public PropertyManager(String dir) {
-        directory = dir;
+        BASE = dir;
     }
 
     public static Map<String, Object> load(String target) {
@@ -52,12 +52,12 @@ public class PropertyManager {
     public static Map<String, Object> load(String target, String destination) {
         // Note: Destination is appended to plugins/VoxelGuest/data
         // For example, when destination is "/channels",
-        // the target directory will be "plugins/VoxelGuest/data/channels/"
+        // the target BASE will be "plugins/VoxelGuest/data/channels/"
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.clear();
 
-        File f = new File(directory + destination + "/" + target + ".properties");
+        File f = new File(BASE + destination + "/" + target + ".properties");
         FileInputStream fi = null;
 
         if (f.exists()) {
@@ -116,9 +116,9 @@ public class PropertyManager {
     public static void save(String target, Map<String, Object> data, String destination) {
         // Note: Destination is appended to plugins/VoxelGuest/data
         // For example, when destination is "/channels",
-        // the target directory will be "plugins/VoxelGuest/data/channels/"
+        // the target BASE will be "plugins/VoxelGuest/data/channels/"
 
-        File f = new File(directory + destination + "/" + target + ".properties");
+        File f = new File(BASE + destination + "/" + target + ".properties");
         FileOutputStream fo = null;
 
         try {

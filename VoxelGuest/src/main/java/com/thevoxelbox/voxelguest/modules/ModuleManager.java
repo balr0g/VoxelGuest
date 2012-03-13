@@ -26,7 +26,7 @@
 
 package com.thevoxelbox.voxelguest.modules;
 
-import com.thevoxelbox.commands.CommandsManager;
+import com.thevoxelbox.commands.CommandManager;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,14 +36,14 @@ import org.bukkit.plugin.Plugin;
 
 public class ModuleManager {
     private static Plugin plugin;
-    private final CommandsManager commandsManager;
+    private final CommandManager commandsManager;
     private static ModuleManager instance;
         
     protected List<Module> activeModules   = new LinkedList<Module>();
     protected List<Module> inactiveModules = new LinkedList<Module>();
     protected HashMap<Class<? extends Module>, Module> classInstanceMap = new HashMap<Class<? extends Module>, Module>();
     
-    public ModuleManager(Plugin p, CommandsManager manager) {
+    public ModuleManager(Plugin p, CommandManager manager) {
         plugin = p;
         commandsManager = manager;
     }
@@ -93,17 +93,20 @@ public class ModuleManager {
             throw new ModuleException("Module already registered: " + cls.getCanonicalName());
         
         if (module != null) {
-            // Find and register commands and events
-            commandsManager.registerCommands(cls);
-            
             try {
                 module.enable();
                 module.setEnabled(true);
+                commandsManager.registerCommands(module);
+                
                 activeModules.add(module);
                 classInstanceMap.put(cls, module);
                 log(getName(module), module.getLoadMessage(), 0);
             } catch (ModuleException ex) {
                 log(module.getName(), "Did not enable: " + ex.getMessage(), 0);
+                
+                if (module.getConfiguration() != null)
+                    module.getConfiguration().save();
+                
                 module.setEnabled(false);
                 inactiveModules.add(module);
                 return;

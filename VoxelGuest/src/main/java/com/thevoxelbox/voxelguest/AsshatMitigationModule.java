@@ -8,9 +8,9 @@ import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.modules.Setting;
-import com.thevoxelbox.voxelguest.util.PropertyManager;
+import com.thevoxelbox.voxelguest.util.Configuration;
+import com.thevoxelbox.voxelguest.util.Formatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,7 +26,7 @@ import org.bukkit.event.player.PlayerPreLoginEvent;
 @MetaData(name = "Asshat Mitigator", description = "Major asshat handling.")
 public class AsshatMitigationModule extends Module {
 
-    public HashMap<String, Object> banned = (HashMap<String, Object>) PropertyManager.load("banned", "/asshatmitigation");
+    protected Configuration bannedList = new Configuration("banned", "/asshatmitigation");
     public List<String> gagged = new ArrayList<String>();
 
     public AsshatMitigationModule() {
@@ -38,7 +38,7 @@ public class AsshatMitigationModule extends Module {
         @Setting("save-banlist-on-ban") public boolean saveBanlistOnBan = false;
         @Setting("unrestrict-chat-message") public String unrestrictChatMessage = "I agree. Allow me to chat.";
         @Setting("gag-message-format") public String gagMessageFormat = "§cYou have been gagged. You cannot chat until you say\n"
-                + "§c6the ungag key phrase.";
+                + "§6the ungag key phrase.";
         @Setting("ungag-message-format") public String ungagMessageFormat = "§aYou have been ungagged.";
         
         public AsshatMitigationConfiguration(AsshatMitigationModule parent) {
@@ -49,13 +49,13 @@ public class AsshatMitigationModule extends Module {
     @Override
     public void enable() {
         setConfiguration(new AsshatMitigationConfiguration(this));
-        banned.clear();
+        bannedList.load();
         gagged.clear();
     }
 
     @Override
     public void disable() {
-        PropertyManager.save("banned", banned, "/asshatmitigation");
+        bannedList.save();
     }
 
     @Override
@@ -71,10 +71,9 @@ public class AsshatMitigationModule extends Module {
      * exact player names must be given when banning offline players.
      */
     @Command(aliases = {"ban", "vban", "vbano", "bano"},
-    bounds = {1, -1},
-    help = "To ban someone, simply type\n"
-    + "§c/ban [player] (reason)",
-    playerOnly = false)
+        bounds = {1, -1},
+        help = "To ban someone, simply type\n"
+        + "§c/ban [player] (reason)")
     @CommandPermission(permission = "voxelguest.asshat.ban")
     public void ban(CommandSender cs, String[] args) {
         List<Player> l = Bukkit.matchPlayer(args[0]);
@@ -90,30 +89,34 @@ public class AsshatMitigationModule extends Module {
             cs.sendMessage(ChatColor.RED + "Partial match.");
         } else if (l.isEmpty()) {
             String player = args[0];
-
-            banned.put(player, reason);
+            
             if (args.length > 1) {
+                bannedList.setString(player, reason);
                 Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                 Bukkit.broadcastMessage(ChatColor.BLUE + reason);
             } else {
-                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                bannedList.setString(player, getConfiguration().getString("default-asshat-reason"));
+                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                 Bukkit.broadcastMessage(getConfiguration().getString("default-asshat-reason"));
             }
         } else {
-            l.get(0).kickPlayer(reason);
-            banned.put(l.get(0).getName(), reason);
+            Player toBan = l.get(0);
+            
             if (args.length > 1) {
-                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
+                toBan.kickPlayer("You have been banned for: " + reason);
+                bannedList.setString(toBan.getName(), reason);
+                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + toBan.getName() + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                 Bukkit.broadcastMessage(ChatColor.BLUE + reason);
             } else {
-                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                toBan.kickPlayer("You have been banned for: " + getConfiguration().getString("default-asshat-reason"));
+                bannedList.setString(toBan.getName(), getConfiguration().getString("default-asshat-reason"));
+                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + toBan.getName() + ChatColor.DARK_GRAY + " has been banned by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                 Bukkit.broadcastMessage(getConfiguration().getString("default-asshat-reason"));
             }
         }
-
-        if (getConfiguration().getBoolean("save-banlist-on-ban")) {
-            PropertyManager.save("banned", banned, "/asshatmitigation");
-        }
+        
+        if (getConfiguration().getBoolean("save-banlist-on ban"))
+            bannedList.save();
     }
 
     /*
@@ -124,10 +127,9 @@ public class AsshatMitigationModule extends Module {
      * player must be banned, in order to be unbanned.
      */
     @Command(aliases = {"unban", "vunban"},
-    bounds = {1, -1},
-    help = "To unban someone, simply type\n"
-    + "§c/unban [player]",
-    playerOnly = false)
+        bounds = {1, -1},
+        help = "To unban someone, simply type\n"
+        + "§c/unban [player]")
     @CommandPermission(permission = "voxelguest.asshat.unban")
     public void unban(CommandSender cs, String[] args) {
         if (args.length < 1) {
@@ -136,9 +138,11 @@ public class AsshatMitigationModule extends Module {
             cs.sendMessage(ChatColor.RED + "Too many arguments.");
         } else {
             String player = args[0];
-            if (banned.containsKey(player)) {
-                banned.remove(player);
-                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + "has been unbanned by " + ChatColor.RED + cs.getName());
+            if (bannedList.hasEntry(player)) {
+                bannedList.removeEntry(player);
+                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + player + ChatColor.DARK_GRAY + " has been unbanned by " + ChatColor.RED + cs.getName());
+                bannedList.save();
+                bannedList.load();
             } else {
                 cs.sendMessage(ChatColor.RED + "Player isn't banned.");
             }
@@ -184,7 +188,7 @@ public class AsshatMitigationModule extends Module {
                     Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + p.getName() + ChatColor.DARK_GRAY + " has been gagged by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                     Bukkit.broadcastMessage(ChatColor.BLUE + reason);
                 } else {
-                    Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + p.getName() + ChatColor.DARK_GRAY + " has been gagged by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                    Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + p.getName() + ChatColor.DARK_GRAY + " has been gagged by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                     Bukkit.broadcastMessage(getConfiguration().getString("default-asshat-reason"));
                 }
             }
@@ -224,24 +228,24 @@ public class AsshatMitigationModule extends Module {
                 Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been kicked by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                 Bukkit.broadcastMessage(ChatColor.BLUE + reason);
             } else {
-                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been kicked by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + "for:");
+                Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player " + ChatColor.RED + l.get(0).getName() + ChatColor.DARK_GRAY + " has been kicked by " + ChatColor.RED + cs.getName() + ChatColor.DARK_GRAY + " for:");
                 Bukkit.broadcastMessage(getConfiguration().getString("default-asshat-reason"));
             }
         }
     }
 
-    @ModuleEvent(event = PlayerPreLoginEvent.class)
+    @ModuleEvent(event = PlayerPreLoginEvent.class, ignoreCancelledEvents=false)
     public void onPlayerPreLogin(BukkitEventWrapper wrapper) {
         PlayerPreLoginEvent event = (PlayerPreLoginEvent) wrapper.getEvent();
         String player = event.getName();
 
-        if (banned.containsKey(player)) {
+        if (bannedList.hasEntry(player)) {
             event.setResult(PlayerPreLoginEvent.Result.KICK_FULL);
-            event.disallow(PlayerPreLoginEvent.Result.KICK_FULL, banned.get(player).toString());
+            event.disallow(PlayerPreLoginEvent.Result.KICK_FULL, "You are banned for: " + bannedList.getString(player));
         }
     }
 
-    @ModuleEvent(event = PlayerChatEvent.class)
+    @ModuleEvent(event = PlayerChatEvent.class, ignoreCancelledEvents=false)
     public void onPlayerChat(BukkitEventWrapper wrapper) {
         PlayerChatEvent event = (PlayerChatEvent) wrapper.getEvent();
         Player p = event.getPlayer();
@@ -249,13 +253,18 @@ public class AsshatMitigationModule extends Module {
         if (gagged.contains(p.getName())) {
             if (event.getMessage().equals(getConfiguration().getString("unrestrict-chat-message"))) {
                 gagged.remove(p.getName());
-                p.sendMessage(getConfiguration().getString("ungag-message-format"));
+                
+                for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(getConfiguration().getString("ungag-message-format"), VoxelGuest.getGuestPlayer(p))) {
+                    p.sendMessage(str);
+                }
+                
                 event.setCancelled(true);
-                wrapper.setCancelled(true);
             } else {
-                p.sendMessage(getConfiguration().getString("gag-message-format"));
+                for (String str : Formatter.selectFormatter(SimpleFormatter.class).format(getConfiguration().getString("gag-message-format"), VoxelGuest.getGuestPlayer(p))) {
+                    p.sendMessage(str);
+                }
+                
                 event.setCancelled(true);
-                wrapper.setCancelled(true);
             }
         }
     }

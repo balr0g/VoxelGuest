@@ -34,12 +34,18 @@ import java.util.Map;
 import org.bukkit.command.CommandSender;
 
 public class ServerAdministrationCommands {
-    @Command(aliases={"vsystem", "vsys"},
+    @Command(aliases={"system", "sys"},
             bounds={0,-1})
     @CommandPermission(permission="voxelguest.admin")
     public void system(CommandSender cs, String[] args) {
         if (args != null) {
             if (args[0].equalsIgnoreCase("settings")) {
+                if (args.length > 1) {
+                    if (args[1].equalsIgnoreCase("set")) {
+                        
+                    }
+                }
+                
                 cs.sendMessage("§8==============================");
                 cs.sendMessage("§bVoxelGuest Master Settings");
                 cs.sendMessage("§8==============================");
