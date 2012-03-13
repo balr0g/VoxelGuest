@@ -1,0 +1,5 @@
+VOXELGUEST 4 KNOWN BUGS LIST
+-------------------------------------------
+- Configurations for modules are saved on exit, overriding user-defined variables.
+- Variables defined via txt/properties files are not loaded into their proper hard-coded variables. (AKA a boolean set as "false" will be registered as "false", even if the txt file says "true").
+- Gag, Kick, and Ban commands do not work. Returns InvocationTargetException.
