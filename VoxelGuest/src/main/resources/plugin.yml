@@ -1,7 +1,7 @@
 name: VoxelGuest
 main: com.thevoxelbox.voxelguest.VoxelGuest
 author: VoxelPlugineering
-version: 4.0.0a
+version: 4.0.0-b1
 website: http://voxelwiki.com/minecraft/VoxelGuest
 
 commands:
@@ -29,3 +29,16 @@ commands:
   kick:
     aliases: [vkick]
     usage: /<command> [user] [reason]
+  greylist:
+    aliases: [gl, graylist]
+    usage: /<command> ?
+  explorationmode:
+    usage: /<command>
+  fakequit:
+    aliases: [fq]
+    usage: /<command>
+  vanish:
+    usage: /<command>
+  vsystem:
+    aliases: [vsys]
+    usage: /<command>

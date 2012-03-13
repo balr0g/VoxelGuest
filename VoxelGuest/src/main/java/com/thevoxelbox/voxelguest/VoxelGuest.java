@@ -34,6 +34,7 @@ import com.thevoxelbox.commands.MalformattedCommandException;
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
 import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.commands.MiscellaneousCommands;
+import com.thevoxelbox.voxelguest.commands.ServerAdministrationCommands;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import com.thevoxelbox.voxelguest.players.GroupManager;
@@ -81,7 +82,8 @@ public class VoxelGuest extends JavaPlugin {
         GreylistModule.class,
         OfflineModeModule.class,
         RegionModule.class,
-        VanishModule.class
+        VanishModule.class,
+        WorldProtectionModule.class
     };
 
     @Override
@@ -112,6 +114,7 @@ public class VoxelGuest extends JavaPlugin {
         
         // Register system / miscellaneous commands
         commandsManager.registerCommands(MiscellaneousCommands.class);
+        commandsManager.registerCommands(ServerAdministrationCommands.class);
         
         // Load system event listeners
         Bukkit.getPluginManager().registerEvents(listener, this);
@@ -277,20 +280,24 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");
         
+        getConfigData().setBoolean("permissions-multigroup", false);
+        getConfigData().setBoolean("permissions-multiworld", false);
+        getConfigData().setBoolean("permissions-default-op", false);
+        
         for (Module module : ModuleManager.getManager().getModules()) {
             if (module.getConfiguration() != null)
                 module.getConfiguration().reset();
         }
         
         getConfigData().setString("reset", "no");
-        log("==========================================");
-        log("* VOXELGUEST 4");
-        log("*");
-        log("* The premiere server adminstration suite");
-        log("*");
-        log("* Built by: psanker & VoxelPlugineering");
-        log("* Licensed by the BSD License - 2012");
-        log("==========================================");
+        log("| ========================================== |");
+        log("| * VOXELGUEST 4                             |");
+        log("| *                                          |");
+        log("| * The premiere server adminstration suite  |");
+        log("| *                                          |");
+        log("| * Built by: psanker & VoxelPlugineering    |");
+        log("| * Licensed by the BSD License - 2012       |");
+        log("| ========================================== |");
         log("Factory settings loaded");
     }
     

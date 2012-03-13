@@ -26,6 +26,8 @@
 
 package com.thevoxelbox.voxelguest;
 
+import com.thevoxelbox.voxelguest.modules.ModuleException;
+import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import com.thevoxelbox.voxelguest.util.Formatter;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.Configuration;
@@ -69,7 +71,14 @@ public class SimpleFormatter extends Formatter {
                 copy = copy.replace("$g", group);
             }
             
-            copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
+            try {
+                VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
+                int fakequitNum = module.getFakequitSize();
+                copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length - fakequitNum));
+            } catch (ModuleException ex) {
+                copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
+            }
+            
             copy = copy.replace("$name", gp.getPlayer().getName());
             copy = copy.replace("$n", gp.getPlayer().getName());
         }

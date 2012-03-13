@@ -63,7 +63,7 @@ public abstract class Module {
     public void setConfiguration(ModuleConfiguration config) {
         if (config != null) {
             configuration = config;
-            configuration.load(config.getClass());
+            configuration.load();
         }
     }
     

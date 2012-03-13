@@ -49,23 +49,26 @@ public class PermissionsManager implements Listener {
     private final Configuration configuration;
     protected static PermissionsHandler handler;
     
-    protected static boolean multigroup = false;
-    protected static boolean multiworld = false;
+    protected static boolean multigroup  = false;
+    protected static boolean multiworld  = false;
+    protected static boolean defaultToOp = false;
     
     public PermissionsManager(Server s, String pluginPrefix, Configuration config) {
         server = s;
         tag = pluginPrefix;
         configuration = config;
         
-        multigroup = configuration.getBoolean("permissions-multigroup");
-        multiworld = configuration.getBoolean("permissions-multiworld");
+        multigroup  = configuration.getBoolean("permissions-multigroup");
+        multiworld  = configuration.getBoolean("permissions-multiworld");
+        defaultToOp = configuration.getBoolean("permissions-default-op");
     }
     
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
         PermissionsExHandler.class,
         BPermissionsHandler.class,
         DinnerpermsHandler.class,
-        GuestPermissionsHandler.class
+        GuestPermissionsHandler.class,
+        OpPermissionsHandler.class
     };
     
     @EventHandler(priority=EventPriority.MONITOR)
@@ -85,7 +88,7 @@ public class PermissionsManager implements Listener {
                 PermissionsHandler _handler = (PermissionsHandler) init.invoke(null, this.server);
 
                 if (_handler != null) {
-                    if (_handler instanceof GuestPermissionsHandler)
+                    if (_handler instanceof GuestPermissionsHandler || _handler instanceof OpPermissionsHandler)
                         continue;
                     
                     handler = _handler;
@@ -98,8 +101,11 @@ public class PermissionsManager implements Listener {
             }
         }
         
-        if (handler == null) {
+        if (handler == null && !defaultToOp) {
             handler = new GuestPermissionsHandler(server);
+            log(handler.getDetectionMessage(), 0);
+        } else {
+            handler = new OpPermissionsHandler(server);
             log(handler.getDetectionMessage(), 0);
         }
     }

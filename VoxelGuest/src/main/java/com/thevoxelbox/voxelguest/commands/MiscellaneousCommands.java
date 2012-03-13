@@ -116,6 +116,7 @@ public class MiscellaneousCommands {
                 sendGroupStrings(cs, Arrays.asList(entry.getValue()), ("§8[" + entry.getKey() + "§8]"));
             }
             cs.sendMessage("§8------------------------------");
+            return;
         }
         
         String header = "";

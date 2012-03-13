@@ -28,6 +28,7 @@ package com.thevoxelbox.voxelguest.modules;
 
 import com.thevoxelbox.voxelguest.util.Configuration;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 public class ModuleConfiguration {
     protected final Configuration config;
@@ -36,6 +37,10 @@ public class ModuleConfiguration {
     public ModuleConfiguration(Module parent) {
         parentModule = parent;
         config = new Configuration(parentModule.getName(), "/modules");
+    }
+    
+    public HashMap<String, Object> getAllEntries() {
+        return config.getAllEntries();
     }
     
     public Object getEntry(String key) {
@@ -70,8 +75,8 @@ public class ModuleConfiguration {
         config.setInt(key, value);
     }
     
-    public void load(Class<? extends ModuleConfiguration> cls) {
-        registerFieldSettings(cls);
+    public void load() {
+        registerFieldSettings(this.getClass());
         config.load();
     }
     
@@ -107,7 +112,7 @@ public class ModuleConfiguration {
 
         Setting setting = field.getAnnotation(Setting.class);
         String key = setting.value();
-        Object value = field.get(parentModule);
+        Object value = field.get(this);
         
         setEntry(key, value);
     }

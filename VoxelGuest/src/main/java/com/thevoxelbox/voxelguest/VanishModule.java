@@ -147,6 +147,8 @@ public class VanishModule extends Module {
                 if (!safeList.contains(p.getName()))
                     p.hidePlayer(hidden);
             }
+            
+            hidden.sendMessage("§bYou have vanished.");
         }
     }
     
@@ -158,6 +160,8 @@ public class VanishModule extends Module {
                 if (!safeList.contains(p.getName()))
                     p.showPlayer(hidden);
             }
+            
+            hidden.sendMessage("§bYou have reappeared.");
         }
     }
     
@@ -225,6 +229,10 @@ public class VanishModule extends Module {
         
         if (PermissionsManager.getHandler().hasPermission(p.getName(), "voxelguest.vanish.vanish"))
             revealPlayer(p);
+    }
+    
+    public int getFakequitSize() {
+        return fakequit.size();
     }
     
     public void addMemberToSafeList(Player p) {

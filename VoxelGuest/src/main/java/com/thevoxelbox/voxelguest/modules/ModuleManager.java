@@ -122,8 +122,9 @@ public class ModuleManager {
             try {
                 module.disable();
                 
-                if (module.getConfiguration() != null)
+                if (module.getConfiguration() != null) {
                     module.getConfiguration().save();
+                }
                 
                 module.setEnabled(false);
             } catch (ModuleException ex) {
