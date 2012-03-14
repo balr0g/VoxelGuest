@@ -55,17 +55,17 @@ public class PlayerProtectionModule extends Module {
     
     @Override
     public void enable() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        setConfiguration(new PlayerProtectionConfiguration(this));
     }
 
     @Override
     public String getLoadMessage() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "Player protection module loaded";
     }
     
     @Override
     public void disable() {
-        return;
+        
     }
     
     /* Player Protection - EntityDamage Event

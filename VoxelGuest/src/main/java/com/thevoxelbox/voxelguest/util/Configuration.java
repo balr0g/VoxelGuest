@@ -26,6 +26,8 @@
 
 package com.thevoxelbox.voxelguest.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,23 +69,44 @@ public class Configuration {
             // Populate map
             
             for (Map.Entry<String, Object> entry : data.entrySet()) {
-                if (map.containsKey(entry.getKey()) && map.get(entry.getKey()) != null)
-                    continue;
-                
-                setEntry(entry.getKey(), entry.getValue());
+                if (entry.getValue() != null)
+                    setEntry(entry.getKey(), entry.getValue());
             }
         }
     }
     
     public void save() {
-        if (map == null)
-            return;
+        if (map == null || map.isEmpty()) {
+            clear();
+        }
         
         PropertyManager.save(target, map, destination);
     }
     
+    public void clear() {
+        if (!map.isEmpty())
+            map.clear();
+        
+        File f = new File(PropertyManager.BASE + destination + "/" + target + ".properties");
+        f.delete();
+        
+        try {
+            f.createNewFile();
+        } catch (IOException ex) {
+            // Oh well.
+        }
+    }
+    
     public HashMap<String, Object> getAllEntries() {
         return map;
+    }
+    
+    public void removeEntry(String key) {
+        map.remove(key);
+    }
+    
+    public boolean hasEntry(String key) {
+        return map.containsKey(key);
     }
     
     public Object getEntry(String key) {

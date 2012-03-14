@@ -29,7 +29,7 @@ package com.thevoxelbox.voxelguest;
 import com.thevoxelbox.commands.ArgumentOutOfBoundsException;
 import com.thevoxelbox.commands.CommandException;
 import com.thevoxelbox.commands.CommandMethodInvocationException;
-import com.thevoxelbox.commands.CommandsManager;
+import com.thevoxelbox.commands.CommandManager;
 import com.thevoxelbox.commands.MalformattedCommandException;
 import com.thevoxelbox.permissions.InsufficientPermissionsException;
 import com.thevoxelbox.permissions.PermissionsManager;
@@ -65,7 +65,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class VoxelGuest extends JavaPlugin {
 
     private static VoxelGuest instance;
-    protected static CommandsManager commandsManager = new CommandsManager("[VoxelGuest]");
+    protected static CommandManager commandsManager = new CommandManager("[VoxelGuest]");
     protected static SystemListener listener = new SystemListener();
     protected static List<GuestPlayer> guestPlayers = new LinkedList<GuestPlayer>();
     protected static Map<Plugin, String> pluginIds = new HashMap<Plugin, String>();
@@ -81,6 +81,7 @@ public class VoxelGuest extends JavaPlugin {
         CreatureProtectionModule.class,
         GreylistModule.class,
         OfflineModeModule.class,
+        PlayerProtectionModule.class,
         RegionModule.class,
         VanishModule.class,
         WorldProtectionModule.class
@@ -267,7 +268,7 @@ public class VoxelGuest extends JavaPlugin {
         return instance;
     }
 
-    public static CommandsManager getCommandsManager() {
+    public static CommandManager getCommandsManager() {
         return commandsManager;
     }
     

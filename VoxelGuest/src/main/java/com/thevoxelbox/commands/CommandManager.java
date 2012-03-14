@@ -42,7 +42,7 @@ import org.bukkit.entity.Player;
  *
  * @author psanker
  */
-public class CommandsManager {
+public class CommandManager {
     // =============================
     // - VOXELGUEST COMMAND ENGINE
     // - 
@@ -54,7 +54,7 @@ public class CommandsManager {
     protected Map<String, Method> aliases = new HashMap<String, Method>();
     protected Map<Method, Object> instances = new HashMap<Method, Object>();
     
-    public CommandsManager(String pluginPrefix) {
+    public CommandManager(String pluginPrefix) {
         tag = pluginPrefix;
     }
 
@@ -69,6 +69,35 @@ public class CommandsManager {
             log("Could not register commands from " + cls.getCanonicalName(), 2);
         }
 
+        for (Method method : cls.getMethods()) {
+            if (!method.isAnnotationPresent(Command.class)) {
+                continue; // Improper command registration, helper method, or other method type
+            }
+
+            boolean isStatic = Modifier.isStatic(method.getModifiers());
+            Command command = method.getAnnotation(Command.class);
+
+            // If not static, grab the instance to reference from.
+            // If the instance doesn't exist, move on. Command is not registered.
+            if (!isStatic) {
+                if (obj == null) {
+                    continue;
+                } else {
+                    instances.put(method, obj);
+                }
+            }
+
+            for (String alias : command.aliases()) {
+                String al = alias.toLowerCase();
+
+                aliases.put(al, method);
+            }
+        }
+    }
+    
+    public void registerCommands(Object obj) {
+        Class<?> cls = obj.getClass();
+        
         for (Method method : cls.getMethods()) {
             if (!method.isAnnotationPresent(Command.class)) {
                 continue; // Improper command registration, helper method, or other method type

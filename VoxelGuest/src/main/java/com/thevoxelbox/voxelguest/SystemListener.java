@@ -51,6 +51,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class SystemListener extends ModuleSystemListener {
@@ -155,6 +156,11 @@ public class SystemListener extends ModuleSystemListener {
     
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onPlayerPreLogin(PlayerPreLoginEvent event) {
         processModuleEvents(event);
     }
     

@@ -59,7 +59,7 @@ public class WorldProtectionModule extends Module{
         @Setting("disable-ice-melting") public boolean icemelt = false;
         @Setting("disable-snow-melting") public boolean snowmelt = false;
         @Setting("disable-ice-formation") public boolean iceform = false;
-        @Setting("disable-snow-formatin") public boolean snowform = false;
+        @Setting("disable-snow-formation") public boolean snowform = false;
         @Setting("disable-block-burning") public boolean blockburn = false;
         @Setting("disable-fire-spread") public boolean firespred = false;
         @Setting("disable-enchanting") public boolean enchanting = false;
