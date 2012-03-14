@@ -147,8 +147,17 @@ public class ModuleManager {
     }
     
     public Module[] getModules() {
+        return getActiveModules();
+    }
+    
+    public Module[] getActiveModules() {
         Module[] modules = new Module[activeModules.size()];
         return activeModules.toArray(modules);
+    }
+    
+    public Module[] getInactiveModules() {
+        Module[] modules = new Module[inactiveModules.size()];
+        return inactiveModules.toArray(modules);
     }
     
     public String getName(Module mod) {

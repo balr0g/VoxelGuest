@@ -1,7 +1,7 @@
 name: VoxelGuest
 main: com.thevoxelbox.voxelguest.VoxelGuest
 author: VoxelPlugineering
-version: 4.0.0-b2
+version: 4.0.0-b3
 website: http://voxelwiki.com/minecraft/VoxelGuest
 
 commands:
@@ -42,3 +42,7 @@ commands:
   system:
     aliases: [sys]
     usage: /<command>
+  whitelist:
+    aliases: [wl]
+  unwhitelist:
+    aliases: [unwl]

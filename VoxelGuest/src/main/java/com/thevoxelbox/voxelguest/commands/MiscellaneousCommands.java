@@ -68,45 +68,49 @@ public class MiscellaneousCommands {
                 if (groupId == null)
                     groupId = "§fG";
                 
-                String[] list = new String[players.size()];
-                
-                Iterator<String> it = players.listIterator();
-                int x = 0;
-                while (it.hasNext()) {
-                    String player = it.next();
-                    list[x] = player;
-                    x++;
-                }
-                
-                boolean colorSwitch = false;
-                boolean afk = false;
-                boolean fakequit = false;
-                
-                for (int i = 0; i < list.length; i++) {
-                    String str = list[i];
-                    
-                    try {
-                        if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
-                            AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
-                            afk = module.isAFK(Bukkit.getPlayer(str));
+                if (players != null) {
+                    String[] list = new String[players.size()];
+
+                    Iterator<String> it = players.listIterator();
+                    int x = 0;
+                    while (it.hasNext()) {
+                        String player = it.next();
+                        list[x] = player;
+                        x++;
+                    }
+
+                    boolean colorSwitch = false;
+                    boolean afk = false;
+                    boolean fakequit = false;
+
+                    for (int i = 0; i < list.length; i++) {
+                        String str = list[i];
+
+                        try {
+                            if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
+                                AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
+                                afk = module.isAFK(Bukkit.getPlayer(str));
+                            }
+
+                            if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
+                                VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
+                                fakequit = module.isInFakequit(Bukkit.getPlayer(str));
+                            }
+                        } catch (ModuleException ex) {
+                            // continue
                         }
-                        
-                        if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
-                            VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
-                            fakequit = module.isInFakequit(Bukkit.getPlayer(str));
-                        }
-                    } catch (ModuleException ex) {
-                        // continue
+
+                        str = ((fakequit) ? FAKEQUIT : "") + ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
+                        colorSwitch = !colorSwitch;
+                        list[i] = str;
                     }
                     
-                    str = ((fakequit) ? FAKEQUIT : "") + ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
-                    colorSwitch = !colorSwitch;
-                    list[i] = str;
-                    
                     header = header + "§8[" + groupId + ":" + list.length + "§8] ";
+                    storage.put(groupId, list);
+                    continue;
                 }
                 
-                storage.put(groupId, list);
+                header = header + "§8[" + groupId + ":0§8] ";
             }
             
             cs.sendMessage("§8------------------------------");
@@ -124,6 +128,9 @@ public class MiscellaneousCommands {
         for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
             List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
             String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
+            
+            if (groupId == null)
+                groupId = "§fG";
             
             if (players != null) {
                 Iterator<String> itr = players.listIterator();
