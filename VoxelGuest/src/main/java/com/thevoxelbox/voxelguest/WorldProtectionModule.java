@@ -251,7 +251,7 @@ public class WorldProtectionModule extends Module{
     }
     
     /*
-     * World Protection - BlockSpread Event
+     * World Protection - BlockIgnite Event
      * Written by: Razorcane
      * 
      * Handles Fire Spread.
@@ -259,12 +259,28 @@ public class WorldProtectionModule extends Module{
     @ModuleEvent(event=BlockIgniteEvent.class)
     public void onBlockIgnite(BukkitEventWrapper wrapper) {
         BlockIgniteEvent event = (BlockIgniteEvent) wrapper.getEvent();
-        Block b = event.getBlock();
         IgniteCause cause = event.getCause();
         
         boolean fireSpread = (cause == IgniteCause.SPREAD || cause == IgniteCause.LAVA || cause == IgniteCause.LIGHTNING);
         
-        if(fireSpread && getConfiguration().getBoolean("disable-fire-spread")) {
+        if (fireSpread && getConfiguration().getBoolean("disable-fire-spread")) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+    
+    /*
+     * World Protection - BlockSpread Event
+     * Written by: Razorcane
+     * 
+     * Handles Fire Spread.
+     */
+    @ModuleEvent(event=BlockSpreadEvent.class)
+    public void onBlockSpread(BukkitEventWrapper wrapper) {
+        BlockSpreadEvent event = (BlockSpreadEvent) wrapper.getEvent();
+        boolean fireSpread = (event.getNewState().getType() == Material.FIRE);
+        
+        if (fireSpread && getConfiguration().getBoolean("disable-fire-spread")) {
             event.setCancelled(true);
             return;
         }

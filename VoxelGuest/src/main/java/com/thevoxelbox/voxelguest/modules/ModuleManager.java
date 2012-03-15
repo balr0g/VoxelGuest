@@ -100,7 +100,6 @@ public class ModuleManager {
                     log(module.getName(), "Did not enable: \"disable-module\" is set to true", 0);
                     
                     module.disable();
-                    module.getConfiguration().save();
                     module.setEnabled(false);
                     inactiveModules.add(module);
                     return;
@@ -114,9 +113,6 @@ public class ModuleManager {
                 log(getName(module), module.getLoadMessage(), 0);
             } catch (ModuleException ex) {
                 log(module.getName(), "Did not enable: " + ex.getMessage(), 0);
-                
-                if (module.getConfiguration() != null)
-                    module.getConfiguration().save();
                 
                 module.setEnabled(false);
                 inactiveModules.add(module);
@@ -143,6 +139,16 @@ public class ModuleManager {
                 module.setEnabled(false);
             } catch (ModuleException ex) {
                 log(module.getName(), "Could not properly disable: " + ex.getMessage(), 1);
+            }
+        }
+        
+        Iterator<Module> in = inactiveModules.listIterator();
+        
+        while (in.hasNext()) {
+            Module module = in.next();
+            
+            if (module.getConfiguration() != null) {
+                module.getConfiguration().save();
             }
         }
         

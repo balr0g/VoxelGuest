@@ -27,6 +27,7 @@ package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.commands.Command;
 import com.thevoxelbox.commands.CommandPermission;
+import com.thevoxelbox.commands.Subcommands;
 import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
@@ -288,7 +289,7 @@ public class RegionModule extends Module {
                         else
                             PermissionsManager.getHandler().removePermission(region.getName(), player, adminPerm);
                         
-                        cs.sendMessage("§aSet player \"" + player + "'s\" flags in \"" + region.getName() + "\" to " + args[2]);
+                        cs.sendMessage("§aSet \"" + player + "\" player's flags in \"" + region.getName() + "\" to " + args[1]);
                     } else if (args[2].equalsIgnoreCase("-g")) {
                         String group = args[3];
                         
@@ -307,15 +308,73 @@ public class RegionModule extends Module {
                         else
                             PermissionsManager.getHandler().removeGroupPermission(region.getName(), group, adminPerm);
                         
-                        cs.sendMessage("§aSet group \"" + group + "'s\" flags in \"" + region.getName() + "\" to " + args[2]);
+                        cs.sendMessage("§aSet \"" + group + "\" group's flags in \"" + region.getName() + "\" to " + args[2]);
                     } else {
-                        cs.sendMessage("§cIncorrect flag: " + args[2]);
+                        cs.sendMessage("§cIncorrect flag: " + args[1]);
                     }
                             
                     return;
                 }
             }
         }
+    }
+    
+    @Command(aliases={"listregions", "lr"},
+            bounds={0, 2},
+            help="List registered regions with /listregions\n"
+            + "Show a region's subregions with /lr children [region]")
+    @CommandPermission(permission="voxelguest.regions.list.list")
+    @Subcommands(arguments={"children"}, permission={"voxelguest.regions.list.children"})
+    public void listRegions(CommandSender cs, String[] args) {
+        if (args.length == 2 && args[0].equalsIgnoreCase("children")) {
+            List<Region> l = matchRegion(args[1]);
+            
+            if (l.isEmpty()) {
+                cs.sendMessage("§cNo region found with that name.");
+                return;
+            } else if (l.size() > 1) {
+                cs.sendMessage("§cMultiple regions found with that name.");
+                return;
+            } else {
+                Region parent = l.get(0);
+                
+                Region[] subregions = new Region[getSubregions(parent).size()];
+                subregions = getSubregions(parent).toArray(subregions);
+                
+                if (subregions.length == 0) {
+                    cs.sendMessage("§cThis region has no subregions.");
+                    return;
+                }
+                
+                cs.sendMessage("§8==============================");
+                cs.sendMessage("§fRegion Children for §6" + parent.getName());
+                cs.sendMessage("§8==============================");
+                
+                for (int i = 0; i < subregions.length; i++) {
+                    cs.sendMessage("§f" + (i + 1) + "§7.§8) §f" + subregions[i].getName());
+                }
+                
+                return;
+            }
+        }
+        
+        Region[] regions = new Region[loadedRegions.size()];
+        regions = loadedRegions.toArray(regions);
+        
+        if (regions.length == 0) {
+            cs.sendMessage("§cNo regions are registered.");
+            return;
+        }
+        
+        cs.sendMessage("§8==============================");
+        cs.sendMessage("§fRegistered Regions");
+        cs.sendMessage("§8==============================");
+        
+        for (int i = 0; i < regions.length; i++) {
+            cs.sendMessage("§f" + (i + 1) + "§7.§8) §f" + regions[i].getName() + ((!getSubregions(regions[i]).isEmpty()) ? (" §8[§fChildren: §6" + getSubregions(regions[i]).size() + "§8]") : ""));
+        }
+        
+        return;
     }
     
     public List<Region> matchRegion(String name) {

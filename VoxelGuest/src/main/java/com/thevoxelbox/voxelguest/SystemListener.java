@@ -39,6 +39,7 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -166,12 +167,17 @@ public class SystemListener extends ModuleSystemListener {
     }
     
     @EventHandler
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         processModuleEvents(event);
     }
     
     @EventHandler
-    public void onBlockIgnite(BlockIgniteEvent event) {
+    public void onBlockSpread(BlockSpreadEvent event) {
         processModuleEvents(event);
     }
     

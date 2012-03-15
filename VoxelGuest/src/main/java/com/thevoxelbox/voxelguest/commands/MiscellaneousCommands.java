@@ -276,25 +276,25 @@ public class MiscellaneousCommands {
             while (it.hasNext()) {
                 String str = it.next();
                 
-                if (line.length() + (str.length() + COMMA.length()) > 70) {
+                if (line.length() + (str.length() + COMMA.length() + 1) > 70) {
                     if (!groupStart) {
                         groupStart = true;
                         cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
                         line = " ";
                     } else {
-                        cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
+                        cs.sendMessage(line.substring(0, line.length() - 2));
                         line = " ";
                     }
                 }
                 
-                line += (str + COMMA);
+                line += (str + COMMA + " ");
             }
             
             if (!line.isEmpty()) {
                 if (!groupStart) {
                     cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
                 } else {
-                    cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
+                    cs.sendMessage(line.substring(0, line.length() - 2));
                 }
             }
         }
