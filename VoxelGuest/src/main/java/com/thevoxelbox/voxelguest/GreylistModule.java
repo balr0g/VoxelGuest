@@ -58,6 +58,7 @@ import java.util.concurrent.Future;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -206,11 +207,130 @@ public class GreylistModule extends Module {
         
         String user = args[0];
         injectGreylist(new String[] {user});
-        cs.sendMessage(ChatColor.GREEN + "Added " + args[0] + " to the greylist");
+        announceGreylist(user);
+    }
+    
+    @Command(aliases={"whitelist", "wl"},
+            bounds={1, 1},
+            help="Whitelist someone to your server\n"
+            + "by typing §c/whitelist [player]")
+    @CommandPermission(permission="voxelguest.greylist.whitelist")
+    public void whitelist(CommandSender cs, String[] args) {
+        List<Player> l = Bukkit.matchPlayer(args[0]);
+        
+        if (l.isEmpty()) {
+            cs.sendMessage("§cNo player found with that name.");
+            return;
+        } else if (l.size() > 1) {
+            cs.sendMessage("§cMultiple players found with that name.");
+            return;
+        } else {
+            Player p = l.get(0);
+            
+            try {
+                String group = VoxelGuest.getGroupManager().findGroup("whitelist", true);
+                
+                if (PermissionsManager.hasMultiGroupSupport()) {
+                    PermissionsManager.getHandler().addGroup(p.getName(), group);
+                } else {
+                    for (String nixGroup : PermissionsManager.getHandler().getGroups(p.getName()))
+                        PermissionsManager.getHandler().removeGroup(p.getName(), nixGroup);
+                    
+                    PermissionsManager.getHandler().addGroup(p.getName(), group);
+                }
+                
+                if (!PermissionsManager.getHandler().hasPermission(p.getName(), "voxelguest.greylist.bypass")) {
+                    PermissionsManager.getHandler().giveGroupPermission(group, "voxelguest.greylist.bypass");
+                }
+                
+            } catch (GroupNotFoundException ex) {
+                PermissionsManager.getHandler().givePermission(p.getName(), "voxelguest.greylist.bypass");
+            }
+            
+            String header = "";
+            for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
+                List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
+                String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
+                
+                if (groupId == null)
+                    groupId = "§fG";
+                
+                if (players != null) {
+                    header = header + "§8[" + groupId + ":" + players.size() + "§8] ";
+                    continue;
+                }
+                
+                header = header + "§8[" + groupId + ":0§8] ";
+            }
+            
+            Bukkit.broadcastMessage(header);
+            Bukkit.broadcastMessage("§aWhitelisted: §6" + p.getName());
+        }
+    }
+    
+    @Command(aliases={"unwhitelist", "unwl"},
+            bounds={1,1},
+            help="Unwhitelist someone to your server\n"
+            + "by typing §c/unwhitelist [player]")
+    @CommandPermission(permission="voxelguest.greylist.unwhitelist")
+    public void unwhitelist(CommandSender cs, String[] args) {
+        List<Player> l = Bukkit.matchPlayer(args[0]);
+        
+        if (l.isEmpty()) {
+            cs.sendMessage("§cNo player found with that name.");
+            return;
+        } else if (l.size() > 1) {
+            cs.sendMessage("§cMultiple players found with that name.");
+            return;
+        } else {
+            Player p = l.get(0);
+            
+            try {
+                String whitelistGroup = VoxelGuest.getGroupManager().findGroup("whitelist", true);
+                String greylistGroup = VoxelGuest.getGroupManager().findGroup("greylist", true);
+                
+                if (PermissionsManager.hasMultiGroupSupport()) {
+                    PermissionsManager.getHandler().addGroup(p.getName(), greylistGroup);
+                    PermissionsManager.getHandler().removeGroup(p.getName(), whitelistGroup);
+                } else {
+                    for (String nixGroup : PermissionsManager.getHandler().getGroups(p.getName()))
+                        PermissionsManager.getHandler().removeGroup(p.getName(), nixGroup);
+                    
+                    PermissionsManager.getHandler().addGroup(p.getName(), greylistGroup);
+                }
+                
+                if (PermissionsManager.getHandler().hasPermission(p.getName(), "voxelguest.greylist.bypass")) {
+                    PermissionsManager.getHandler().removeGroupPermission(greylistGroup, "voxelguest.greylist.bypass");
+                }
+                
+            } catch (GroupNotFoundException ex) {
+                PermissionsManager.getHandler().removePermission(p.getName(), "voxelguest.greylist.bypass");
+            }
+            
+            String header = "";
+            for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
+                List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
+                String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
+                
+                if (groupId == null)
+                    groupId = "§fG";
+                
+                if (players != null) {
+                    header = header + "§8[" + groupId + ":" + players.size() + "§8] ";
+                    continue;
+                }
+                
+                header = header + "§8[" + groupId + ":0§8] ";
+            }
+            
+            Bukkit.broadcastMessage(header);
+            Bukkit.broadcastMessage("§4Unwhitelisted: §6" + p.getName());
+        }
     }
     
     @Command(aliases={"explorationmode"},
-            bounds={0,0})
+            bounds={0,0},
+            help="Toggle your server's floodgates on and off")
     @CommandPermission(permission="voxelguest.greylist.admin.exploration")
     public void explorationMode(CommandSender cs, String[] args) {
         explorationMode = !explorationMode;

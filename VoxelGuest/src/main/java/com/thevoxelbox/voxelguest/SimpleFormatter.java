@@ -74,7 +74,10 @@ public class SimpleFormatter extends Formatter {
             try {
                 VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
                 int fakequitNum = module.getFakequitSize();
-                copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length - fakequitNum));
+                if (fakequitNum > 0)
+                    copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length - fakequitNum));
+                else
+                    copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
             } catch (ModuleException ex) {
                 copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
             }

@@ -37,6 +37,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
@@ -53,6 +54,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class SystemListener extends ModuleSystemListener {
     
@@ -135,6 +137,16 @@ public class SystemListener extends ModuleSystemListener {
     }
     
     @EventHandler
+    public void onPlayerPreLogin(PlayerPreLoginEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         processModuleEvents(event);
     }
@@ -155,12 +167,12 @@ public class SystemListener extends ModuleSystemListener {
     }
     
     @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) {
+    public void onBlockIgnite(BlockIgniteEvent event) {
         processModuleEvents(event);
     }
     
     @EventHandler
-    public void onPlayerPreLogin(PlayerPreLoginEvent event) {
+    public void onBlockPlace(BlockPlaceEvent event) {
         processModuleEvents(event);
     }
     

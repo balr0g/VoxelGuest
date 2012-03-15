@@ -95,6 +95,16 @@ public class ModuleManager {
         if (module != null) {
             try {
                 module.enable();
+                
+                if (module.getConfiguration() != null && module.getConfiguration().getBoolean("disable-module")) {
+                    log(module.getName(), "Did not enable: \"disable-module\" is set to true", 0);
+                    
+                    module.disable();
+                    module.setEnabled(false);
+                    inactiveModules.add(module);
+                    return;
+                }
+                
                 module.setEnabled(true);
                 commandsManager.registerCommands(module);
                 
@@ -103,9 +113,6 @@ public class ModuleManager {
                 log(getName(module), module.getLoadMessage(), 0);
             } catch (ModuleException ex) {
                 log(module.getName(), "Did not enable: " + ex.getMessage(), 0);
-                
-                if (module.getConfiguration() != null)
-                    module.getConfiguration().save();
                 
                 module.setEnabled(false);
                 inactiveModules.add(module);
@@ -135,6 +142,16 @@ public class ModuleManager {
             }
         }
         
+        Iterator<Module> in = inactiveModules.listIterator();
+        
+        while (in.hasNext()) {
+            Module module = in.next();
+            
+            if (module.getConfiguration() != null) {
+                module.getConfiguration().save();
+            }
+        }
+        
         activeModules.clear();
         inactiveModules.clear();
     }
@@ -147,8 +164,17 @@ public class ModuleManager {
     }
     
     public Module[] getModules() {
+        return getActiveModules();
+    }
+    
+    public Module[] getActiveModules() {
         Module[] modules = new Module[activeModules.size()];
         return activeModules.toArray(modules);
+    }
+    
+    public Module[] getInactiveModules() {
+        Module[] modules = new Module[inactiveModules.size()];
+        return inactiveModules.toArray(modules);
     }
     
     public String getName(Module mod) {

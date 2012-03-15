@@ -27,7 +27,7 @@
 package com.thevoxelbox.permissions;
 
 import com.thevoxelbox.voxelguest.util.Configuration;
-import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.logging.Logger;
 import org.bukkit.Server;
@@ -66,15 +66,16 @@ public class PermissionsManager implements Listener {
     protected Class<? extends PermissionsHandler>[] availableHandlers = new Class[] {
         PermissionsExHandler.class,
         BPermissionsHandler.class,
-        DinnerpermsHandler.class,
-        GuestPermissionsHandler.class,
-        OpPermissionsHandler.class
+        DinnerpermsHandler.class
+    };
+    
+    protected String[] plugins = new String[] {
+        "PermissionsEx",
+        "bPermissions"
     };
     
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPluginEnable(PluginEnableEvent event) {
-        String[] plugins = {"PermissionsEx", "bPermissions"};
-        
         if (Arrays.asList(plugins).contains(event.getPlugin().getDescription().getName())) {
             registerActiveHandler();
         }
@@ -83,14 +84,12 @@ public class PermissionsManager implements Listener {
     public void registerActiveHandler() {
         for (Class<? extends PermissionsHandler> handlerClass : availableHandlers) {
             try {
-                Method init = handlerClass.getMethod("initialize", Server.class);
+                Constructor<? extends PermissionsHandler> construct = handlerClass.getConstructor(Server.class);
+                PermissionsHandler test = construct.newInstance(this.server);
 
-                PermissionsHandler _handler = (PermissionsHandler) init.invoke(null, this.server);
+                PermissionsHandler _handler = test.initialize(server);
 
                 if (_handler != null) {
-                    if (_handler instanceof GuestPermissionsHandler || _handler instanceof OpPermissionsHandler)
-                        continue;
-                    
                     handler = _handler;
                     log(handler.getDetectionMessage(), 0);
                     break;
@@ -104,7 +103,7 @@ public class PermissionsManager implements Listener {
         if (handler == null && !defaultToOp) {
             handler = new GuestPermissionsHandler(server);
             log(handler.getDetectionMessage(), 0);
-        } else {
+        } else if (handler == null && defaultToOp) {
             handler = new OpPermissionsHandler(server);
             log(handler.getDetectionMessage(), 0);
         }
@@ -112,26 +111,6 @@ public class PermissionsManager implements Listener {
     
     public static PermissionsHandler getHandler() {
         return handler;
-    }
-    
-    public boolean hasPermission(String name, String permission) {
-        return handler.hasPermission(name, permission);
-    }
-    
-    public boolean hasPermission(String world, String name, String permission) {
-        return handler.hasPermission(world, name, permission);
-    }
-    
-    public boolean inGroup(String name, String group) {
-        return handler.inGroup(name, group);
-    }
-    
-    public String[] getGroups(String name) {
-        return handler.getGroups(name);
-    }
-
-    public String getDetectionMessage() {
-        return handler.getDetectionMessage();
     }
     
     public static boolean hasMultiGroupSupport() {

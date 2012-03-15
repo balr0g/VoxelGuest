@@ -35,7 +35,7 @@ import ru.tehkode.permissions.PermissionUser;
 
 public class PermissionsExHandler extends PermissionsHandler {
 
-    private final PermissionManager manager;
+    private PermissionManager manager;
     
     @Override
     public PermissionsHandler initialize(Server server) {
@@ -45,15 +45,16 @@ public class PermissionsExHandler extends PermissionsHandler {
             if (manager == null)
                 return null;
             
-            return new PermissionsExHandler(server, manager);
+            PermissionsExHandler handler = new PermissionsExHandler(server);
+            handler.manager = manager;
+            return handler;
         } catch (Throwable t) {
             return null;
         }
     }
     
-    public PermissionsExHandler(Server server, PermissionManager manager) {
-        this.server = server;
-        this.manager = manager;
+    public PermissionsExHandler(Server server) {
+        super(server);
     }
     
     @Override

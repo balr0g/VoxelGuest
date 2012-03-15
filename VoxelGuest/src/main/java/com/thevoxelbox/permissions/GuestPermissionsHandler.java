@@ -69,9 +69,9 @@ public class GuestPermissionsHandler extends PermissionsHandler {
     }
     
     public GuestPermissionsHandler(Server server) {
+        super(server);
+        
         try {
-            
-            this.server = server;
         
             if (!file.exists()) {
                 file.getParentFile().mkdirs();

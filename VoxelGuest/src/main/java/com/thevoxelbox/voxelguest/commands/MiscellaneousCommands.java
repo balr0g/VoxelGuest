@@ -41,7 +41,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class MiscellaneousCommands {
     private final String AFK = "§8[§9AFK§8]";
@@ -68,45 +71,49 @@ public class MiscellaneousCommands {
                 if (groupId == null)
                     groupId = "§fG";
                 
-                String[] list = new String[players.size()];
-                
-                Iterator<String> it = players.listIterator();
-                int x = 0;
-                while (it.hasNext()) {
-                    String player = it.next();
-                    list[x] = player;
-                    x++;
-                }
-                
-                boolean colorSwitch = false;
-                boolean afk = false;
-                boolean fakequit = false;
-                
-                for (int i = 0; i < list.length; i++) {
-                    String str = list[i];
-                    
-                    try {
-                        if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
-                            AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
-                            afk = module.isAFK(Bukkit.getPlayer(str));
+                if (players != null) {
+                    String[] list = new String[players.size()];
+
+                    Iterator<String> it = players.listIterator();
+                    int x = 0;
+                    while (it.hasNext()) {
+                        String player = it.next();
+                        list[x] = player;
+                        x++;
+                    }
+
+                    boolean colorSwitch = false;
+                    boolean afk = false;
+                    boolean fakequit = false;
+
+                    for (int i = 0; i < list.length; i++) {
+                        String str = list[i];
+
+                        try {
+                            if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
+                                AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
+                                afk = module.isAFK(Bukkit.getPlayer(str));
+                            }
+
+                            if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
+                                VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
+                                fakequit = module.isInFakequit(Bukkit.getPlayer(str));
+                            }
+                        } catch (ModuleException ex) {
+                            // continue
                         }
-                        
-                        if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
-                            VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
-                            fakequit = module.isInFakequit(Bukkit.getPlayer(str));
-                        }
-                    } catch (ModuleException ex) {
-                        // continue
+
+                        str = ((fakequit) ? FAKEQUIT : "") + ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
+                        colorSwitch = !colorSwitch;
+                        list[i] = str;
                     }
                     
-                    str = ((fakequit) ? FAKEQUIT : "") + ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
-                    colorSwitch = !colorSwitch;
-                    list[i] = str;
-                    
                     header = header + "§8[" + groupId + ":" + list.length + "§8] ";
+                    storage.put(groupId, list);
+                    continue;
                 }
                 
-                storage.put(groupId, list);
+                header = header + "§8[" + groupId + ":0§8] ";
             }
             
             cs.sendMessage("§8------------------------------");
@@ -124,6 +131,9 @@ public class MiscellaneousCommands {
         for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
             List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
             String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
+            
+            if (groupId == null)
+                groupId = "§fG";
             
             if (players != null) {
                 Iterator<String> itr = players.listIterator();
@@ -196,6 +206,65 @@ public class MiscellaneousCommands {
         cs.sendMessage("§8------------------------------");
     }
     
+    @Command(aliases={"vteleport", "vtp"},
+            bounds={1, 2},
+            help="Teleport to other people with /vtp [player]\n"
+            + "Teleport to other people at an offset with /vtp [player] [x,y,z][num]\n"
+            + "Teleport others to you with /vtp [player] me",
+            playerOnly=true)
+    @CommandPermission(permission="voxelguest.miscellaneous.vtp")
+    public void vteleport(CommandSender cs, String[] args) {
+        if (args != null && args.length > 0) {
+            Player p = (Player) cs;
+
+            List<Player> l = Bukkit.matchPlayer(args[0]);
+            if (l.size() > 1) {
+                p.sendMessage(ChatColor.RED + "Partial match");
+            } else if (l.isEmpty()) {
+                p.sendMessage(ChatColor.RED + "No player to match");
+            } else {
+                Player pl = l.get(0);
+                Location loc = pl.getLocation();
+
+                p.sendMessage(ChatColor.AQUA + "Woosh!");
+
+                if (args.length < 2) {
+                    p.teleport(loc);
+                } else {
+                    if (args[1].matches("me")) {
+                        pl.sendMessage(ChatColor.DARK_AQUA + "Woosh!");
+                        pl.teleport(p.getLocation());
+                        return;
+                    }
+
+                    for (int i = 1; i < args.length; i++) {
+                        try {
+                            if (args[i].startsWith("x")) {
+                                loc.setX(loc.getX() + Double.parseDouble(args[i].replace("x", "")));
+                                continue;
+                            } else if (args[i].startsWith("y")) {
+                                loc.setY(loc.getY() + Double.parseDouble(args[i].replace("y", "")));
+                                continue;
+                            } else if (args[i].startsWith("z")) {
+                                loc.setZ(loc.getZ() + Double.parseDouble(args[i].replace("z", "")));
+                                continue;
+                            }
+                        } catch (NumberFormatException e) {
+                            p.sendMessage(ChatColor.RED + "Error parsing argument \"" + args[i] + "\"");
+                            return;
+                        }
+                    }
+
+                    p.teleport(loc);
+                }
+            }
+            return;
+        } else {
+            cs.sendMessage(ChatColor.LIGHT_PURPLE + "Please specify the target player");
+            return;
+        }
+    }
+    
     private void sendGroupStrings(CommandSender cs, List<String> list, String groupHeader) {
         if (list == null || list.isEmpty()) {
             return;
@@ -207,25 +276,25 @@ public class MiscellaneousCommands {
             while (it.hasNext()) {
                 String str = it.next();
                 
-                if (line.length() + (str.length() + COMMA.length()) > 70) {
+                if (line.length() + (str.length() + COMMA.length() + 1) > 70) {
                     if (!groupStart) {
                         groupStart = true;
                         cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
                         line = " ";
                     } else {
-                        cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
+                        cs.sendMessage(line.substring(0, line.length() - 2));
                         line = " ";
                     }
                 }
                 
-                line += (str + COMMA);
+                line += (str + COMMA + " ");
             }
             
             if (!line.isEmpty()) {
                 if (!groupStart) {
                     cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
                 } else {
-                    cs.sendMessage(groupHeader + line.substring(0, line.length() - 2));
+                    cs.sendMessage(line.substring(0, line.length() - 2));
                 }
             }
         }

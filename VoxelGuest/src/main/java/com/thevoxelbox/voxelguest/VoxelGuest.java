@@ -137,8 +137,8 @@ public class VoxelGuest extends JavaPlugin {
         }
         
         // Load modules
-        moduleManager.loadModules(availableModules);
         ModuleManager.setActiveModuleManager(moduleManager);
+        moduleManager.loadModules(availableModules);
         
         // Load module events into the system listener
         listener.registerModuleEvents();
@@ -276,7 +276,7 @@ public class VoxelGuest extends JavaPlugin {
         return groupManager;
     }
     
-    private void loadFactorySettings() {
+    public void loadFactorySettings() {
         getConfigData().setString("join-message-format", "&8(&6$nonline&8) &3$n &7joined");
         getConfigData().setString("leave-message-format", "&8(&6$nonline&8) &3$n &7left");
         getConfigData().setString("kick-message-format", "&8(&6$nonline&8) &3$n &4was kicked out");

@@ -30,7 +30,11 @@ import org.bukkit.Server;
 
 public abstract class PermissionsHandler {
     
-    protected Server server;
+    protected final Server server;
+    
+    public PermissionsHandler(Server serv) {
+        this.server = serv;
+    }
     
     public abstract PermissionsHandler initialize(Server server);
     

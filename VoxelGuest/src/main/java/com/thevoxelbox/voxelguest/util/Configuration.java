@@ -189,4 +189,11 @@ public class Configuration {
         
         map.put(key, Integer.valueOf(value));
     }
+    
+    public void setDouble(String key, double value) {
+        if (map == null)
+            return;
+        
+        map.put(key, Double.valueOf(value));
+    }
 }

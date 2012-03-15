@@ -28,6 +28,7 @@ package com.thevoxelbox.voxelguest.regions;
 
 import com.thevoxelbox.voxelguest.util.Configuration;
 import com.thevoxelbox.voxelguest.util.PropertyManager;
+import java.io.File;
 import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -87,8 +88,25 @@ public class Region {
         PropertyManager.save(name, map, "/regions");
     }
     
+    public void delete() {
+        File f = new File(PropertyManager.BASE + "/regions/" + name + ".properties");
+        f.delete();
+    }
+    
     public String getName() {
         return name;
+    }
+    
+    public World getWorld() {
+        return this.world;
+    }
+    
+    public boolean isGeneralBuildOverrideDisabled() {
+        return disableGeneralBuildOverride;
+    }
+    
+    public void setGeneralBuildOverrideDisable(boolean bool) {
+        disableGeneralBuildOverride = bool;
     }
     
     public Vector3D getMaximumPoint() {
@@ -99,7 +117,7 @@ public class Region {
         return Vector3D.getMinimum(pos1, pos2);
     }
     
-    public boolean inRegion(Location loc) {
+    public boolean inBounds(Location loc) {
         Vector3D vec = new Vector3D(loc);
         
         if (!loc.getWorld().equals(world))
@@ -111,6 +129,24 @@ public class Region {
         if (vec.getX() >= min.getX() && vec.getX() <= max.getX())
             if (vec.getY() >= min.getY() && vec.getY() <= max.getY())
                 if (vec.getZ() >= min.getZ() && vec.getZ() <= max.getZ())
+                    return true;
+        
+        return false;
+    }
+    
+    public boolean inBounds(Region region) {
+        if (!world.equals(region.world))
+            return false;
+        
+        Vector3D max = getMaximumPoint();
+        Vector3D min = getMinimumPoint();
+        
+        Vector3D regMax = region.getMaximumPoint();
+        Vector3D regMin = region.getMinimumPoint();
+        
+        if (regMin.getX() >= min.getX() && regMax.getX() <= max.getX())
+            if (regMin.getY() >= min.getY() && regMax.getY() <= max.getY())
+                if (regMin.getZ() >= min.getZ() && regMax.getZ() <= max.getZ())
                     return true;
         
         return false;
@@ -130,5 +166,49 @@ public class Region {
     
     public double getVolume() {
         return getLength() * getWidth() * getHeight();
+    }
+    
+    public boolean matches(Region region) {
+        if (!world.equals(region.world))
+            return false;
+        
+        Vector3D max = getMaximumPoint();
+        Vector3D min = getMinimumPoint();
+        
+        Vector3D regMax = region.getMaximumPoint();
+        Vector3D regMin = region.getMinimumPoint();
+        
+        if ((max.getX() != regMax.getX()) || (min.getX() != regMin.getX()))
+            return false;
+        if ((max.getY() != regMax.getY()) || (min.getY() != regMin.getY()))
+            return false;
+        if ((max.getZ() != regMax.getZ()) || (min.getZ() != regMin.getZ()))
+            return false;
+        
+        return true;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() != Region.class) {
+            return false;
+        }
+        
+        Region test = (Region) obj;
+        
+        if (!name.equals(test.name))
+            return false;
+        
+        return matches(test);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 97 * hash + (this.world != null ? this.world.hashCode() : 0);
+        hash = 97 * hash + (this.pos1 != null ? this.pos1.hashCode() : 0);
+        hash = 97 * hash + (this.pos2 != null ? this.pos2.hashCode() : 0);
+        return hash;
     }
 }

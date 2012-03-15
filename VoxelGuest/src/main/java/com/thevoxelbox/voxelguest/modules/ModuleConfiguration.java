@@ -59,6 +59,10 @@ public class ModuleConfiguration {
         return config.getInt(key);
     }
     
+    public double getDouble(String key) {
+        return config.getDouble(key);
+    }
+    
     public void setEntry(String key, Object value) {
         config.setEntry(key, value);
     }
@@ -73,6 +77,10 @@ public class ModuleConfiguration {
     
     public void setInt(String key, int value) {
         config.setInt(key, value);
+    }
+    
+    public void setDouble(String key, double value) {
+        config.setDouble(key, value);
     }
     
     public void load() {
