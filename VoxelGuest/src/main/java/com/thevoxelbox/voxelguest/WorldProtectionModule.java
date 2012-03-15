@@ -17,6 +17,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
@@ -254,12 +256,15 @@ public class WorldProtectionModule extends Module{
      * 
      * Handles Fire Spread.
      */
-    @ModuleEvent(event=BlockSpreadEvent.class)
-    public void onBlockSpread(BukkitEventWrapper wrapper) {
-        BlockSpreadEvent event = (BlockSpreadEvent) wrapper.getEvent();
+    @ModuleEvent(event=BlockIgniteEvent.class)
+    public void onBlockIgnite(BukkitEventWrapper wrapper) {
+        BlockIgniteEvent event = (BlockIgniteEvent) wrapper.getEvent();
         Block b = event.getBlock();
+        IgniteCause cause = event.getCause();
         
-        if(b.getType().equals(Material.FIRE) && getConfiguration().getBoolean("disable-fire-spread")) {
+        boolean fireSpread = (cause == IgniteCause.SPREAD || cause == IgniteCause.LAVA || cause == IgniteCause.LIGHTNING);
+        
+        if(fireSpread && getConfiguration().getBoolean("disable-fire-spread")) {
             event.setCancelled(true);
             return;
         }

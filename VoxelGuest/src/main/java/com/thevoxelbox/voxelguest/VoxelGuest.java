@@ -137,8 +137,8 @@ public class VoxelGuest extends JavaPlugin {
         }
         
         // Load modules
-        moduleManager.loadModules(availableModules);
         ModuleManager.setActiveModuleManager(moduleManager);
+        moduleManager.loadModules(availableModules);
         
         // Load module events into the system listener
         listener.registerModuleEvents();
