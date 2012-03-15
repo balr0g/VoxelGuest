@@ -37,7 +37,7 @@ public class OpPermissionsHandler extends PermissionsHandler { // BARE BONES AT 
     }
     
     public OpPermissionsHandler(Server srv) {
-        this.server = srv;
+        super(srv);
     }
 
     @Override

@@ -168,9 +168,11 @@ public class CommandManager {
             if (cs instanceof Player) {
                 Player p = (Player) cs;
                 
-                if (!PermissionsManager.getHandler().hasPermission(p.getName(), perm.permission())) {
-                    throw new InsufficientPermissionsException("You do not have sufficient privileges to access this command.");
-                }      
+                if (!PermissionsManager.getHandler().hasPermission(p.getName(), "system.admin")) {
+                    if (!PermissionsManager.getHandler().hasPermission(p.getName(), perm.permission())) {
+                        throw new InsufficientPermissionsException("You do not have sufficient privileges to access this command.");
+                    } 
+                }     
             }
         }
         
@@ -180,16 +182,19 @@ public class CommandManager {
             if (cs instanceof Player) {
                 Player p = (Player) cs;
                 
-                try {
-                    if (Arrays.asList(subs.arguments()).contains(args[0])) {
-                        for (int i = 0; i < subs.arguments().length; i++) {
-                            if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !PermissionsManager.getHandler().hasPermission(p.getName(), subs.permission()[i])) {
-                                throw new InsufficientPermissionsException("You do not have sufficient privileges to access this command.");
+                
+                if (!PermissionsManager.getHandler().hasPermission(p.getName(), "system.admin")) {
+                    try {
+                        if (Arrays.asList(subs.arguments()).contains(args[0])) {
+                            for (int i = 0; i < subs.arguments().length; i++) {
+                                if (subs.arguments()[i].equalsIgnoreCase(args[0]) && !PermissionsManager.getHandler().hasPermission(p.getName(), subs.permission()[i])) {
+                                    throw new InsufficientPermissionsException("You do not have sufficient privileges to access this command.");
+                                }
                             }
                         }
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        // Continue
                     }
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    // Continue
                 }
             }
         }

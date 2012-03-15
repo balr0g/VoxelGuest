@@ -25,7 +25,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 public class CreatureProtectionModule extends Module{
     Server s = Bukkit.getServer();
 
-    public CreatureProtectionModule(){
+    public CreatureProtectionModule() {
         super(CreatureProtectionModule.class.getAnnotation(MetaData.class));
     }
     
@@ -85,77 +85,121 @@ public class CreatureProtectionModule extends Module{
      * Handles creature spawning event.
      */
     @ModuleEvent(event=CreatureSpawnEvent.class)
-    public void onCreatureSpawn(BukkitEventWrapper wrapper){
+    public void onCreatureSpawn(BukkitEventWrapper wrapper) {
         CreatureSpawnEvent event = (CreatureSpawnEvent) wrapper.getEvent();
         CreatureType mob = event.getCreatureType();
         
         switch(mob) {
             case BLAZE:
-                if (getConfiguration().getBoolean("disable-blaze-spawning"))
+                if (getConfiguration().getBoolean("disable-blaze-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case CAVE_SPIDER:
-                if (getConfiguration().getBoolean("disable-cavespider-spawning"))
+                if (getConfiguration().getBoolean("disable-cavespider-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case CHICKEN:
-                if (getConfiguration().getBoolean("disable-chicken-spawning"))
+                if (getConfiguration().getBoolean("disable-chicken-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case COW:
-                if (getConfiguration().getBoolean("disable-cow-spawning"))
+                if (getConfiguration().getBoolean("disable-cow-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case CREEPER:
-                if (getConfiguration().getBoolean("disable-creeper-spawning"))
+                if (getConfiguration().getBoolean("disable-creeper-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case ENDERMAN:
-                if (getConfiguration().getBoolean("disable-enderman-spawning"))
+                if (getConfiguration().getBoolean("disable-enderman-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case ENDER_DRAGON:
-                if (getConfiguration().getBoolean("disable-enderdragon-spawning"))
+                if (getConfiguration().getBoolean("disable-enderdragon-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case GHAST:
-                if (getConfiguration().getBoolean("disable-ghast-spawning"))
+                if (getConfiguration().getBoolean("disable-ghast-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case MAGMA_CUBE:
-                if (getConfiguration().getBoolean("disable-magmacube-spawning"))
+                if (getConfiguration().getBoolean("disable-magmacube-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case MUSHROOM_COW:
-                if (getConfiguration().getBoolean("disable-mushroomcow-spawning"))
+                if (getConfiguration().getBoolean("disable-mushroomcow-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case PIG:
-                if (getConfiguration().getBoolean("disable-pig-spawning"))
+                if (getConfiguration().getBoolean("disable-pig-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case PIG_ZOMBIE:
-                if (getConfiguration().getBoolean("disable-pigzombie-spawning"))
+                if (getConfiguration().getBoolean("disable-pigzombie-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case SHEEP:
-                if (getConfiguration().getBoolean("disable-sheep-spawning"))
+                if (getConfiguration().getBoolean("disable-sheep-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case SILVERFISH:
-                if (getConfiguration().getBoolean("disable-silverfish-spawning"))
+                if (getConfiguration().getBoolean("disable-silverfish-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case SKELETON:
-                if (getConfiguration().getBoolean("disable-skeleton-spawning"))
+                if (getConfiguration().getBoolean("disable-skeleton-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case SLIME:
-                if (getConfiguration().getBoolean("disable-slime-spawning"))
+                if (getConfiguration().getBoolean("disable-slime-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case SNOWMAN:
-                if (getConfiguration().getBoolean("disable-snowman-spawning"))
+                if (getConfiguration().getBoolean("disable-snowman-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case SPIDER:
-                if (getConfiguration().getBoolean("disable-spider-spawning"))
+                if (getConfiguration().getBoolean("disable-spider-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case SQUID:
-                if (getConfiguration().getBoolean("disable-squid-spawning"))
+                if (getConfiguration().getBoolean("disable-squid-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case VILLAGER:
-                if (getConfiguration().getBoolean("disable-villager-spawning"))
+                if (getConfiguration().getBoolean("disable-villager-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case WOLF:
-                if (getConfiguration().getBoolean("disable-wolf-spawning"))
+                if (getConfiguration().getBoolean("disable-wolf-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
             case ZOMBIE:
-                if (getConfiguration().getBoolean("disable-zombie-spawning"))
+                if (getConfiguration().getBoolean("disable-zombie-spawning")) {
+                    event.getEntity().remove();
                     event.setCancelled(true);
+                }
                 
         }
     }
@@ -167,10 +211,10 @@ public class CreatureProtectionModule extends Module{
      * Handles mob explosions, such as creepers.
      */
     @ModuleEvent(event=EntityExplodeEvent.class)
-    public void onEntityExplode(BukkitEventWrapper wrapper){
+    public void onEntityExplode(BukkitEventWrapper wrapper) {
         EntityExplodeEvent event = (EntityExplodeEvent) wrapper.getEvent();
         
-        if(getConfiguration().getBoolean("disable-creeper-explosion")){
+        if(getConfiguration().getBoolean("disable-creeper-explosion")) {
             event.setCancelled(true);
         }
     }

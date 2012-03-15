@@ -26,7 +26,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 @MetaData(name="Player Protection", description="Various player protection methods.")
 public class PlayerProtectionModule extends Module {
     
-    public PlayerProtectionModule(){
+    public PlayerProtectionModule() {
         super(PlayerProtectionModule.class.getAnnotation(MetaData.class));
     }
     
@@ -74,58 +74,74 @@ public class PlayerProtectionModule extends Module {
      * Handles all player-based damages.
      */
     @ModuleEvent(event=EntityDamageEvent.class)
-    public void onEntityDamage(BukkitEventWrapper wrapper){
+    public void onEntityDamage(BukkitEventWrapper wrapper) {
         EntityDamageEvent event = (EntityDamageEvent) wrapper.getEvent();
         Entity e = event.getEntity();
         DamageCause dc = event.getCause();
         
-        if(e instanceof Player){
-            if(dc.equals(DamageCause.BLOCK_EXPLOSION) && getConfiguration().getBoolean("disable-tnt-damage")){
+        if(e instanceof Player) {
+            if(dc.equals(DamageCause.BLOCK_EXPLOSION) && getConfiguration().getBoolean("disable-tnt-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.CONTACT) && getConfiguration().getBoolean("disable-cactus-damage")){
+            else if(dc.equals(DamageCause.CONTACT) && getConfiguration().getBoolean("disable-cactus-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.DROWNING) && getConfiguration().getBoolean("disable-drowning-damage")){
+            else if(dc.equals(DamageCause.DROWNING) && getConfiguration().getBoolean("disable-drowning-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.ENTITY_ATTACK) && getConfiguration().getBoolean("disable-pvp-damage")){
+            else if(dc.equals(DamageCause.ENTITY_ATTACK) && getConfiguration().getBoolean("disable-pvp-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.ENTITY_EXPLOSION) && getConfiguration().getBoolean("disable-explosion-damage")){
+            else if(dc.equals(DamageCause.ENTITY_EXPLOSION) && getConfiguration().getBoolean("disable-explosion-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.FALL) && getConfiguration().getBoolean("disable-fall-damage")){
+            else if(dc.equals(DamageCause.FALL) && getConfiguration().getBoolean("disable-fall-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.FIRE) && getConfiguration().getBoolean("disable-fire-damage")){
+            else if(dc.equals(DamageCause.FIRE) && getConfiguration().getBoolean("disable-fire-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.FIRE_TICK) && getConfiguration().getBoolean("disable-firetick-damage")){
+            else if(dc.equals(DamageCause.FIRE_TICK) && getConfiguration().getBoolean("disable-firetick-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.LAVA) && getConfiguration().getBoolean("disable-lava-damage")){
+            else if(dc.equals(DamageCause.LAVA) && getConfiguration().getBoolean("disable-lava-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.LIGHTNING) && getConfiguration().getBoolean("disable-lightning-damage")){
+            else if(dc.equals(DamageCause.LIGHTNING) && getConfiguration().getBoolean("disable-lightning-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.MAGIC) && getConfiguration().getBoolean("disable-magic-damage")){
+            else if(dc.equals(DamageCause.MAGIC) && getConfiguration().getBoolean("disable-magic-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.POISON) && getConfiguration().getBoolean("disable-poison-damage")){
+            else if(dc.equals(DamageCause.POISON) && getConfiguration().getBoolean("disable-poison-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.PROJECTILE) && getConfiguration().getBoolean("disable-projectile-damage")){
+            else if(dc.equals(DamageCause.PROJECTILE) && getConfiguration().getBoolean("disable-projectile-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.STARVATION) && getConfiguration().getBoolean("disable-starvation-damage")){
+            else if(dc.equals(DamageCause.STARVATION) && getConfiguration().getBoolean("disable-starvation-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.SUFFOCATION) && getConfiguration().getBoolean("disable-suffocation-damage")){
+            else if(dc.equals(DamageCause.SUFFOCATION) && getConfiguration().getBoolean("disable-suffocation-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
-            else if(dc.equals(DamageCause.VOID) && getConfiguration().getBoolean("disable-void-damage")){
+            else if(dc.equals(DamageCause.VOID) && getConfiguration().getBoolean("disable-void-damage")) {
+                event.setDamage(0);
                 event.setCancelled(true);
             }
         }
@@ -138,11 +154,12 @@ public class PlayerProtectionModule extends Module {
      * Handles food level changes, specifically those for players.
      */
     @ModuleEvent(event=FoodLevelChangeEvent.class)
-    public void onFoodLevelChange(BukkitEventWrapper wrapper){
+    public void onFoodLevelChange(BukkitEventWrapper wrapper) {
         FoodLevelChangeEvent event = (FoodLevelChangeEvent) wrapper.getEvent();
         
-        if(event.getFoodLevel() < 20 && getConfiguration().getBoolean("disable-food-changes")){
+        if(event.getFoodLevel() < 20 && getConfiguration().getBoolean("disable-food-changes")) {
             event.setFoodLevel(20);
+            event.setCancelled(true);
         }
     }
 }

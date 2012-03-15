@@ -88,6 +88,7 @@ public class ServerAdministrationCommands {
                     }
                 }
             } else if (args[0].equalsIgnoreCase("modules")) {
+                
                 cs.sendMessage("§8==============================");
                 cs.sendMessage("§bLoaded Modules");
                 cs.sendMessage("§8==============================");
@@ -154,6 +155,9 @@ public class ServerAdministrationCommands {
                 } else {
                     cs.sendMessage(ticks + renderTPSBar(calculateTPS(), 20));
                 }
+            } else if (args[0].equalsIgnoreCase("reset")) {
+                VoxelGuest.getInstance().loadFactorySettings();
+                cs.sendMessage("§aReset to factory settings");
             }
         }
     }

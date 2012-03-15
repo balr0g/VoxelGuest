@@ -203,7 +203,6 @@ public class AFKModule extends Module {
         Player p = event.getPlayer();
         
         if (isAFK(p)) {
-            p.sendMessage("yes");
             cycleAFK(p);
             broadcastAFKMessage(p);
         }

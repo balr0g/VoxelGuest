@@ -47,7 +47,7 @@ public class DinnerpermsHandler extends PermissionsHandler {
     }
     
     public DinnerpermsHandler(Server server) {
-        this.server = server;
+        super(server);
     }
 
     @Override

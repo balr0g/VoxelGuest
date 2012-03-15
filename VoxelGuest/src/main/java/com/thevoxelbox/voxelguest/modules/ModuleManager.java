@@ -95,6 +95,17 @@ public class ModuleManager {
         if (module != null) {
             try {
                 module.enable();
+                
+                if (module.getConfiguration() != null && module.getConfiguration().getBoolean("disable-module")) {
+                    log(module.getName(), "Did not enable: \"disable-module\" is set to true", 0);
+                    
+                    module.disable();
+                    module.getConfiguration().save();
+                    module.setEnabled(false);
+                    inactiveModules.add(module);
+                    return;
+                }
+                
                 module.setEnabled(true);
                 commandsManager.registerCommands(module);
                 

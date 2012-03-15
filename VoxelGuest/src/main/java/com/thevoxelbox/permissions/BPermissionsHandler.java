@@ -53,7 +53,7 @@ public class BPermissionsHandler extends PermissionsHandler {
     }
     
     public BPermissionsHandler(Server server) {
-        this.server = server;
+        super(server);
     }
 
     @Override
