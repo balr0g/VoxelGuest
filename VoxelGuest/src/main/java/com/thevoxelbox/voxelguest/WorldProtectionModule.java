@@ -23,6 +23,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,7 +39,6 @@ import org.bukkit.inventory.ItemStack;
  *      Snow Melting/Forming
  *      All Fire/Explosion Events
  *      Enchanting(allow or disallow)
- *      Food Level Management
  *      Vehicle Damage
  *      Vehicle Creation
  *      Weather Controls
@@ -65,7 +65,7 @@ public class WorldProtectionModule extends Module{
         @Setting("disable-block-burning") public boolean blockburn = false;
         @Setting("disable-fire-spread") public boolean firespred = false;
         @Setting("disable-enchanting") public boolean enchanting = false;
-        @Setting("disable-food-changes") public boolean foodchange = false;
+        @Setting("disable-creeper-explosion") public boolean creeperexplode = false;
         @Setting("unplacable-blocks") public String unplacable = "8,9,10,11,46";
         @Setting("unusable-items") public String unusableitems = "325,326,327";
         
@@ -299,6 +299,21 @@ public class WorldProtectionModule extends Module{
         if(getConfiguration().getBoolean("disable-enchanting")) {
             event.setCancelled(true);
             return;
+        }
+    }
+    
+     /*
+     * World Protection - EntityExplode Event
+     * Written by: Razorcane
+     * 
+     * Handles mob explosions, such as creepers.
+     */
+    @ModuleEvent(event=EntityExplodeEvent.class)
+    public void onEntityExplode(BukkitEventWrapper wrapper) {
+        EntityExplodeEvent event = (EntityExplodeEvent) wrapper.getEvent();
+        
+        if(getConfiguration().getBoolean("disable-creeper-explosion")) {
+            event.setCancelled(true);
         }
     }
 }
