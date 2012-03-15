@@ -47,6 +47,7 @@ public class PlayerProtectionModule extends Module {
         @Setting("disable-starvation-damage") public boolean starvation = false;
         @Setting("disable-suffocation-damage") public boolean suffocation = false;
         @Setting("disable-void-damage") public boolean voiddamage = false;
+        @Setting("disable-food-changes") public boolean foodchange = false;
         
         public PlayerProtectionConfiguration(PlayerProtectionModule parent) {
             super(parent);
