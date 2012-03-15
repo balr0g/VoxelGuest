@@ -8,11 +8,9 @@ import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.modules.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.event.entity.EntityExplodeEvent;
 
 /**
  * The Creature Protection Module was created to help maintain various creature
@@ -55,7 +53,6 @@ public class CreatureProtectionModule extends Module{
         @Setting("disable-villager-spawning") public boolean villager = false;
         @Setting("disable-wolf-spawning") public boolean wolf = false;
         @Setting("disable-zombie-spawning") public boolean zombie = false;
-        @Setting("disable-creeper-explosion") public boolean creeperexplode = false;
         
         public CreatureProtectionConfiguration(CreatureProtectionModule parent) {
         
@@ -206,21 +203,6 @@ public class CreatureProtectionModule extends Module{
                     }
 
             }
-        }
-    }
-    
-    /*
-     * Creature Protection - EntityExplode Event
-     * Written by: Razorcane
-     * 
-     * Handles mob explosions, such as creepers.
-     */
-    @ModuleEvent(event=EntityExplodeEvent.class)
-    public void onEntityExplode(BukkitEventWrapper wrapper) {
-        EntityExplodeEvent event = (EntityExplodeEvent) wrapper.getEvent();
-        
-        if(getConfiguration().getBoolean("disable-creeper-explosion")) {
-            event.setCancelled(true);
         }
     }
 }
