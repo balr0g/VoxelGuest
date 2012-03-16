@@ -144,13 +144,10 @@ public class GroupManager {
     public void removePlayerFromGroupMap(Player p) {
         try {
             String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
-        
-            if (group == null)
-                group = "Unknown";
 
             List<String> list = playerMap.get(group);
 
-            if (list.isEmpty() || list == null) {
+            if (list == null || list.isEmpty()) {
                 // Do nothing
             } else {
                 if (list.contains(p.getName())) {
@@ -163,7 +160,7 @@ public class GroupManager {
             
             List<String> list = playerMap.get(group);
 
-            if (list.isEmpty() || list == null) {
+            if (list == null || list.isEmpty()) {
                 // Do nothing
             } else {
                 if (list.contains(p.getName())) {

@@ -52,7 +52,7 @@ public class MiscellaneousCommands {
     private final String COMMA = "§6,";
     
     
-    @Command(aliases={"who", "online", "list", "readlist"},
+    @Command(aliases={"who", "online", "list", "readlist", "playerlist"},
             bounds={0,1},
             help="To list all online players, type §c/who")
     @Subcommands(arguments={"-f"},
@@ -63,6 +63,7 @@ public class MiscellaneousCommands {
         
         if (args != null && args.length > 0 && args[0].equalsIgnoreCase("-f")) {
             String header = "";
+            int onlineNum = Bukkit.getOnlinePlayers().length;
             
             for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
                 List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
@@ -115,6 +116,8 @@ public class MiscellaneousCommands {
                 
                 header = header + "§8[" + groupId + ":0§8] ";
             }
+            
+            header = header + "§8(§fO§8:§f" + onlineNum + "§8)";
             
             cs.sendMessage("§8------------------------------");
             cs.sendMessage(header.trim());

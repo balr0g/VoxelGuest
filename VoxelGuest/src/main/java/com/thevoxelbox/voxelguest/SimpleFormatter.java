@@ -52,10 +52,9 @@ public class SimpleFormatter extends Formatter {
      */
     
     @Override
-    public String[] format(String input, GuestPlayer gp) {
+    public String[] format(String input, GuestPlayer gp, Object... others) {
         String copy = input;
         boolean guestPlayerParcing;
-        AsshatMitigationModule amm;
         
         guestPlayerParcing = (gp == null) ? false : true;
         
@@ -79,6 +78,8 @@ public class SimpleFormatter extends Formatter {
                 else
                     copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
             } catch (ModuleException ex) {
+                copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
+            } catch (NullPointerException ex) {
                 copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
             }
             

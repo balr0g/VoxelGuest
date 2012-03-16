@@ -47,7 +47,7 @@ public abstract class Formatter {
         return input;
     }
     
-    public abstract String[] format(String in, GuestPlayer gp);
+    public abstract String[] format(String in, GuestPlayer gp, Object... otherArgs);
 }
 
 enum FormatColors {

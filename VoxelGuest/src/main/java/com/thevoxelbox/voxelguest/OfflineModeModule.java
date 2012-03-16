@@ -30,6 +30,7 @@ import com.thevoxelbox.commands.CommandPermission;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;
+import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import java.io.File;
@@ -64,6 +65,13 @@ public class OfflineModeModule extends Module {
     protected static List<String> banned = new LinkedList<String>();
     private static File f = new File("plugins/VoxelGuest/tempban.yml");
 
+    class OfflineConfiguration extends ModuleConfiguration {
+        
+        public OfflineConfiguration(OfflineModeModule parent) {
+            super(parent);
+        }
+    }
+    
     public OfflineModeModule() {
         super(OfflineModeModule.class.getAnnotation(MetaData.class));
     }
@@ -75,6 +83,8 @@ public class OfflineModeModule extends Module {
 
     @Override
     public void enable() {
+        setConfiguration(new OfflineConfiguration(this));
+        
         if (!f.exists()) {
             try {
                 f.createNewFile();
