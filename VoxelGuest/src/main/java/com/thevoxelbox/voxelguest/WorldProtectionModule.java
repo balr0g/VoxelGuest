@@ -185,7 +185,7 @@ public class WorldProtectionModule extends Module{
         LeavesDecayEvent event = (LeavesDecayEvent) wrapper.getEvent();
         
         if(getConfiguration().getBoolean("disable-leaf-decay")) {
-            event.getBlock().setType(Material.LEAVES);
+            event.setCancelled(true);
             return;
         }
     }

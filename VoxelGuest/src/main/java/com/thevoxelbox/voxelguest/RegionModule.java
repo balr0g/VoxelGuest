@@ -155,7 +155,7 @@ public class RegionModule extends Module {
                     if (!loadedRegions.contains(region))
                         loadedRegions.add(region);
                     
-                    PermissionsManager.getHandler().givePermission(world.getName(), p.getName(), "system.region." + regName.toLowerCase() + ".admin");
+                    PermissionsManager.getHandler().givePermission(p.getName(), "system.region." + regName.toLowerCase() + ".admin");
                     p.sendMessage("§aRegion \"" + regName + "\" registered.");
                     return;
                 } catch (NumberFormatException ex) {
@@ -246,9 +246,9 @@ public class RegionModule extends Module {
                     boolean modify = false;
                     boolean admin  = false;
                     
-                    String entryPerm  = "system.regions." + region.getName().toLowerCase() + ".entry";
-                    String modifyPerm = "system.regions." + region.getName().toLowerCase() + ".modify";
-                    String adminPerm  = "system.regions." + region.getName().toLowerCase() + ".admin";
+                    String entryPerm  = "system.region." + region.getName().toLowerCase() + ".entry";
+                    String modifyPerm = "system.region." + region.getName().toLowerCase() + ".modify";
+                    String adminPerm  = "system.region." + region.getName().toLowerCase() + ".admin";
                     
                     for (int i = 0; i < flags.length; i++) {
                         if (flags[i] == '+') {
@@ -434,8 +434,8 @@ public class RegionModule extends Module {
                     
                     for (Region subregion : subregions) {
                         if (subregion.inBounds(event.getTo())) {
-                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
-                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".entry")) {
+                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
+                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".entry")) {
                                 event.getPlayer().sendMessage("§cYou are not authorized to enter region \"" + subregion.getName() +"\"");
                                 event.getPlayer().teleport(event.getFrom());
                                 event.setCancelled(true);
@@ -445,8 +445,8 @@ public class RegionModule extends Module {
                     }
                 }
                 
-                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
-                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".entry")) {
+                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
+                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".entry")) {
                     
                     event.getPlayer().sendMessage("§cYou are not authorized to enter region \"" + region.getName() +"\"");
                     event.getPlayer().teleport(event.getFrom());
@@ -472,8 +472,8 @@ public class RegionModule extends Module {
                     
                     for (Region subregion : subregions) {
                         if (subregion.inBounds(event.getTo())) {
-                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
-                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".entry")) {
+                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
+                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".entry")) {
                                 event.getPlayer().sendMessage("§cYou are not authorized to enter region \"" + subregion.getName() +"\"");
                                 event.getPlayer().teleport(event.getFrom());
                                 event.setCancelled(true);
@@ -483,8 +483,8 @@ public class RegionModule extends Module {
                     }
                 }
                 
-                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
-                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".entry")) {
+                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
+                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".entry")) {
                     
                     event.getPlayer().sendMessage("§cYou are not authorized to enter region \"" + region.getName() +"\"");
                     event.getPlayer().teleport(event.getFrom());
@@ -510,8 +510,8 @@ public class RegionModule extends Module {
                     
                     for (Region subregion : subregions) {
                         if (subregion.inBounds(event.getBlock().getLocation())) {
-                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
-                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
+                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
+                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
                                 
                                 if (!(region.isGeneralBuildOverrideDisabled() && PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general"))) {
                                     event.getPlayer().sendMessage("§cYou are not authorized to modify region \"" + subregion.getName() +"\"");
@@ -523,8 +523,8 @@ public class RegionModule extends Module {
                     }
                 }
                 
-                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
-                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
+                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
+                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
                     
                     if (!(region.isGeneralBuildOverrideDisabled() && PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general"))) {
                         event.getPlayer().sendMessage("§cYou are not authorized to modify region \"" + region.getName() +"\"");
@@ -551,8 +551,8 @@ public class RegionModule extends Module {
                     
                     for (Region subregion : subregions) {
                         if (subregion.inBounds(event.getBlock().getLocation())) {
-                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
-                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
+                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
+                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
                                 
                                 if (!(region.isGeneralBuildOverrideDisabled() && PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general"))) {
                                     event.getPlayer().sendMessage("§cYou are not authorized to modify region \"" + subregion.getName() +"\"");
@@ -564,8 +564,8 @@ public class RegionModule extends Module {
                     }
                 }
                 
-                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
-                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName().toLowerCase(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
+                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
+                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
                     
                     if (!(region.isGeneralBuildOverrideDisabled() && PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general"))) {
                         event.getPlayer().sendMessage("§cYou are not authorized to modify region \"" + region.getName() +"\"");
