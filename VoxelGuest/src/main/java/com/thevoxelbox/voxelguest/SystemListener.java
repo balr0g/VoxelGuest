@@ -30,6 +30,7 @@ import com.thevoxelbox.voxelguest.modules.ModuleSystemListener;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.FormatException;
 import com.thevoxelbox.voxelguest.util.Formatter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -64,11 +65,12 @@ public class SystemListener extends ModuleSystemListener {
         GuestPlayer gp = VoxelGuest.registerPlayer(event.getPlayer());
         VoxelGuest.ONLINE_MEMBERS++;
         
+        if (VoxelGuest.ONLINE_MEMBERS != Bukkit.getOnlinePlayers().length)
+            VoxelGuest.ONLINE_MEMBERS = Bukkit.getOnlinePlayers().length;
+        
         try {
             String format = VoxelGuest.getConfigData().getString("join-message-format");
             event.setJoinMessage(formatJoinQuitKickMessage(format, gp));
-        } catch (FormatException ex) {
-            VoxelGuest.log(ex.getMessage(), 1);
         } catch (NullPointerException ex) {
             event.setJoinMessage(ChatColor.YELLOW + gp.getPlayer().getName() + " joined");
             ex.printStackTrace();
@@ -83,41 +85,49 @@ public class SystemListener extends ModuleSystemListener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent event) {
         GuestPlayer gp = VoxelGuest.getGuestPlayer(event.getPlayer());
-        VoxelGuest.unregsiterPlayer(gp);
-        gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
-        VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
         VoxelGuest.ONLINE_MEMBERS--;
         
         try {
             String format = VoxelGuest.getConfigData().getString("leave-message-format");
             event.setQuitMessage(formatJoinQuitKickMessage(format, gp));
-        } catch (FormatException ex) {
-            VoxelGuest.log(ex.getMessage(), 1);
         } catch (NullPointerException ex) {
             event.setQuitMessage(ChatColor.YELLOW + gp.getPlayer().getName() + " left");
         }
         
         processModuleEvents(event);
+        
+        if (!event.getPlayer().isOnline()) {
+            VoxelGuest.unregsiterPlayer(gp);
+            gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
+            VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
+        }
+        
+        if (VoxelGuest.ONLINE_MEMBERS != Bukkit.getOnlinePlayers().length)
+            VoxelGuest.ONLINE_MEMBERS = Bukkit.getOnlinePlayers().length;
     }
     
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerKick(PlayerKickEvent event) {
         GuestPlayer gp = VoxelGuest.getGuestPlayer(event.getPlayer());
-        VoxelGuest.unregsiterPlayer(gp);
-        gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
-        VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
         VoxelGuest.ONLINE_MEMBERS--;
         
         try {
             String format = VoxelGuest.getConfigData().getString("kick-message-format");
             event.setLeaveMessage(formatJoinQuitKickMessage(format, gp));
-        } catch (FormatException ex) {
-            VoxelGuest.log(ex.getMessage(), 1);
         } catch (NullPointerException ex) {
             event.setLeaveMessage(ChatColor.YELLOW + gp.getPlayer().getName() + " was kicked out");
         }
         
         processModuleEvents(event);
+        
+        if (!event.getPlayer().isOnline()) {
+            VoxelGuest.unregsiterPlayer(gp);
+            gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
+            VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
+        }
+        
+        if (VoxelGuest.ONLINE_MEMBERS != Bukkit.getOnlinePlayers().length)
+            VoxelGuest.ONLINE_MEMBERS = Bukkit.getOnlinePlayers().length;
     }
     
     @EventHandler
@@ -220,10 +230,7 @@ public class SystemListener extends ModuleSystemListener {
         processModuleEvents(event);
     }
     
-    private String formatJoinQuitKickMessage(String format, GuestPlayer gp) throws FormatException {
-        if (format.contains("\n"))
-            throw new FormatException("Line feeds are not accepted in join/quit/kick messages");
-        
+    private String formatJoinQuitKickMessage(String format, GuestPlayer gp) {
         return Formatter.selectFormatter(SimpleFormatter.class).format(format, gp)[0];
     }
 }

@@ -73,14 +73,16 @@ public class SimpleFormatter extends Formatter {
                 VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
                 int fakequitNum = module.getFakequitSize();
                 if (fakequitNum > 0)
-                    copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS - fakequitNum));
+                    copy = copy.replace("$nonline", String.valueOf(VoxelGuest.ONLINE_MEMBERS - fakequitNum));
                 else
-                    copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS));
+                    copy = copy.replace("$nonline", String.valueOf(VoxelGuest.ONLINE_MEMBERS));
             } catch (ModuleException ex) {
-                copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS));
+                copy = copy.replace("$nonline", String.valueOf(VoxelGuest.ONLINE_MEMBERS));
             } catch (NullPointerException ex) {
-                copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS));
+                copy = copy.replace("$nonline", String.valueOf(VoxelGuest.ONLINE_MEMBERS));
             }
+            
+            VoxelGuest.log(String.valueOf(VoxelGuest.ONLINE_MEMBERS));
             
             copy = copy.replace("$name", gp.getPlayer().getName());
             copy = copy.replace("$n", gp.getPlayer().getName());

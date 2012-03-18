@@ -43,7 +43,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -174,19 +173,6 @@ public class AFKModule extends Module {
     @ModuleEvent(event=PlayerChatEvent.class)
     public void onPlayerChat(BukkitEventWrapper wrapper) {
         PlayerChatEvent event = (PlayerChatEvent) wrapper.getEvent();
-        Player p = event.getPlayer();
-        
-        if (isAFK(p)) {
-            cycleAFK(p);
-            broadcastAFKMessage(p);
-        }
-        
-        updateTimeEntry(p);
-    }
-    
-    @ModuleEvent(event=PlayerCommandPreprocessEvent.class)
-    public void onPlayerCommandPreprocess(BukkitEventWrapper wrapper) {
-        PlayerCommandPreprocessEvent event = (PlayerCommandPreprocessEvent) wrapper.getEvent();
         Player p = event.getPlayer();
         
         if (isAFK(p)) {

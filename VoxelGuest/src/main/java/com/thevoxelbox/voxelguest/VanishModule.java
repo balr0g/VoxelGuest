@@ -203,7 +203,7 @@ public class VanishModule extends Module {
         }
     }
     
-    public void hidePlayer(Player hidden) {
+        public void hidePlayer(Player hidden) {
         if (!vanished.contains(hidden.getName())) {
             vanished.add(hidden.getName());
             
