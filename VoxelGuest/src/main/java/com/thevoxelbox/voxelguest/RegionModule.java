@@ -47,6 +47,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -498,6 +499,47 @@ public class RegionModule extends Module {
     @ModuleEvent(event=BlockBreakEvent.class)
     public void onBlockBreak(BukkitEventWrapper wrapper) {
         BlockBreakEvent event = (BlockBreakEvent) wrapper.getEvent();
+        
+        Region[] regions = new Region[loadedRegions.size()];
+        regions = loadedRegions.toArray(regions);
+        
+        for (Region region : regions) {
+            if (region.inBounds(event.getBlock().getLocation())) {
+                if (!getSubregions(region).isEmpty()) {
+                    Region[] subregions = new Region[getSubregions(region).size()];
+                    subregions = getSubregions(region).toArray(regions);
+                    
+                    for (Region subregion : subregions) {
+                        if (subregion.inBounds(event.getBlock().getLocation())) {
+                            if (!PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin")
+                                && !PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
+                                
+                                if (!(region.isGeneralBuildOverrideDisabled() && PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general"))) {
+                                    event.getPlayer().sendMessage("§cYou are not authorized to modify region \"" + subregion.getName() +"\"");
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (!PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin")
+                    && !PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
+                    
+                    if (!(region.isGeneralBuildOverrideDisabled() && PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general"))) {
+                        event.getPlayer().sendMessage("§cYou are not authorized to modify region \"" + region.getName() +"\"");
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
+    @ModuleEvent(event=BlockDamageEvent.class)
+    public void onBlockDamage(BukkitEventWrapper wrapper) {
+        BlockDamageEvent event = (BlockDamageEvent) wrapper.getEvent();
         
         Region[] regions = new Region[loadedRegions.size()];
         regions = loadedRegions.toArray(regions);

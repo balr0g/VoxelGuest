@@ -75,6 +75,8 @@ public class VoxelGuest extends JavaPlugin {
     
     protected static final Configuration config = new Configuration("VoxelGuest");
     
+    public static int ONLINE_MEMBERS = 0;
+    
     protected Class<? extends Module>[] availableModules = new Class[] {
         AFKModule.class,
         AsshatMitigationModule.class,
@@ -134,6 +136,7 @@ public class VoxelGuest extends JavaPlugin {
 
             groupManager.addPlayerToGroupMap(player);
             guestPlayers.add(gp); // KEEP THIS LAST
+            ONLINE_MEMBERS++;
         }
         
         // Load modules

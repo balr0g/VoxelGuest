@@ -35,6 +35,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
@@ -61,6 +62,7 @@ public class SystemListener extends ModuleSystemListener {
     @EventHandler(priority = EventPriority.HIGH) 
     public void onPlayerJoin(PlayerJoinEvent event) {
         GuestPlayer gp = VoxelGuest.registerPlayer(event.getPlayer());
+        VoxelGuest.ONLINE_MEMBERS++;
         
         try {
             String format = VoxelGuest.getConfigData().getString("join-message-format");
@@ -84,6 +86,7 @@ public class SystemListener extends ModuleSystemListener {
         VoxelGuest.unregsiterPlayer(gp);
         gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
         VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
+        VoxelGuest.ONLINE_MEMBERS--;
         
         try {
             String format = VoxelGuest.getConfigData().getString("leave-message-format");
@@ -103,6 +106,7 @@ public class SystemListener extends ModuleSystemListener {
         VoxelGuest.unregsiterPlayer(gp);
         gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
         VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
+        VoxelGuest.ONLINE_MEMBERS--;
         
         try {
             String format = VoxelGuest.getConfigData().getString("kick-message-format");
@@ -153,6 +157,11 @@ public class SystemListener extends ModuleSystemListener {
     
     @EventHandler
     public void onBlockBurn(BlockBurnEvent event) {
+        processModuleEvents(event);
+    }
+    
+    @EventHandler
+    public void onBlockDamage(BlockDamageEvent event) {
         processModuleEvents(event);
     }
     

@@ -31,7 +31,6 @@ import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import com.thevoxelbox.voxelguest.util.Formatter;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
 import com.thevoxelbox.voxelguest.util.Configuration;
-import org.bukkit.Bukkit;
 
 public class SimpleFormatter extends Formatter {
     
@@ -74,13 +73,13 @@ public class SimpleFormatter extends Formatter {
                 VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
                 int fakequitNum = module.getFakequitSize();
                 if (fakequitNum > 0)
-                    copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length - fakequitNum));
+                    copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS - fakequitNum));
                 else
-                    copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
+                    copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS));
             } catch (ModuleException ex) {
-                copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
+                copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS));
             } catch (NullPointerException ex) {
-                copy = copy.replace("$nonline", Integer.toString(Bukkit.getOnlinePlayers().length));
+                copy = copy.replace("$nonline", Integer.toString(VoxelGuest.ONLINE_MEMBERS));
             }
             
             copy = copy.replace("$name", gp.getPlayer().getName());
