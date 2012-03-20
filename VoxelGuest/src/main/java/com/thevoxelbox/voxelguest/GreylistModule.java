@@ -61,6 +61,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @MetaData(name="Greylist", description="Allows for the setup of a greylist system!")
@@ -338,6 +339,28 @@ public class GreylistModule extends Module {
         cs.sendMessage(ChatColor.GREEN + "Exploration mode has been " + ((explorationMode) ? "enabled" : "disabled"));
     }
     
+    @ModuleEvent(event=PlayerPreLoginEvent.class, priority= ModuleEventPriority.HIGHEST)
+    public void onPlayerPreLogin(BukkitEventWrapper wrapper) {
+        PlayerPreLoginEvent event = (PlayerPreLoginEvent) wrapper.getEvent();
+        
+        if (PermissionsManager.getHandler().hasPermission(event.getName(), "voxelguest.greylist.bypass")) {
+            return;
+        }
+        
+        if (!explorationMode) {
+            if (!greylist.contains(event.getName())) {
+                event.disallow(PlayerPreLoginEvent.Result.KICK_FULL, (getConfiguration().getString("greylist-not-greylisted-kick-message") != null) ? getConfiguration().getString("greylist-not-greylisted-kick-message") : "You are not greylisted on this server.");
+                return;
+            } else if (greylist.contains(event.getName()) && !PermissionsManager.getHandler().hasPermission(event.getName(), "voxelguest.greylist.bypass")) {
+                if (onlineGreylistLimit > -1 && onlineGreys.size() >= onlineGreylistLimit) {
+                    String str = getConfiguration().getString("greylist-over-capacity-kick-message");
+                    event.disallow(PlayerPreLoginEvent.Result.KICK_FULL, (str != null) ? str : "The server is temporarily over guest capacity. Check back later.");
+                    return;
+                }
+            }
+        }
+    }
+    
     @ModuleEvent(event=PlayerJoinEvent.class, priority=ModuleEventPriority.HIGHEST)
     public void onPlayerJoin(BukkitEventWrapper wrapper) {
         PlayerJoinEvent event = (PlayerJoinEvent) wrapper.getEvent();
@@ -351,13 +374,11 @@ public class GreylistModule extends Module {
             if (!greylist.contains(gp.getPlayer().getName())) {
                 gp.getPlayer().kickPlayer((getConfiguration().getString("greylist-not-greylisted-kick-message") != null) ? getConfiguration().getString("greylist-not-greylisted-kick-message") : "You are not greylisted on this server.");
                 event.setJoinMessage("");
-                wrapper.setCancelled(true);
                 return;
             } else if (greylist.contains(gp.getPlayer().getName()) && !PermissionsManager.getHandler().hasPermission(gp.getPlayer().getName(), "voxelguest.greylist.bypass")) {
                 if (onlineGreylistLimit > -1 && onlineGreys.size() >= onlineGreylistLimit) {
                     String str = getConfiguration().getString("greylist-over-capacity-kick-message");
                     gp.getPlayer().kickPlayer((str != null) ? str : "The server is temporarily over guest capacity. Check back later.");
-                    wrapper.setCancelled(true);
                     return;
                 }
                 

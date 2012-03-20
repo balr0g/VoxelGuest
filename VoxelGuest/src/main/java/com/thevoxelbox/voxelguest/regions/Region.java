@@ -120,7 +120,7 @@ public class Region {
     public boolean inBounds(Location loc) {
         Vector3D vec = new Vector3D(loc);
         
-        if (!loc.getWorld().equals(world))
+        if (loc.getWorld() != null && !loc.getWorld().equals(world))
             return false;
         
         Vector3D max = getMaximumPoint();
@@ -135,6 +135,9 @@ public class Region {
     }
     
     public boolean inBounds(Region region) {
+        if (world == null || region == null || region.world == null)
+            return false;
+        
         if (!world.equals(region.world))
             return false;
         
@@ -169,6 +172,9 @@ public class Region {
     }
     
     public boolean matches(Region region) {
+        if (world == null || region == null || region.world == null)
+            return false;
+        
         if (!world.equals(region.world))
             return false;
         
