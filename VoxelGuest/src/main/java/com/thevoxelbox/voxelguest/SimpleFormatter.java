@@ -82,8 +82,6 @@ public class SimpleFormatter extends Formatter {
                 copy = copy.replace("$nonline", String.valueOf(VoxelGuest.ONLINE_MEMBERS));
             }
             
-            VoxelGuest.log(String.valueOf(VoxelGuest.ONLINE_MEMBERS));
-            
             copy = copy.replace("$name", gp.getPlayer().getName());
             copy = copy.replace("$n", gp.getPlayer().getName());
         }

@@ -26,6 +26,7 @@
 
 package com.thevoxelbox.voxelguest.util;
 
+import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -101,6 +102,14 @@ public class FlatFileManager {
         
         File f = new File(directory + destination + "/" + target + ".txt");
         PrintWriter pw = null;
+        
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException ex) {
+                VoxelGuest.log("Could not create new file \"" + f.getAbsolutePath() + "\"", 2);
+            }
+        }
         
         if (f.exists()) {
             try {

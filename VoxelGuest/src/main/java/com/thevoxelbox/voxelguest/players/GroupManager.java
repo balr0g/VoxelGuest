@@ -101,73 +101,14 @@ public class GroupManager {
         config.save();
     }
     
-    public void addPlayerToGroupMap(Player p) {
-        try {
-            String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
+    public void verifyPlayerGroupExistence(Player p) {
+        String[] groups = PermissionsManager.getHandler().getGroups(p.getName());
+        
+        if (groups != null && groups.length > 0) {
+            String group = groups[0];
             
-            if (!groupMap.containsKey(group)) {
-                Configuration config = new Configuration(group, "/groups");
-                config.setString("group-id", defaultGroupID);
-                setGroupConfiguration(group, config);
-            }
-
-            List<String> list = playerMap.get(group);
-
-            if (list == null || list.isEmpty()) {
-                List<String> newList = new ArrayList<String>();
-                newList.add(p.getName());
-                playerMap.put(group, newList);
-            } else {
-                if (!list.contains(p.getName())) {
-                    list.add(p.getName());
-                    playerMap.put(group, list);
-                }
-            }
-        } catch (NullPointerException e) {
-            String group = defaultGroupName;
-            
-            List<String> list = playerMap.get(group);
-
-            if (list == null || list.isEmpty()) {
-                List<String> newList = new ArrayList<String>();
-                newList.add(p.getName());
-                playerMap.put(group, newList);
-            } else {
-                if (!list.contains(p.getName())) {
-                    list.add(p.getName());
-                    playerMap.put(group, list);
-                }
-            }
-        }
-    }
-    
-    public void removePlayerFromGroupMap(Player p) {
-        try {
-            String group = PermissionsManager.getHandler().getGroups(p.getName())[0];
-
-            List<String> list = playerMap.get(group);
-
-            if (list == null || list.isEmpty()) {
-                // Do nothing
-            } else {
-                if (list.contains(p.getName())) {
-                    list.remove(p.getName());
-                    playerMap.put(group, list);
-                }
-            }
-        } catch (NullPointerException e) {
-            String group = defaultGroupName;
-            
-            List<String> list = playerMap.get(group);
-
-            if (list == null || list.isEmpty()) {
-                // Do nothing
-            } else {
-                if (list.contains(p.getName())) {
-                    list.remove(p.getName());
-                    playerMap.put(group, list);
-                }
-            }
+            if (!groupMap.containsKey(group))
+                groupMap.put(group, defaultConfig);
         }
     }
     
@@ -184,5 +125,9 @@ public class GroupManager {
         }
         
         return l;
+    }
+    
+    public Configuration getDefaultConfiguration() {
+        return defaultConfig;
     }
 }

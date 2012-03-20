@@ -134,7 +134,7 @@ public class VoxelGuest extends JavaPlugin {
                 continue;
             }
 
-            groupManager.addPlayerToGroupMap(player);
+            groupManager.verifyPlayerGroupExistence(player);
             guestPlayers.add(gp); // KEEP THIS LAST
             ONLINE_MEMBERS++;
         }

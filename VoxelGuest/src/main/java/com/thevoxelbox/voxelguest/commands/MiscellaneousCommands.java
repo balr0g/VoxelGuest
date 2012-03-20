@@ -29,13 +29,13 @@ package com.thevoxelbox.voxelguest.commands;
 import com.thevoxelbox.commands.Command;
 import com.thevoxelbox.commands.CommandPermission;
 import com.thevoxelbox.commands.Subcommands;
+import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.AFKModule;
 import com.thevoxelbox.voxelguest.VanishModule;
 import com.thevoxelbox.voxelguest.VoxelGuest;
 import com.thevoxelbox.voxelguest.modules.ModuleException;
 import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,154 +59,12 @@ public class MiscellaneousCommands {
             permission={"voxelguest.miscellaneous.list.admin"})
     @CommandPermission(permission="voxelguest.miscellaneous.list.list")
     public void who(CommandSender cs, String[] args) {
-        HashMap<String, String[]> storage = new HashMap<String, String[]>();
-        
         if (args != null && args.length > 0 && args[0].equalsIgnoreCase("-f")) {
-            String header = "";
-            int onlineNum = Bukkit.getOnlinePlayers().length;
-            
-            for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
-                List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
-                String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
-                
-                if (groupId == null)
-                    groupId = "§fG";
-                
-                if (players != null) {
-                    String[] list = new String[players.size()];
-
-                    Iterator<String> it = players.listIterator();
-                    int x = 0;
-                    while (it.hasNext()) {
-                        String player = it.next();
-                        list[x] = player;
-                        x++;
-                    }
-
-                    boolean colorSwitch = false;
-                    boolean afk = false;
-                    boolean fakequit = false;
-
-                    for (int i = 0; i < list.length; i++) {
-                        String str = list[i];
-
-                        try {
-                            if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
-                                AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
-                                afk = module.isAFK(Bukkit.getPlayer(str));
-                            }
-
-                            if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
-                                VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
-                                fakequit = module.isInFakequit(Bukkit.getPlayer(str));
-                            }
-                        } catch (ModuleException ex) {
-                            // continue
-                        }
-
-                        str = ((fakequit) ? FAKEQUIT : "") + ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
-                        colorSwitch = !colorSwitch;
-                        list[i] = str;
-                    }
-                    
-                    header = header + "§8[" + groupId + ":" + list.length + "§8] ";
-                    storage.put(groupId, list);
-                    continue;
-                }
-                
-                header = header + "§8[" + groupId + ":0§8] ";
-            }
-            
-            header = header + "§8(§fO§8:§f" + onlineNum + "§8)";
-            
-            cs.sendMessage("§8------------------------------");
-            cs.sendMessage(header.trim());
-            
-            for (Map.Entry<String, String[]> entry : storage.entrySet()) {
-                sendGroupStrings(cs, Arrays.asList(entry.getValue()), ("§8[" + entry.getKey() + "§8]"));
-            }
-            cs.sendMessage("§8------------------------------");
+            adminWho(cs);
             return;
         }
         
-        String header = "";
-            
-        for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
-            List<String> players = VoxelGuest.getGroupManager().getPlayerListForGroup(group);
-            String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
-            
-            if (groupId == null)
-                groupId = "§fG";
-            
-            if (players != null) {
-                Iterator<String> itr = players.listIterator();
-                List<String> toRemove = new ArrayList<String>();
-
-                while (itr.hasNext()) {
-                    try {
-                        String str = itr.next();
-
-                        if (ModuleManager.getManager().getModule(VanishModule.class).isEnabled()) {
-                            VanishModule vanish = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
-
-                            if (vanish.isInFakequit(Bukkit.getPlayer(str)))
-                                toRemove.add(str);
-                        }
-                    } catch (ModuleException ex) {
-                        break;
-                    }
-                }
-
-                players.removeAll(toRemove);
-
-                if (groupId == null)
-                    groupId = "§fG";
-
-                String[] list = new String[players.size()];
-
-                Iterator<String> it = players.listIterator();
-                int x = 0;
-                while (it.hasNext()) {
-                    String player = it.next();
-                    list[x] = player;
-                    x++;
-                }
-
-                boolean colorSwitch = false;
-                boolean afk = false;
-
-                for (int i = 0; i < list.length; i++) {
-                    String str = list[i];
-
-                    try {
-                        if (ModuleManager.getManager().getModule(AFKModule.class).isEnabled()) {
-                            AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
-                            afk = module.isAFK(Bukkit.getPlayer(str));
-                        }
-                    } catch (ModuleException ex) {
-                        // continue
-                    }
-
-                    str = ((afk) ? AFK : "") + ((colorSwitch) ? "§f" : "§7") + str;
-                    colorSwitch = !colorSwitch;
-                    list[i] = str;
-                }
-                
-                storage.put(groupId, list);
-                header = header + "§8[" + groupId + ":" + list.length + "§8] ";
-                continue;
-            }
-
-            header = header + "§8[" + groupId + ":0§8] ";
-        }
-
-        cs.sendMessage("§8------------------------------");
-        cs.sendMessage(header.trim());
-
-        for (Map.Entry<String, String[]> entry : storage.entrySet()) {
-            sendGroupStrings(cs, Arrays.asList(entry.getValue()), ("§8[" + entry.getKey() + "§8]"));
-        }
-        cs.sendMessage("§8------------------------------");
+        normalWho(cs);
     }
     
     @Command(aliases={"vteleport", "vtp"},
@@ -268,6 +126,128 @@ public class MiscellaneousCommands {
         }
     }
     
+    private void adminWho(CommandSender sender) {
+        HashMap<String, List<String>> storage = new HashMap<String, List<String>>();
+        String defaultGroupId = VoxelGuest.getGroupManager().getDefaultConfiguration().getString("group-id");
+        boolean colorSwitch = false;
+        
+        String header = "";
+        
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            String groupId;
+            
+            String[] groups = PermissionsManager.getHandler().getGroups(p.getName());
+            
+            if (groups == null || groups.length == 0) {
+                groupId = defaultGroupId;
+            } else {
+                groupId = VoxelGuest.getGroupManager().getGroupConfiguration(groups[0]).getString("group-id");
+            }
+            
+            boolean afk = isAFK(p);
+            boolean fq  = isInFakeQuit(p);
+            
+            String user = ((fq) ? FAKEQUIT : "") + ((afk) ? AFK : "") + ((colorSwitch) ? "§7" : "§f") + p.getName();
+            groupId = "§8[" + groupId + "§8]";
+            
+            if (!storage.containsKey(groupId)) {
+                List<String> l = new ArrayList<String>();
+                l.add(user);
+                storage.put(groupId, l);
+            } else {
+                List<String> l = storage.get(groupId);
+                l.add(user);
+                storage.put(groupId, l);
+            }
+            
+            colorSwitch = !colorSwitch;
+        }
+        
+        header = writeHeader(storage, Bukkit.getOnlinePlayers().length);
+        
+        sender.sendMessage("§8------------------------------");
+        sender.sendMessage(header.trim());
+        
+        for (Map.Entry<String, List<String>> entry : storage.entrySet()) {
+            sendGroupStrings(sender, entry.getValue(), entry.getKey());
+        }
+        
+        sender.sendMessage("§8------------------------------");
+    }
+    
+    private void normalWho(CommandSender sender) {
+        HashMap<String, List<String>> storage = new HashMap<String, List<String>>();
+        String defaultGroupId = VoxelGuest.getGroupManager().getDefaultConfiguration().getString("group-id");
+        boolean colorSwitch = false;
+        
+        String header = "";
+        
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (isInFakeQuit(p))
+                continue;
+            
+            String groupId;
+            
+            String[] groups = PermissionsManager.getHandler().getGroups(p.getName());
+            
+            if (groups == null || groups.length == 0) {
+                groupId = defaultGroupId;
+            } else {
+                groupId = VoxelGuest.getGroupManager().getGroupConfiguration(groups[0]).getString("group-id");
+            }
+            
+            boolean afk = isAFK(p);
+            
+            String user = ((afk) ? AFK : "") + ((colorSwitch) ? "§7" : "§f") + p.getName();
+            groupId = "§8[" + groupId + "§8]";
+            
+            if (!storage.containsKey(groupId)) {
+                List<String> l = new ArrayList<String>();
+                l.add(user);
+                storage.put(groupId, l);
+            } else {
+                List<String> l = storage.get(groupId);
+                l.add(user);
+                storage.put(groupId, l);
+            }
+            
+            colorSwitch = !colorSwitch;
+        }
+        
+        header = writeHeader(storage, Bukkit.getOnlinePlayers().length - getFakequitSize());
+        
+        sender.sendMessage("§8------------------------------");
+        sender.sendMessage(header.trim());
+        
+        for (Map.Entry<String, List<String>> entry : storage.entrySet()) {
+            sendGroupStrings(sender, entry.getValue(), entry.getKey());
+        }
+        
+        sender.sendMessage("§8------------------------------");
+    }
+    
+    private String writeHeader(HashMap<String, List<String>> storage, int onlineNumber) {
+        String header = "";
+        String defaultGroupId = VoxelGuest.getGroupManager().getDefaultConfiguration().getString("group-id");
+        
+        for (String group : VoxelGuest.getGroupManager().getRegisteredGroups()) {
+            String groupId = VoxelGuest.getGroupManager().getGroupConfiguration(group).getString("group-id");
+            
+            if (groupId == null)
+                groupId = defaultGroupId;
+            
+            String groupTest = "§8[" + groupId + "§8]";
+            
+            if (storage.containsKey(groupTest)) {
+                header = header + "§8[" + groupId + ":" + storage.get(groupTest).size() + "§8] ";
+            } else {
+                header = header + "§8[" + groupId + ":0§8] ";
+            }
+        }
+        
+        return (header.trim() + (" §8(§fO:" + onlineNumber + "§8)"));
+    }
+    
     private void sendGroupStrings(CommandSender cs, List<String> list, String groupHeader) {
         if (list == null || list.isEmpty()) {
             return;
@@ -300,6 +280,35 @@ public class MiscellaneousCommands {
                     cs.sendMessage(line.substring(0, line.length() - 2));
                 }
             }
+        }
+    }
+    
+    
+       
+    private boolean isAFK(Player p) {
+        try {
+            AFKModule module = (AFKModule) ModuleManager.getManager().getModule(AFKModule.class);
+            return module.isAFK(p);
+        } catch (ModuleException ex) {
+            return false;
+        }
+    }
+    
+    private boolean isInFakeQuit(Player p) {
+        try {
+            VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
+            return module.isInFakequit(p);
+        } catch (ModuleException ex) {
+            return false;
+        }
+    }
+    
+    private int getFakequitSize() {
+        try {
+            VanishModule module = (VanishModule) ModuleManager.getManager().getModule(VanishModule.class);
+            return module.getFakequitSize();
+        } catch (ModuleException ex) {
+            return 0;
         }
     }
 }

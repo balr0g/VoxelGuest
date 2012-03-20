@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -94,8 +95,16 @@ public class VanishModule extends Module {
         
         if (reloadFakequitList != null) {
             for (String str : reloadFakequitList) {
-                if (!fakequit.contains(str))
-                    fakequit.add(str);
+                OfflinePlayer op = Bukkit.getOfflinePlayer(str);
+                Player p = op.getPlayer();
+                
+                if (p != null) {
+                    if (!fakequit.contains(str)) {
+                        fakequit.add(str);
+                    }
+                } else {
+                    ofakequit.add(str);
+                }      
             }
         }
         
@@ -166,6 +175,8 @@ public class VanishModule extends Module {
         if (ofakequit.contains(event.getPlayer().getName())) {
             ofakequit.remove(event.getPlayer().getName());
             fakequit.add(event.getPlayer().getName());
+            resetHiddenPlayer(event.getPlayer());
+            
             event.setJoinMessage("");
         }
     }
@@ -203,9 +214,13 @@ public class VanishModule extends Module {
         }
     }
     
-        public void hidePlayer(Player hidden) {
+    public void hidePlayer(Player hidden) {
+        if (hidden == null)
+            return;
+        
         if (!vanished.contains(hidden.getName())) {
             vanished.add(hidden.getName());
+            VoxelGuest.log(Boolean.valueOf(isVanished(hidden)).toString());
             
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                 if (!safeList.contains(p.getName()))
@@ -219,6 +234,7 @@ public class VanishModule extends Module {
     public void revealPlayer(Player hidden) {
         if (vanished.contains(hidden.getName())) {
             vanished.remove(hidden.getName());
+            VoxelGuest.log(Boolean.valueOf(isVanished(hidden)).toString());
             
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                 if (!safeList.contains(p.getName()))

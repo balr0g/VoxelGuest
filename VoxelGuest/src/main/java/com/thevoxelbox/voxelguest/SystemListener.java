@@ -28,7 +28,6 @@ package com.thevoxelbox.voxelguest;
 
 import com.thevoxelbox.voxelguest.modules.ModuleSystemListener;
 import com.thevoxelbox.voxelguest.players.GuestPlayer;
-import com.thevoxelbox.voxelguest.util.FormatException;
 import com.thevoxelbox.voxelguest.util.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -63,6 +62,7 @@ public class SystemListener extends ModuleSystemListener {
     @EventHandler(priority = EventPriority.HIGH) 
     public void onPlayerJoin(PlayerJoinEvent event) {
         GuestPlayer gp = VoxelGuest.registerPlayer(event.getPlayer());
+        
         VoxelGuest.ONLINE_MEMBERS++;
         
         if (VoxelGuest.ONLINE_MEMBERS != Bukkit.getOnlinePlayers().length)
@@ -78,8 +78,7 @@ public class SystemListener extends ModuleSystemListener {
         
         processModuleEvents(event);
         
-        if (event.getPlayer().isOnline())
-            VoxelGuest.getGroupManager().addPlayerToGroupMap(event.getPlayer());
+        VoxelGuest.getGroupManager().verifyPlayerGroupExistence(event.getPlayer());
     }
     
     @EventHandler(priority = EventPriority.HIGH)
@@ -99,7 +98,6 @@ public class SystemListener extends ModuleSystemListener {
         if (!event.getPlayer().isOnline()) {
             VoxelGuest.unregsiterPlayer(gp);
             gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
-            VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
         }
         
         if (VoxelGuest.ONLINE_MEMBERS != Bukkit.getOnlinePlayers().length)
@@ -123,7 +121,6 @@ public class SystemListener extends ModuleSystemListener {
         if (!event.getPlayer().isOnline()) {
             VoxelGuest.unregsiterPlayer(gp);
             gp.saveData(VoxelGuest.getPluginId(VoxelGuest.getInstance()));
-            VoxelGuest.getGroupManager().removePlayerFromGroupMap(event.getPlayer());
         }
         
         if (VoxelGuest.ONLINE_MEMBERS != Bukkit.getOnlinePlayers().length)
