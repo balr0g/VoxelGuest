@@ -34,6 +34,7 @@ import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import com.thevoxelbox.voxelguest.util.Configuration;
 import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -96,6 +97,27 @@ public class ServerAdministrationCommands {
                     }
 
                     cs.sendMessage("§cCould not find module specified");
+                    return;
+                } else if (args[2] != null && args[2].equals("-m")) {
+                    if (args.length != 6) {
+                        cs.sendMessage("§cIncorrect format: /system settings set -g [group] [setting] [value]");
+                        return;
+                    }
+                    
+                    List<String> groups = VoxelGuest.getGroupManager().getRegisteredGroups();
+                    String[] test = new String[groups.size()];
+                    test = groups.toArray(test);
+                    
+                    for (String group : test) {
+                        if (group.equalsIgnoreCase(args[3])) {
+                            Configuration config = VoxelGuest.getGroupManager().getGroupConfiguration(group);
+                            smartSetSetting(config, args[4], args[5]);
+                            cs.sendMessage("§aSet master setting \"" + args[4] + "\" to \"" + args[5] + "\"");
+                            return;
+                        }
+                    }
+                    
+                    cs.sendMessage("§cCould not find group specified");
                     return;
                 } else {
                     if (args.length != 4) {

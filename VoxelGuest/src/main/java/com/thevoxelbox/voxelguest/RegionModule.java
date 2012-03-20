@@ -387,6 +387,33 @@ public class RegionModule extends Module {
         return;
     }
     
+    @Command(aliases={"regioninfo", "ri"},
+            bounds={1,1},
+            help="Displays info for a region using\n"
+            + "§c/regioninfo [region]")
+    public void regionInfo(CommandSender cs, String[] args) {
+        List<Region> l = matchRegion(args[0]);
+        
+        if (l.isEmpty()) {
+            cs.sendMessage("§cNo region found by that name.");
+        } else if (l.size() > 1) {
+            cs.sendMessage("§cMultiple regions found by that name.");
+        } else {
+            Region region = l.get(0);
+            
+            cs.sendMessage("§8==============================");
+            cs.sendMessage("§fRegion: §6" + region.getName());
+            cs.sendMessage("§8==============================");
+            
+            Vector3D min = region.getMinimumPoint();
+            Vector3D max = region.getMaximumPoint();
+            cs.sendMessage("§a-World: §f" + region.getWorld().getName());
+            cs.sendMessage("§a-From: §8(§f" + min.getX() + "§7,§f " + min.getY() + "§7,§f " + min.getZ() + "§8)");
+            cs.sendMessage("§a-To: §8(§f" + max.getX() + "§7,§f " + max.getY() + "§7,§f " + max.getZ() + "§8)");
+            
+        }
+    }
+    
     public List<Region> matchRegion(String name) {
         Region[] regions = new Region[loadedRegions.size()];
         regions = loadedRegions.toArray(regions);

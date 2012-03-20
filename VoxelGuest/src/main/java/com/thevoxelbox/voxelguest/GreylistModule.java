@@ -50,6 +50,7 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -382,8 +383,30 @@ public class GreylistModule extends Module {
                     return;
                 }
                 
-                if (!onlineGreys.contains(gp.getPlayer().getName()))
+                if (!onlineGreys.contains(gp.getPlayer().getName())) {
                     onlineGreys.add(gp.getPlayer().getName());
+                    
+                    try {
+                        String user = gp.getPlayer().getName();
+                        
+                        String[] groups = PermissionsManager.getHandler().getGroups(user);
+                        String group = VoxelGuest.getGroupManager().findGroup("greylist", true);
+
+                        if (groups == null || groups.length == 0 || !Arrays.asList(groups).contains(group)) {
+                            if (!PermissionsManager.hasMultiGroupSupport()) {
+                                for (String _group : groups) {
+                                    PermissionsManager.getHandler().removeGroup(user, _group);
+                                }
+
+                                PermissionsManager.getHandler().addGroup(user, group);
+                            } else {
+                                PermissionsManager.getHandler().addGroup(user, group);
+                            }
+                        }
+                    } catch (GroupNotFoundException ex) {
+                        // Just leave in greylist ... no group defined
+                    }
+                }
             }
         }
     }
