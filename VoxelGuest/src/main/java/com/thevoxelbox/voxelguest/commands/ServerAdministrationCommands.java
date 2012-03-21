@@ -98,7 +98,7 @@ public class ServerAdministrationCommands {
 
                     cs.sendMessage("§cCould not find module specified");
                     return;
-                } else if (args[2] != null && args[2].equals("-m")) {
+                } else if (args[2] != null && args[2].equals("-g")) {
                     if (args.length != 6) {
                         cs.sendMessage("§cIncorrect format: /system settings set -g [group] [setting] [value]");
                         return;

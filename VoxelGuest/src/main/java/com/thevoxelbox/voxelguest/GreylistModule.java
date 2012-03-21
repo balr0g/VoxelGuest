@@ -447,24 +447,6 @@ public class GreylistModule extends Module {
         for (String str : strs) {
             if (!greylist.contains(str))
                 greylist.add(str);
-            
-            try {
-                String[] groups = PermissionsManager.getHandler().getGroups(str);
-                String group = VoxelGuest.getGroupManager().findGroup("greylist", true);
-                
-                if (!PermissionsManager.hasMultiGroupSupport()) {
-                    for (String _group : groups) {
-                        PermissionsManager.getHandler().removeGroup(str, _group);
-                    }
-                    
-                    PermissionsManager.getHandler().addGroup(str, group);
-                } else {
-                    PermissionsManager.getHandler().addGroup(str, group);
-                }
-                
-            } catch (GroupNotFoundException ex) {
-                // Just leave in greylist ... no group defined
-            }
         }
     }
     
