@@ -1,7 +1,7 @@
 name: VoxelGuest
 main: com.thevoxelbox.voxelguest.VoxelGuest
 author: VoxelPlugineering
-version: 4.0.0-b15
+version: 4.0.0-b16
 website: http://voxelwiki.com/minecraft/VoxelGuest
 
 commands:

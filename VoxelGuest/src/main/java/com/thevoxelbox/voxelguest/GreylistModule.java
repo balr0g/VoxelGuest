@@ -44,18 +44,17 @@ import com.thevoxelbox.voxelguest.util.FlatFileManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -71,11 +70,9 @@ public class GreylistModule extends Module {
     private static final List<String> greylist = new ArrayList<String>();
     private static final List<String> onlineGreys = new ArrayList<String>();
     
-    private int streamTask = -1;
+    private StreamThread streamTask = null;
     private String streamPasswordHash;
     private int streamPort;
-    private boolean couldNotConnect = false;
-    private long disconnectTimestamp = -1;
     
     private int onlineGreylistLimit = -1;
     private boolean explorationMode = false;
@@ -119,37 +116,8 @@ public class GreylistModule extends Module {
             
             streamPort = getConfiguration().getInt("greylist-stream-port");
             streamPasswordHash = getConfiguration().getString("greylist-stream-password");
-            streamTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(VoxelGuest.getInstance(), new Runnable() {
-
-                @Override
-                public void run() {
-                    if (couldNotConnect && (System.currentTimeMillis() - disconnectTimestamp) < 60000)
-                        return;
-                    
-                    couldNotConnect = false;
-                    
-                    try {
-                        ServerSocket socket = new ServerSocket(streamPort);
-                        Future<List<String>> future = Bukkit.getScheduler().callSyncMethod(VoxelGuest.getInstance(), new StreamReader(socket.accept()));
-                        
-                        List<String> list = future.get();
-                        
-                        if (list == null || list.isEmpty())
-                            return;
-                        
-                        injectGreylist(list);
-                        announceGreylist(list);
-                    } catch (InterruptedException ex) {
-                        // Don't inject greylist
-                    } catch (ExecutionException ex) {
-                        // Don't inject greylist
-                    } catch (IOException ex) {
-                        VoxelGuest.log(name, "Could not connect to stream -- Retrying in a minute...", 1);
-                        couldNotConnect = true;
-                        disconnectTimestamp = System.currentTimeMillis();
-                    }
-                }
-            }, 0L, 200L);
+            streamTask = new StreamThread(this);
+            streamTask.start();
             
             explorationMode = getConfiguration().getBoolean("exploration-mode");
             onlineGreylistLimit = getConfiguration().getInt("greylist-online-limit");
@@ -158,7 +126,9 @@ public class GreylistModule extends Module {
     
     @Override
     public void disable() {
-        Bukkit.getScheduler().cancelTask(streamTask);
+        if (streamTask != null)
+            streamTask.killProcesses();
+            
         String[] toSave = new String[greylist.size()];
         toSave = greylist.toArray(toSave);
         FlatFileManager.save(toSave, "greylist");
@@ -461,24 +431,6 @@ public class GreylistModule extends Module {
             
             if (!greylist.contains(user))
                 greylist.add(user);
-            
-            try {
-                String[] groups = PermissionsManager.getHandler().getGroups(user);
-                String group = VoxelGuest.getGroupManager().findGroup("greylist", true);
-                
-                if (!PermissionsManager.hasMultiGroupSupport()) {
-                    for (String _group : groups) {
-                        PermissionsManager.getHandler().removeGroup(user, _group);
-                    }
-                    
-                    PermissionsManager.getHandler().addGroup(user, group);
-                } else {
-                    PermissionsManager.getHandler().addGroup(user, group);
-                }
-                
-            } catch (GroupNotFoundException ex) {
-                // Just leave in greylist ... no group defined
-            }
         }
     }
     
@@ -487,7 +439,7 @@ public class GreylistModule extends Module {
         
         if (args[0].equals(streamPasswordHash)) {
             String user = args[1];
-            boolean accepted = !(Boolean.parseBoolean(args[2]));
+            boolean accepted = Boolean.parseBoolean(args[2]);
             
             if (accepted) {
                 return user;
@@ -497,20 +449,77 @@ public class GreylistModule extends Module {
         return null;
     }
     
-    class StreamReader implements Callable< List<String> > {
-        private final Socket socket;
-
-        public StreamReader(Socket s) {
-            socket = s;
+    class StreamThread extends Thread {
+        private ServerSocket serverSocket;
+        private StreamReader readerTask;
+        
+        public StreamThread(GreylistModule module) {
+            try {    
+                this.serverSocket = new ServerSocket(streamPort);
+            } catch (IOException ex) {
+                this.serverSocket = null;
+                VoxelGuest.log(name, "Could not bind to port " + streamPort + ". Perhaps it is already in use?", 2);
+            }
         }
-
+        
+        public void killProcesses() {
+            if (readerTask != null)
+                readerTask.interrupt();
+            
+            this.interrupt();
+        }
+        
         @Override
-        public List<String> call() {
-            List<String> list = new ArrayList<String>();
-            String line = null;
+        public void run() {
+            if (serverSocket == null)
+                return;
             
             try {
+                readerTask = new StreamReader(serverSocket.accept());
+                
+                while (streamTask != null) {
+                    readerTask.start();
+                }
+                
+            } catch (IOException ex) {
+                // Nothing on client end... Continue...
+            }
+        }
+        
+        class StreamReader extends Thread {
+            private final Socket socket;
+            
+            public StreamReader(Socket s) {
+                this.socket = s;
+            }
+            
+            @Override
+            public void run() {
+                if (socket != null) {
+                    try {
+                        VoxelGuest.log(name, "Accepted client on port " + streamPort, 0);
+                        List<String> list = readSocket(socket);
+
+                        if (list == null || list.isEmpty())
+                            return;
+
+                        injectGreylist(list);
+                        announceGreylist(list);
+                        socket.close();
+                    } catch (IOException ex) {
+                        VoxelGuest.log(name, "Could not close client stream socket", 2);
+                    }
+                }
+            }
+        }
+        
+        private synchronized List<String> readSocket(Socket socket) {
+            try {
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader stream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                
+                List<String> list = new ArrayList<String>();
+                String line = null;
                 
                 while ((line = stream.readLine()) != null) {
                     String toAdd = interpretStreamInput(line);
@@ -522,7 +531,11 @@ public class GreylistModule extends Module {
                 }
                 
                 stream.close();
+                socket.close();
                 return list;
+            } catch (SocketException ex) {
+                VoxelGuest.log(name, "Stream closed while reading stream", 1);
+                return null;
             } catch (IOException ex) {
                 return null;
             }
