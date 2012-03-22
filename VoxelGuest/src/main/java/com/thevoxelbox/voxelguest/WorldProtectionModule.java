@@ -1,5 +1,7 @@
 package com.thevoxelbox.voxelguest;
 
+import com.thevoxelbox.commands.Command;
+import com.thevoxelbox.commands.CommandPermission;
 import com.thevoxelbox.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
@@ -7,11 +9,17 @@ import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.modules.Setting;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -50,6 +58,7 @@ public class WorldProtectionModule extends Module{
     public HashSet<Integer> bannedblocks = new HashSet<Integer>();
     public HashSet<Integer> banneditems = new HashSet<Integer>();
     
+    private List<EntityPurgeThread> purgeThreads = new ArrayList<EntityPurgeThread>();    
 
     public WorldProtectionModule() {
         super(WorldProtectionModule.class.getAnnotation(MetaData.class));
@@ -103,7 +112,28 @@ public class WorldProtectionModule extends Module{
     
     @Override
     public void disable() {
-        return;
+        if (!purgeThreads.isEmpty()) {
+            for (EntityPurgeThread thread : purgeThreads) {
+                thread.interrupt();
+            }
+        }
+    }
+    
+    @Command(aliases={"entitypurge", "ep"},
+            bounds={1,1},
+            help="Purge all non-players and non-paintings from worlds using\n"
+            + "§c/entitypurge [world]")
+    @CommandPermission(permission="voxelguest.protection.entitypurge")
+    public void entityPurge(CommandSender cs, String[] args) {
+        World world = Bukkit.getWorld(args[0]);
+        
+        if (world == null) {
+            cs.sendMessage("§cNo world found by that name. Did you spell the name correctly?");
+            return;
+        }
+        
+        EntityPurgeThread thread = new EntityPurgeThread(world, cs);
+        thread.start();
     }
     
     /*
@@ -314,6 +344,38 @@ public class WorldProtectionModule extends Module{
         
         if(getConfiguration().getBoolean("disable-creeper-explosion")) {
             event.setCancelled(true);
+        }
+    }
+    
+    class EntityPurgeThread extends Thread {
+        private final World world;
+        private final CommandSender sender;
+        
+        public EntityPurgeThread(World w, CommandSender cs) {
+            world = w;
+            sender = cs;
+            registerPurgeThread();
+        }
+        
+        @Override
+        public void run() {
+            Entity[] entities = new Entity[world.getEntities().size()];
+            entities = world.getEntities().toArray(entities);
+
+            for (Entity e : entities) {
+                if (!((e instanceof Player) || (e instanceof Painting))) {
+                    e.remove();
+                }
+            }
+
+            sender.sendMessage("§aEntity purge complete");
+            
+            if (purgeThreads.contains(this))
+                purgeThreads.remove(this);
+        }
+        
+        private void registerPurgeThread() {
+            purgeThreads.add(this);
         }
     }
 }

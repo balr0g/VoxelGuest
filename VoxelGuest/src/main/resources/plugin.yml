@@ -1,7 +1,7 @@
 name: VoxelGuest
 main: com.thevoxelbox.voxelguest.VoxelGuest
 author: VoxelPlugineering
-version: 4.0.0-b17
+version: 4.0.0-b18
 website: http://voxelwiki.com/minecraft/VoxelGuest
 
 commands:
@@ -54,3 +54,5 @@ commands:
     aliases: [vtp]
   regioninfo:
     aliases: [ri]
+  entitypurge:
+    aliases: [ep]

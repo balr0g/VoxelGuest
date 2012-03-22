@@ -127,7 +127,7 @@ public class GreylistModule extends Module {
     @Override
     public void disable() {
         if (streamTask != null)
-            streamTask.killProcesses();
+            streamTask.interrupt();
             
         String[] toSave = new String[greylist.size()];
         toSave = greylist.toArray(toSave);
@@ -451,7 +451,6 @@ public class GreylistModule extends Module {
     
     class StreamThread extends Thread {
         private ServerSocket serverSocket;
-        private StreamReader readerTask;
         
         public StreamThread(GreylistModule module) {
             try {    
@@ -462,54 +461,34 @@ public class GreylistModule extends Module {
             }
         }
         
-        public void killProcesses() {
-            if (readerTask != null)
-                readerTask.interrupt();
-            
-            this.interrupt();
-        }
-        
         @Override
         public void run() {
             if (serverSocket == null)
                 return;
             
             try {
-                readerTask = new StreamReader(serverSocket.accept());
+                Socket socket = serverSocket.accept();
                 
                 while (streamTask != null) {
-                    readerTask.start();
+                    if (socket != null) {
+                        try {
+                            VoxelGuest.log(name, "Accepted client on port " + streamPort, 0);
+                            List<String> list = readSocket(socket);
+
+                            if (list == null || list.isEmpty())
+                                return;
+
+                            injectGreylist(list);
+                            announceGreylist(list);
+                            socket.close();
+                        } catch (IOException ex) {
+                            VoxelGuest.log(name, "Could not close client stream socket", 2);
+                        }
+                    }
                 }
                 
             } catch (IOException ex) {
                 // Nothing on client end... Continue...
-            }
-        }
-        
-        class StreamReader extends Thread {
-            private final Socket socket;
-            
-            public StreamReader(Socket s) {
-                this.socket = s;
-            }
-            
-            @Override
-            public void run() {
-                if (socket != null) {
-                    try {
-                        VoxelGuest.log(name, "Accepted client on port " + streamPort, 0);
-                        List<String> list = readSocket(socket);
-
-                        if (list == null || list.isEmpty())
-                            return;
-
-                        injectGreylist(list);
-                        announceGreylist(list);
-                        socket.close();
-                    } catch (IOException ex) {
-                        VoxelGuest.log(name, "Could not close client stream socket", 2);
-                    }
-                }
             }
         }
         
@@ -526,7 +505,7 @@ public class GreylistModule extends Module {
                     
                     if (toAdd != null) {
                         if (!list.contains(toAdd))
-                            list.add(line);
+                            list.add(toAdd);
                     }
                 }
                 

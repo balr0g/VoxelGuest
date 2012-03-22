@@ -547,6 +547,12 @@ public class RegionModule extends Module {
                                     return;
                                 }
                             }
+                            
+                            if (PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin") 
+                                    || PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
+                                event.setCancelled(false);
+                                return;
+                            }
                         }
                     }
                 }
@@ -559,6 +565,12 @@ public class RegionModule extends Module {
                         event.setCancelled(true);
                         return;
                     }
+                }
+                
+                if (PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin") 
+                        || PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
+                    event.setCancelled(false);
+                    return;
                 }
             }
         }
@@ -594,6 +606,12 @@ public class RegionModule extends Module {
                                     return;
                                 }
                             }
+                            
+                            if (PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin") 
+                                    || PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
+                                event.setCancelled(false);
+                                return;
+                            }
                         }
                     }
                 }
@@ -606,6 +624,12 @@ public class RegionModule extends Module {
                         event.setCancelled(true);
                         return;
                     }
+                }
+                
+                if (PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin") 
+                        || PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
+                    event.setCancelled(false);
+                    return;
                 }
             }
         }
@@ -641,6 +665,12 @@ public class RegionModule extends Module {
                                     return;
                                 }
                             }
+                            
+                            if (PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".admin") 
+                                    || PermissionsManager.getHandler().hasPermission(subregion.getWorld().getName(), event.getPlayer().getName(), "system.region." + subregion.getName().toLowerCase() + ".modify")) {
+                                event.setCancelled(false);
+                                return;
+                            }
                         }
                     }
                 }
@@ -653,6 +683,12 @@ public class RegionModule extends Module {
                         event.setCancelled(true);
                         return;
                     }
+                }
+                
+                if (PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".admin") 
+                        || PermissionsManager.getHandler().hasPermission(region.getWorld().getName(), event.getPlayer().getName(), "system.region." + region.getName().toLowerCase() + ".modify")) {
+                    event.setCancelled(false);
+                    return;
                 }
             }
         }
