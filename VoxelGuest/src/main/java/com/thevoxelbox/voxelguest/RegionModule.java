@@ -562,6 +562,12 @@ public class RegionModule extends Module {
                 }
             }
         }
+        
+        if (!PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general")) {
+            event.getPlayer().sendMessage("§cYou are not authorized to modify this area.");
+            event.setCancelled(true);
+            return;
+        }
     }
     
     @ModuleEvent(event=BlockDamageEvent.class)
@@ -603,6 +609,12 @@ public class RegionModule extends Module {
                 }
             }
         }
+        
+        if (!PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general")) {
+            event.getPlayer().sendMessage("§cYou are not authorized to modify this area.");
+            event.setCancelled(true);
+            return;
+        } 
     }
     
     @ModuleEvent(event=BlockPlaceEvent.class)
@@ -643,6 +655,12 @@ public class RegionModule extends Module {
                     }
                 }
             }
+        }
+        
+        if (!PermissionsManager.getHandler().hasPermission(event.getPlayer().getName(), "system.build.general")) {
+            event.getPlayer().sendMessage("§cYou are not authorized to modify this area.");
+            event.setCancelled(true);
+            return;
         }
     }
 }
