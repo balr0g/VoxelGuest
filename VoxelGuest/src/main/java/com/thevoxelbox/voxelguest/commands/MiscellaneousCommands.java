@@ -36,6 +36,7 @@ import com.thevoxelbox.voxelguest.VoxelGuest;
 import com.thevoxelbox.voxelguest.modules.ModuleException;
 import com.thevoxelbox.voxelguest.modules.ModuleManager;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -219,9 +220,9 @@ public class MiscellaneousCommands {
         sender.sendMessage("§8------------------------------");
         sender.sendMessage(header.trim());
         
-        for (Map.Entry<String, List<String>> entry : storage.entrySet()) {
-            sendGroupStrings(sender, entry.getValue(), entry.getKey());
-        }
+      for (Map.Entry<String, List<String>> entry : storage.entrySet()) {
+          sendGroupStrings(sender, entry.getValue(), entry.getKey());
+      }
         
         sender.sendMessage("§8------------------------------");
     }
@@ -255,6 +256,7 @@ public class MiscellaneousCommands {
             boolean groupStart = false;
             String line = " ";
             Iterator<String> it = list.listIterator();
+            Collections.sort(list);
             
             while (it.hasNext()) {
                 String str = it.next();
