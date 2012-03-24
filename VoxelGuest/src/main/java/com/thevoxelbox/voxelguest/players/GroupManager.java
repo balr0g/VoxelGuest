@@ -33,11 +33,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.bukkit.entity.Player;
 
 public class GroupManager {
     
-    protected static HashMap<String, Configuration> groupMap = new HashMap<String, Configuration>();
+    protected static Map<String, Configuration> groupMap = new TreeMap<String, Configuration>();
     protected static HashMap<String, List<String>> playerMap = new HashMap<String, List<String>>();
     
     // Basic group defaults

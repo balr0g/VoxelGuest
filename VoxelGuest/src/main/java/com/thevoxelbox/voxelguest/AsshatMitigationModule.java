@@ -34,12 +34,12 @@ public class AsshatMitigationModule extends Module {
     }
     
     class AsshatMitigationConfiguration extends ModuleConfiguration {
-        @Setting("default-asshat-reason") public String defaultAsshatReason = "§cAsshat";
+        @Setting("default-asshat-reason") public String defaultAsshatReason = "&cAsshat";
         @Setting("save-banlist-on-ban") public boolean saveBanlistOnBan = false;
         @Setting("unrestrict-chat-message") public String unrestrictChatMessage = "I agree. Allow me to chat.";
-        @Setting("gag-message-format") public String gagMessageFormat = "§cYou have been gagged. You cannot chat until you say\n"
-                + "§6the ungag key phrase.";
-        @Setting("ungag-message-format") public String ungagMessageFormat = "§aYou have been ungagged.";
+        @Setting("gag-message-format") public String gagMessageFormat = "&cYou have been gagged. You cannot chat until you say\n"
+                + "&6the ungag key phrase.";
+        @Setting("ungag-message-format") public String ungagMessageFormat = "&aYou have been ungagged.";
         
         public AsshatMitigationConfiguration(AsshatMitigationModule parent) {
             super(parent);

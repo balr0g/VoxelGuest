@@ -163,11 +163,12 @@ public class WorldProtectionModule extends Module{
     @ModuleEvent(event=BlockPlaceEvent.class)
     public void onBlockPlace(BukkitEventWrapper wrapper) {
         BlockPlaceEvent event = (BlockPlaceEvent) wrapper.getEvent();
+        Player player = event.getPlayer();
         Player[] p = Bukkit.getOnlinePlayers();
         int onlinecount = Bukkit.getOnlinePlayers().length;
         Block b = event.getBlock();
         
-        if (bannedblocks.contains(b.getTypeId())) {
+        if (bannedblocks.contains(b.getTypeId()) && !PermissionsManager.getHandler().hasPermission(player.getName(), "voxelguest.protection.bannedblocks")) {
             event.setCancelled(true);
             
             for(int i = 0; i < onlinecount; i++) {
@@ -187,15 +188,16 @@ public class WorldProtectionModule extends Module{
     @ModuleEvent(event=PlayerInteractEvent.class)
     public void onPlayerInteract(BukkitEventWrapper wrapper) {
         PlayerInteractEvent event = (PlayerInteractEvent) wrapper.getEvent();
+        Player player = event.getPlayer();
         Player[] p = Bukkit.getOnlinePlayers();
         int onlinecount = Bukkit.getOnlinePlayers().length;
         ItemStack is = event.getItem();
         
-        if (is != null && banneditems.contains(is.getTypeId())) {
+        if (is != null && banneditems.contains(is.getTypeId()) && !PermissionsManager.getHandler().hasPermission(player.getName(), "voxelguest.protection.banneditems")) {
             event.setCancelled(true);
             
             for (int i = 0; i < onlinecount; i++) {
-                if(PermissionsManager.getHandler().hasPermission(p[i].getName(), "voxelguest.protection.bannedblocks.warning")) {
+                if(PermissionsManager.getHandler().hasPermission(p[i].getName(), "voxelguest.protection.banneditems.warning")) {
                     p[i].sendMessage("§9[VG] §8Player &c" + event.getPlayer().getName() + " §8tried to §buse §9" + is.getType().toString() + "§8(§9" + is.getTypeId() + "§8)");
                 }
             }

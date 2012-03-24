@@ -30,8 +30,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Configuration {
+    private final static Pattern COLOR = Pattern.compile("(?i)&([0-F])");
     private HashMap<String, Object> map = new HashMap<String, Object>();
     private String target;
     private String destination;
@@ -126,7 +128,7 @@ public class Configuration {
         else if (!(map.get(key) instanceof String))
             return null;
         else
-            return map.get(key).toString();
+            return format(map.get(key).toString());
     }
     
     public boolean getBoolean(String key) {
@@ -195,5 +197,9 @@ public class Configuration {
             return;
         
         map.put(key, Double.valueOf(value));
+    }
+    
+    public static String format(String line) {
+        return COLOR.matcher(line).replaceAll("\u00A7$1");
     }
 }
