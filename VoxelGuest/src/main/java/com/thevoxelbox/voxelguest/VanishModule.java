@@ -174,8 +174,7 @@ public class VanishModule extends Module {
         
         if (ofakequit.contains(event.getPlayer().getName())) {
             ofakequit.remove(event.getPlayer().getName());
-            fakequit.add(event.getPlayer().getName());
-            resetHiddenPlayer(event.getPlayer());
+            hidePlayer(event.getPlayer());
             
             event.setJoinMessage("");
         }
@@ -220,7 +219,6 @@ public class VanishModule extends Module {
         
         if (!vanished.contains(hidden.getName())) {
             vanished.add(hidden.getName());
-            VoxelGuest.log(Boolean.valueOf(isVanished(hidden)).toString());
             
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                 if (!safeList.contains(p.getName()))
@@ -253,15 +251,6 @@ public class VanishModule extends Module {
             Player vanishedPlayer = Bukkit.getPlayer(vanishedName);
             
             p.showPlayer(vanishedPlayer);
-        }
-    }
-    
-    public void resetHiddenPlayer(Player hidden) {
-        if (vanished.contains(hidden.getName())) {
-            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                if (!safeList.contains(p.getName()))
-                    p.hidePlayer(hidden);
-            }
         }
     }
     
