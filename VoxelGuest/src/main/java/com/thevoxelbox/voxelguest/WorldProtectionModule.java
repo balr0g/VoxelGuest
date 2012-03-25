@@ -72,6 +72,7 @@ public class WorldProtectionModule extends Module{
         @Setting("disable-ice-formation") public boolean iceform = false;
         @Setting("disable-snow-formation") public boolean snowform = false;
         @Setting("disable-block-burning") public boolean blockburn = false;
+        @Setting("disable-block-ignite") public boolean blockignite = true;
         @Setting("disable-fire-spread") public boolean firespred = false;
         @Setting("disable-enchanting") public boolean enchanting = false;
         @Setting("disable-creeper-explosion") public boolean creeperexplode = false;
@@ -253,7 +254,7 @@ public class WorldProtectionModule extends Module{
     @ModuleEvent(event=BlockFormEvent.class, ignoreCancelledEvents=true)
     public void onBlockForm(BukkitEventWrapper wrapper) {
         BlockFormEvent event = (BlockFormEvent) wrapper.getEvent();
-        Block b = event.getNewState().getBlock();
+        Block b = event.getBlock();
         
         if (b.getType().equals(Material.ICE) && getConfiguration().getBoolean("disable-ice-formation")) {
             event.setCancelled(true);
@@ -283,10 +284,11 @@ public class WorldProtectionModule extends Module{
     }
     
     /*
-     * World Protection - BlockIgnite Event
+     * World Protection BlockIgnite Event
      * Written by: Razorcane
      * 
-     * Handles Fire Spread.
+     * Handles the ignition(fire) of blocks, whether it be from lava,
+     * lightning, or player means.
      */
     @ModuleEvent(event=BlockIgniteEvent.class)
     public void onBlockIgnite(BukkitEventWrapper wrapper) {
@@ -295,7 +297,7 @@ public class WorldProtectionModule extends Module{
         
         boolean fireSpread = (cause == IgniteCause.SPREAD || cause == IgniteCause.LAVA || cause == IgniteCause.LIGHTNING);
         
-        if (fireSpread && getConfiguration().getBoolean("disable-fire-spread")) {
+        if (fireSpread && getConfiguration().getBoolean("disable-block-ignite")) {
             event.setCancelled(true);
             return;
         }
