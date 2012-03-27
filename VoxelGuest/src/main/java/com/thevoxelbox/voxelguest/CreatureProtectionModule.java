@@ -42,6 +42,7 @@ public class CreatureProtectionModule extends Module{
         @Setting("disable-irongolem-spawning") public boolean irongolem = false;
         @Setting("disable-magmacube-spawning") public boolean magmacube = false;
         @Setting("disable-mushroomcow-spawning") public boolean mushroomcow = false;
+        @Setting("disable-ocelot-spawning") public boolean ocelot = false;
         @Setting("disable-pig-spawning") public boolean pig = false;
         @Setting("disable-pigzombie-spawning") public boolean pigzombie = false;
         @Setting("disable-sheep-spawning") public boolean sheep = false;
