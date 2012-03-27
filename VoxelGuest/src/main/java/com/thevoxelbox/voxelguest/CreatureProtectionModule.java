@@ -39,6 +39,7 @@ public class CreatureProtectionModule extends Module{
         @Setting("disable-enderman-spawning") public boolean enderman = false;
         @Setting("disable-enderdragon-spawning") public boolean enderdragon = false;
         @Setting("disable-ghast-spawning") public boolean ghast = false;
+        @Setting("disable-irongolem-spawning") public boolean irongolem = false;
         @Setting("disable-magmacube-spawning") public boolean magmacube = false;
         @Setting("disable-mushroomcow-spawning") public boolean mushroomcow = false;
         @Setting("disable-pig-spawning") public boolean pig = false;
@@ -117,6 +118,10 @@ public class CreatureProtectionModule extends Module{
                     }
                 case ENDER_DRAGON:
                     if (getConfiguration().getBoolean("disable-enderdragon-spawning")) {
+                        event.setCancelled(true);
+                    }
+                case IRON_GOLEM:
+                    if(getConfiguration().getBoolean("disable-irongolem-spawning")) {
                         event.setCancelled(true);
                     }
                 case GHAST:
