@@ -166,10 +166,8 @@ public class OfflineModeModule extends Module {
 
             if (gp.get(VoxelGuest.getPluginId(VoxelGuest.getInstance()), "offline-password") == null) {
                 event.getPlayer().kickPlayer("You do not have an offline mode account.");
-                wrapper.setCancelled(true);
             } else if (isTempBanned(event.getPlayer().getName())) {
                 event.getPlayer().kickPlayer("You have been banned for hacking this account.");
-                wrapper.setCancelled(true);
             }
 
             needsUnlock.add(event.getPlayer().getName());
@@ -217,7 +215,6 @@ public class OfflineModeModule extends Module {
         if (isActive() && needsUnlock.contains(event.getPlayer().getName())) {
             event.getPlayer().teleport(event.getFrom());
             event.setCancelled(true);
-            wrapper.setCancelled(true);
         }
     }
 
@@ -227,7 +224,6 @@ public class OfflineModeModule extends Module {
 
         if (isActive() && needsUnlock.contains(event.getPlayer().getName())) {
             event.setCancelled(true);
-            wrapper.setCancelled(true);
             return;
         }
     }

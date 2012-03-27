@@ -1,7 +1,7 @@
 name: VoxelGuest
 main: com.thevoxelbox.voxelguest.VoxelGuest
 author: VoxelPlugineering
-version: 4.0.0-b18
+version: 4.0.0-b19
 website: http://voxelwiki.com/minecraft/VoxelGuest
 
 commands:
@@ -52,6 +52,8 @@ commands:
     aliases: [lr]
   vteleport:
     aliases: [vtp]
+  vback:
+    description: Inverse of /vteleport
   regioninfo:
     aliases: [ri]
   entitypurge:

@@ -52,6 +52,8 @@ public class MiscellaneousCommands {
     private final String FAKEQUIT = "§8[§cFQ§8]";
     private final String COMMA = "§6,";
     
+    private HashMap<String, Location> teleportHistory = new HashMap<String, Location>();
+    
     
     @Command(aliases={"who", "online", "list", "readlist", "playerlist"},
             bounds={0,1},
@@ -94,6 +96,7 @@ public class MiscellaneousCommands {
                     p.teleport(loc);
                 } else {
                     if (args[1].matches("me")) {
+                        insertHistoryEntry(pl, pl.getLocation());
                         pl.sendMessage(ChatColor.DARK_AQUA + "Woosh!");
                         pl.teleport(p.getLocation());
                         return;
@@ -117,13 +120,45 @@ public class MiscellaneousCommands {
                         }
                     }
 
+                    insertHistoryEntry(p, p.getLocation());
                     p.teleport(loc);
                 }
             }
             return;
         } else {
-            cs.sendMessage(ChatColor.LIGHT_PURPLE + "Please specify the target player");
+            cs.sendMessage(ChatColor.RED + "Please specify the target player.");
             return;
+        }
+    }
+    
+    @Command(aliases={"vback"},
+            bounds={0, 0},
+            help="Go back to your previous location with §c/vback",
+            playerOnly=true)
+    @CommandPermission(permission="voxelguest.miscellaneous.vback")
+    public void vback(CommandSender cs, String[] args) {
+        Player p = (Player) cs;
+        
+        Location back = getHistoryEntry(p);
+        if (back == null) {
+            p.sendMessage("§cYou have no previous location.");
+        } else {
+            p.sendMessage(ChatColor.DARK_AQUA + "Woosh!");
+            p.teleport(back);
+        }
+    }
+    
+    private void insertHistoryEntry(Player p, Location last) {
+        teleportHistory.put(p.getName(), last);
+    }
+    
+    private Location getHistoryEntry(Player p) {
+        if (!teleportHistory.containsKey(p.getName())) {
+            return null;
+        } else {
+            Location back = teleportHistory.get(p.getName());
+            teleportHistory.remove(p.getName());
+            return back;
         }
     }
     
