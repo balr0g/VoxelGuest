@@ -134,7 +134,10 @@ public class CreatureProtectionModule extends Module{
                     }
                 case MUSHROOM_COW:
                     if (getConfiguration().getBoolean("disable-mushroomcow-spawning")) {
-                        
+                        event.setCancelled(true);
+                    }
+                case OCELOT:
+                    if(getConfiguration().getBoolean("disable-ocelot-spawning")) {
                         event.setCancelled(true);
                     }
                 case PIG:
