@@ -250,6 +250,9 @@ public class VanishModule extends Module {
             String vanishedName = it.next();
             Player vanishedPlayer = Bukkit.getPlayer(vanishedName);
             
+            if (vanishedPlayer == null)
+                continue;
+            
             p.showPlayer(vanishedPlayer);
         }
     }
