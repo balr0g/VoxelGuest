@@ -290,8 +290,8 @@ public class MiscellaneousCommands {
         } else {
             boolean groupStart = false;
             String line = " ";
-            Iterator<String> it = list.listIterator();
             Collections.sort(list);
+            Iterator<String> it = list.listIterator();
             
             while (it.hasNext()) {
                 String str = it.next();
