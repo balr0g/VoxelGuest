@@ -39,8 +39,10 @@ public class CreatureProtectionModule extends Module{
         @Setting("disable-enderman-spawning") public boolean enderman = false;
         @Setting("disable-enderdragon-spawning") public boolean enderdragon = false;
         @Setting("disable-ghast-spawning") public boolean ghast = false;
+        @Setting("disable-irongolem-spawning") public boolean irongolem = false;
         @Setting("disable-magmacube-spawning") public boolean magmacube = false;
         @Setting("disable-mushroomcow-spawning") public boolean mushroomcow = false;
+        @Setting("disable-ocelot-spawning") public boolean ocelot = false;
         @Setting("disable-pig-spawning") public boolean pig = false;
         @Setting("disable-pigzombie-spawning") public boolean pigzombie = false;
         @Setting("disable-sheep-spawning") public boolean sheep = false;
@@ -119,6 +121,10 @@ public class CreatureProtectionModule extends Module{
                     if (getConfiguration().getBoolean("disable-enderdragon-spawning")) {
                         event.setCancelled(true);
                     }
+                case IRON_GOLEM:
+                    if(getConfiguration().getBoolean("disable-irongolem-spawning")) {
+                        event.setCancelled(true);
+                    }
                 case GHAST:
                     if (getConfiguration().getBoolean("disable-ghast-spawning")) {
                         event.setCancelled(true);
@@ -129,7 +135,10 @@ public class CreatureProtectionModule extends Module{
                     }
                 case MUSHROOM_COW:
                     if (getConfiguration().getBoolean("disable-mushroomcow-spawning")) {
-                        
+                        event.setCancelled(true);
+                    }
+                case OCELOT:
+                    if(getConfiguration().getBoolean("disable-ocelot-spawning")) {
                         event.setCancelled(true);
                     }
                 case PIG:
