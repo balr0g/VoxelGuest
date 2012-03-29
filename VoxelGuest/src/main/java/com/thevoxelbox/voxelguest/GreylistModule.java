@@ -44,6 +44,7 @@ import com.thevoxelbox.voxelguest.util.FlatFileManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -510,6 +511,7 @@ public class GreylistModule extends Module {
             try {
                 VoxelGuest.log(name, "Accepted client on port " + streamPort, 0);
                 List<String> list = readSocket(socket);
+                socket.close();
 
                 if (list == null || list.isEmpty()) {
                     status = 201;
@@ -518,7 +520,6 @@ public class GreylistModule extends Module {
 
                 injectGreylist(list);
                 announceGreylist(list);
-                socket.close();
             } catch (IOException ex) {
                 VoxelGuest.log(name, "Could not close client stream socket", 2);
                 status = 222;
@@ -528,21 +529,25 @@ public class GreylistModule extends Module {
         
         private synchronized List<String> readSocket(Socket socket) {
             try {
-                BufferedReader stream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 
                 List<String> list = new ArrayList<String>();
                 String line = null;
                 
-                while ((line = stream.readLine()) != null) {
+                while ((line = in.readLine()) != null) {
                     String toAdd = interpretStreamInput(line);
                     
                     if (toAdd != null) {
                         if (!list.contains(toAdd))
                             list.add(toAdd);
                     }
+                    
+                    out.println(line);
                 }
                 
-                stream.close();
+                in.close();
+                out.close();
                 socket.close();
                 return list;
             } catch (SocketException ex) {
