@@ -546,7 +546,11 @@ public class RegionModule extends Module {
             getConfiguration().getBoolean("enable-general-build-outside-defined-regions") &&
             PermissionsManager.getHandler().hasPermission(playerName, "system.build.general"))
             return true;
+        else if (permissionSuffix.equalsIgnoreCase("modify") &&
+            getConfiguration().getBoolean("enable-general-build-outside-defined-regions") &&
+            !PermissionsManager.getHandler().hasPermission(playerName, "system.build.general"))
+            return false;
         
-        return false;
+        return true;
     }
 }
