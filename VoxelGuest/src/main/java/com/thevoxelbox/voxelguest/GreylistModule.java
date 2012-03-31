@@ -481,7 +481,7 @@ public class GreylistModule extends Module {
                 }
                 
             } catch (IOException ex) {
-                VoxelGuest.log(name, "Could not accept port " + streamPort, 2);
+                // Shutting down...
             }
         }
     }

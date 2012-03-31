@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
@@ -89,23 +88,12 @@ public class ModuleSystemListener implements Listener {
                     continue;
                 
                 Method method = entry.getKey();
-                boolean ignoreCancelled = entry.getValue().ignoreCancelledEvents();
                 
                 if (didProcess.contains(method))
                     continue;
                 
                 if (!instances.get(method).isEnabled())
                     continue;
-                
-                if (wrapper.isCancelled() && ignoreCancelled)
-                    continue;
-                
-                if (event instanceof Cancellable) {
-                    Cancellable cancel = (Cancellable) event;
-                    
-                    if (cancel.isCancelled() && ignoreCancelled)
-                        continue;
-                }
                 
                 try {
                     method.invoke(instances.get(method), wrapper);
