@@ -94,14 +94,16 @@ public class RegionModule extends Module {
     
     @Override
     public void disable() {
-        Iterator<Region> it = loadedRegions.listIterator();
-        
-        while (it.hasNext()) {
-            Region region = it.next();
-            region.save();
+        if (loadedRegions != null || !loadedRegions.isEmpty()) {
+            Iterator<Region> it = loadedRegions.listIterator();
+
+            while (it.hasNext()) {
+                Region region = it.next();
+                region.save();
+            }
+
+            loadedRegions.clear();
         }
-        
-        loadedRegions.clear();
     }
 
     @Override
@@ -555,6 +557,12 @@ public class RegionModule extends Module {
         
         return true;
     }
+    
+//    private boolean checkRegionStack(Region[] regions, String playerName, Location loc, String permissionSuffix) {
+//        for (Region region : regions) {
+//            
+//        }
+//    }
     
     public ModifyResult canModify(Player p, Location loc) {
         Region[] regions = new Region[loadedRegions.size()];

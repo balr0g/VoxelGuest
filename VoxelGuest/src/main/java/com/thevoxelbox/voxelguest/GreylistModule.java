@@ -460,13 +460,13 @@ public class GreylistModule extends Module {
                 reader.interrupt();
             }
             
+            this.interrupt();
+            
             try {
                 serverSocket.close();
             } catch (IOException ex) {
                 VoxelGuest.log(name, "Could not release port " + streamPort, 2);
             }
-            
-            this.interrupt();
         }
         
         @Override
