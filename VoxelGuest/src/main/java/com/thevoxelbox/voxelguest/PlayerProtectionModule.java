@@ -7,6 +7,7 @@ import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.modules.Setting;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -85,14 +86,8 @@ public class PlayerProtectionModule extends Module {
         
         if(e instanceof Player){
             switch(dc){
-                case BLOCK_EXPLOSION:
-                    if(getConfiguration().getBoolean("disable-tnt-damage"))
-                        event.setCancelled(true);
                 case CONTACT:
                     if(getConfiguration().getBoolean("disable-cactus-damage"))
-                        event.setCancelled(true);
-                case FIRE:
-                    if(getConfiguration().getBoolean("disable-fire-damage"))
                         event.setCancelled(true);
                 case LAVA:
                     if (getConfiguration().getBoolean("disable-lava-damage"))
@@ -113,14 +108,26 @@ public class PlayerProtectionModule extends Module {
         Entity e = event.getEntity();
         DamageCause dc = event.getCause();
         
-        if(e instanceof Player) {
-            switch(dc){
+        if (e instanceof Player) {
+            switch (dc){
                 case ENTITY_ATTACK:
                     if (getConfiguration().getBoolean("disable-pvp-damage"))
                         event.setCancelled(true);
                 case ENTITY_EXPLOSION:
                     if (getConfiguration().getBoolean("disable-explosion-damage"))
                         event.setCancelled(true);
+                case PROJECTILE:
+                    if (getConfiguration().getBoolean("disable-projectile-damage"))
+                        event.setCancelled(true);
+                case BLOCK_EXPLOSION:
+                    if(getConfiguration().getBoolean("disable-tnt-damage"))
+                        event.setCancelled(true);
+            }
+        } else if (e instanceof Painting) {
+            switch (dc) {
+                case BLOCK_EXPLOSION:
+                        if(getConfiguration().getBoolean("disable-tnt-damage"))
+                            event.setCancelled(true);
             }
         }
     }
@@ -138,6 +145,8 @@ public class PlayerProtectionModule extends Module {
         DamageCause dc = event.getCause();
         
         if (e instanceof Player) {
+            Player p = (Player) e;
+            
             switch (dc) {
                 case DROWNING:
                     if (getConfiguration().getBoolean("disable-drowning-damage"))
@@ -145,9 +154,14 @@ public class PlayerProtectionModule extends Module {
                 case FALL:
                     if (getConfiguration().getBoolean("disable-fall-damage"))
                         event.setCancelled(true);
-                case FIRE_TICK:
-                    if (getConfiguration().getBoolean("disable-firetick-damage"))
+                case FIRE:
+                    if(getConfiguration().getBoolean("disable-fire-damage"))
                         event.setCancelled(true);
+                case FIRE_TICK:
+                    if (getConfiguration().getBoolean("disable-firetick-damage")) {
+                        p.setFireTicks(0);
+                        event.setCancelled(true);
+                    }
                 case LIGHTNING:
                     if (getConfiguration().getBoolean("disable-lightning-damage"))
                         event.setCancelled(true);
@@ -156,9 +170,6 @@ public class PlayerProtectionModule extends Module {
                         event.setCancelled(true);
                 case POISON:
                     if (getConfiguration().getBoolean("disable-poison-damage"))
-                        event.setCancelled(true);
-                case PROJECTILE:
-                    if (getConfiguration().getBoolean("disable-projectile-damage"))
                         event.setCancelled(true);
                 case STARVATION:
                     if (getConfiguration().getBoolean("disable-suffocation-damage"))

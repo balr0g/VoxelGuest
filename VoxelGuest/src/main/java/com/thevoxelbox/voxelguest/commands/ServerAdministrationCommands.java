@@ -23,6 +23,7 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.thevoxelbox.voxelguest.commands;
 
 import com.thevoxelbox.commands.Command;
@@ -41,6 +42,8 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Painting;
+import org.bukkit.entity.Player;
 
 public class ServerAdministrationCommands {
     private long pollInterval = 150L;
@@ -58,6 +61,28 @@ public class ServerAdministrationCommands {
             }
             
         }, 0L, pollInterval);
+        
+        if (VoxelGuest.getConfigData().getBoolean("enable-ram-clear-cycle")) {
+            long interval = VoxelGuest.getConfigData().getInt("ram-clear-cycle-time") * 1200L;
+            
+            if (interval > 0) {
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(VoxelGuest.getInstance(), new Runnable() {
+
+                    @Override
+                    public void run() {
+                        VoxelGuest.log("Running RAM cleaner...");
+                        
+                        for (World world : Bukkit.getWorlds()) {
+                            EntityPurgeThread thread = new EntityPurgeThread(world);
+                            thread.start();
+                        }
+                        
+                        new GarbageCollectionThread().start();
+                        
+                    }
+                }, interval, interval);
+            }
+        }
     }
     
     @Command(aliases = {"system", "sys"},
@@ -176,17 +201,7 @@ public class ServerAdministrationCommands {
             VoxelGuest.getInstance().loadFactorySettings();
             cs.sendMessage("§aReset to factory settings");
         } else if (args[0].equalsIgnoreCase("gc") || args[0].equalsIgnoreCase("flush")) {
-            cs.sendMessage("§8//§e//§8//§e//§8//§e//§8//§e//§8//§e//");
-            cs.sendMessage("§cWARNING: May cause memory leaks. USE ONLY WHEN DESPERATE!");
-            
-            double old = Runtime.getRuntime().freeMemory() / 1048576;
-            Runtime.getRuntime().gc();
-            double now = Runtime.getRuntime().freeMemory() / 1048576;
-            double change = now - old;
-            
-            cs.sendMessage("§6JVM Garbage Collector run complete.");
-            cs.sendMessage("§6" + change + " MB of memory has been freed.");
-            cs.sendMessage("§e//§8//§e//§8//§e//§8//§e//§8//§e//§8//");
+            new GarbageCollectionThread(cs).start();
         }
     }
     
@@ -327,6 +342,55 @@ public class ServerAdministrationCommands {
             }
 
             config.setString(key, value);
+        }
+    }
+    
+    class EntityPurgeThread extends Thread {
+        private final World world;
+        
+        public EntityPurgeThread(World w) {
+            world = w;
+        }
+        
+        @Override
+        public void run() {
+            Entity[] entities = new Entity[world.getEntities().size()];
+            entities = world.getEntities().toArray(entities);
+            
+            int removed = 0;
+
+            for (Entity e : entities) {
+                if (!((e instanceof Player) || (e instanceof Painting))) {
+                    e.remove();
+                    removed++;
+                }
+            }
+
+            Bukkit.getConsoleSender().sendMessage("§aEntity purge complete - Removed " + removed + " entities in world " + world.getName());
+            return;
+        }
+    }
+    
+    class GarbageCollectionThread extends Thread {
+        private final CommandSender sender;
+        
+        public GarbageCollectionThread(CommandSender cs) {
+            sender = cs;
+        }
+        
+        public GarbageCollectionThread() {
+            sender = Bukkit.getConsoleSender();
+        }
+        
+        @Override
+        public void run() {
+            double old = Runtime.getRuntime().freeMemory() / 1048576;
+            Runtime.getRuntime().gc();
+            double current = Runtime.getRuntime().freeMemory() / 1048576;
+            double change = current - old;
+            
+            sender.sendMessage("§6" + change + " MB of memory have been freed.");
+            return;
         }
     }
 }

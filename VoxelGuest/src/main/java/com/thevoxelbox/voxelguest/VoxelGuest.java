@@ -288,6 +288,9 @@ public class VoxelGuest extends JavaPlugin {
         getConfigData().setBoolean("permissions-multiworld", false);
         getConfigData().setBoolean("permissions-default-op", false);
         
+        getConfigData().setBoolean("enable-ram-clear-cycle", false);
+        getConfigData().setInt("ram-clear-cycle-time", 60);
+        
         for (Module module : ModuleManager.getManager().getModules()) {
             if (module.getConfiguration() != null)
                 module.getConfiguration().reset();
