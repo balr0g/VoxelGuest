@@ -250,6 +250,7 @@ public class MiscellaneousCommands {
             colorSwitch = !colorSwitch;
         }
         
+        
         header = writeHeader(storage, Bukkit.getOnlinePlayers().length - getFakequitSize());
         
         sender.sendMessage("§8------------------------------");
@@ -290,8 +291,8 @@ public class MiscellaneousCommands {
         } else {
             boolean groupStart = false;
             String line = " ";
-            Collections.sort(list);
             Iterator<String> it = list.listIterator();
+            Collections.sort(list);
             
             while (it.hasNext()) {
                 String str = it.next();
