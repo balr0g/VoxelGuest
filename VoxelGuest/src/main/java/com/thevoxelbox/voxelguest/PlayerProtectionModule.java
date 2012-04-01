@@ -8,6 +8,8 @@ import com.thevoxelbox.voxelguest.modules.ModuleEvent;
 import com.thevoxelbox.voxelguest.modules.Setting;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -69,10 +71,65 @@ public class PlayerProtectionModule extends Module {
         
     }
     
-    /* Player Protection - EntityDamage Event
+    /*
+     * Player Protection - EntityDamageByBlock Event
      * Written by: Razorcane
      * 
-     * Handles all player-based damages.
+     * Handles player damage dealt by a block.
+     */
+    @ModuleEvent(event=EntityDamageByBlockEvent.class)
+    public void onEntityDamageByBlock(BukkitEventWrapper wrapper){
+        EntityDamageByBlockEvent event = (EntityDamageByBlockEvent) wrapper.getEvent();
+        Entity e = event.getEntity();
+        DamageCause dc = event.getCause();
+        
+        if(e instanceof Player){
+            switch(dc){
+                case BLOCK_EXPLOSION:
+                    if(getConfiguration().getBoolean("disable-tnt-damage"))
+                        event.setCancelled(true);
+                case CONTACT:
+                    if(getConfiguration().getBoolean("disable-cactus-damage"))
+                        event.setCancelled(true);
+                case FIRE:
+                    if(getConfiguration().getBoolean("disable-fire-damage"))
+                        event.setCancelled(true);
+                case LAVA:
+                    if (getConfiguration().getBoolean("disable-lava-damage"))
+                        event.setCancelled(true);
+            }
+        }
+    }
+    
+    /*
+     * PlayerProtection EntityDamageByEntity Event
+     * Written by: Razorcane
+     * 
+     * Handles damage by entity-related damage causes.
+     */
+    @ModuleEvent(event=EntityDamageByEntityEvent.class)
+    public void EntityDamageByEntity(BukkitEventWrapper wrapper){
+        EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) wrapper.getEvent();
+        Entity e = event.getEntity();
+        DamageCause dc = event.getCause();
+        
+        if(e instanceof Player) {
+            switch(dc){
+                case ENTITY_ATTACK:
+                    if (getConfiguration().getBoolean("disable-pvp-damage"))
+                        event.setCancelled(true);
+                case ENTITY_EXPLOSION:
+                    if (getConfiguration().getBoolean("disable-explosion-damage"))
+                        event.setCancelled(true);
+            }
+        }
+    }
+    
+    /*
+     * Player Protection - EntityDamage Event
+     * Written by: Razorcane
+     * 
+     * Handles certain non-block/entity damage causes.
      */
     @ModuleEvent(event=EntityDamageEvent.class)
     public void onEntityDamage(BukkitEventWrapper wrapper) {
@@ -82,32 +139,14 @@ public class PlayerProtectionModule extends Module {
         
         if (e instanceof Player) {
             switch (dc) {
-                case BLOCK_EXPLOSION:
-                    if (getConfiguration().getBoolean("disable-tnt-damage"))
-                        event.setCancelled(true);
-                case CONTACT:
-                    if (getConfiguration().getBoolean("disable-cactus-damage"))
-                        event.setCancelled(true);
                 case DROWNING:
                     if (getConfiguration().getBoolean("disable-drowning-damage"))
-                        event.setCancelled(true);
-                case ENTITY_ATTACK:
-                    if (getConfiguration().getBoolean("disable-pvp-damage"))
-                        event.setCancelled(true);
-                case ENTITY_EXPLOSION:
-                    if (getConfiguration().getBoolean("disable-explosion-damage"))
                         event.setCancelled(true);
                 case FALL:
                     if (getConfiguration().getBoolean("disable-fall-damage"))
                         event.setCancelled(true);
-                case FIRE:
-                    if (getConfiguration().getBoolean("disable-fire-damage"))
-                        event.setCancelled(true);
                 case FIRE_TICK:
                     if (getConfiguration().getBoolean("disable-firetick-damage"))
-                        event.setCancelled(true);
-                case LAVA:
-                    if (getConfiguration().getBoolean("disable-lava-damage"))
                         event.setCancelled(true);
                 case LIGHTNING:
                     if (getConfiguration().getBoolean("disable-lightning-damage"))

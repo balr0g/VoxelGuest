@@ -250,6 +250,7 @@ public class MiscellaneousCommands {
             colorSwitch = !colorSwitch;
         }
         
+        
         header = writeHeader(storage, Bukkit.getOnlinePlayers().length - getFakequitSize());
         
         sender.sendMessage("§8------------------------------");
