@@ -62,6 +62,7 @@ public class SystemListener extends ModuleSystemListener {
     @EventHandler(priority = EventPriority.HIGH) 
     public void onPlayerJoin(PlayerJoinEvent event) {
         GuestPlayer gp = VoxelGuest.registerPlayer(event.getPlayer());
+        VoxelGuest.getGroupManager().verifyPlayerGroupExistence(event.getPlayer());
         
         VoxelGuest.ONLINE_MEMBERS++;
         
@@ -77,8 +78,6 @@ public class SystemListener extends ModuleSystemListener {
         }
         
         processModuleEvents(event);
-        
-        VoxelGuest.getGroupManager().verifyPlayerGroupExistence(event.getPlayer());
     }
     
     @EventHandler(priority = EventPriority.HIGH)

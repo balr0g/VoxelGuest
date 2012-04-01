@@ -127,7 +127,7 @@ public class GreylistModule extends Module {
     @Override
     public void disable() {
         if (streamTask != null)
-            streamTask.interrupt();
+            streamTask.killProcesses();
             
         String[] toSave = new String[greylist.size()];
         toSave = greylist.toArray(toSave);
@@ -424,14 +424,7 @@ public class GreylistModule extends Module {
         if (list.isEmpty() || list == null)
             return;
         
-        Iterator<String> it = list.listIterator();
-        
-        while (it.hasNext()) {
-            String user = it.next();
-            
-            if (!greylist.contains(user))
-                greylist.add(user);
-        }
+       greylist.addAll(list);
     }
     
     private String interpretStreamInput(String input) {
@@ -451,6 +444,7 @@ public class GreylistModule extends Module {
     
     class StreamThread extends Thread {
         private ServerSocket serverSocket;
+        private StreamReader reader;
         
         public StreamThread(GreylistModule module) {
             try {    
@@ -461,55 +455,99 @@ public class GreylistModule extends Module {
             }
         }
         
+        public void killProcesses() {
+            if (reader != null && reader.getStatus() == 100) {
+                reader.interrupt();
+            }
+            
+            this.interrupt();
+            
+            try {
+                serverSocket.close();
+            } catch (IOException ex) {
+                VoxelGuest.log(name, "Could not release port " + streamPort, 2);
+            }
+        }
+        
         @Override
         public void run() {
             if (serverSocket == null)
                 return;
             
             try {
-                Socket socket = serverSocket.accept();
-                
-                while (streamTask != null) {
-                    if (socket != null) {
-                        try {
-                            VoxelGuest.log(name, "Accepted client on port " + streamPort, 0);
-                            List<String> list = readSocket(socket);
-
-                            if (list == null || list.isEmpty())
-                                return;
-
-                            injectGreylist(list);
-                            announceGreylist(list);
-                            socket.close();
-                        } catch (IOException ex) {
-                            VoxelGuest.log(name, "Could not close client stream socket", 2);
-                        }
-                    }
+                while (true) {
+                    reader = new StreamReader(serverSocket.accept());
+                    reader.start();
                 }
                 
             } catch (IOException ex) {
-                // Nothing on client end... Continue...
+                // Shutting down...
+            }
+        }
+    }
+    
+    class StreamReader extends Thread {
+        private final Socket socket;
+        private int status = -1;
+        
+        public StreamReader(Socket s) {
+            socket = s;
+        }
+        
+        public int getStatus() {
+            // -1 : Not yet called
+            // 100: In process
+            // 200: Exited with no error
+            // 201: Exited for no greylist to add
+            // 202: Exited with socket being null
+            // 222: Exited with error
+            
+            return status;
+        }
+        
+        @Override
+        public void run() {
+            status = 100;
+            try {
+                VoxelGuest.log(name, "Accepted client on port " + streamPort, 0);
+                List<String> list = readSocket(socket);
+                socket.close();
+
+                if (list == null || list.isEmpty()) {
+                    status = 201;
+                    return;
+                }
+
+                injectGreylist(list);
+                announceGreylist(list);
+            } catch (IOException ex) {
+                VoxelGuest.log(name, "Could not close client stream socket", 2);
+                status = 222;
+                return;
             }
         }
         
         private synchronized List<String> readSocket(Socket socket) {
             try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader stream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 
                 List<String> list = new ArrayList<String>();
                 String line = null;
                 
-                while ((line = stream.readLine()) != null) {
+                while ((line = in.readLine()) != null) {
                     String toAdd = interpretStreamInput(line);
                     
                     if (toAdd != null) {
                         if (!list.contains(toAdd))
                             list.add(toAdd);
                     }
+                    
+                    out.println(line);
                 }
                 
-                stream.close();
+                in.close();
+                out.close();
                 socket.close();
                 return list;
             } catch (SocketException ex) {

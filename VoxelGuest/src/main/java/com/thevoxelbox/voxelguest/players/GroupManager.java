@@ -110,6 +110,8 @@ public class GroupManager {
             
             if (!groupMap.containsKey(group))
                 groupMap.put(group, defaultConfig);
+        } else {
+            groupMap.put(defaultGroupName, defaultConfig);
         }
     }
     

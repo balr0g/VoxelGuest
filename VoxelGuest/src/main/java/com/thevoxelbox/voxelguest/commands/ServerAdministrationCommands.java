@@ -175,6 +175,18 @@ public class ServerAdministrationCommands {
         } else if (args[0].equalsIgnoreCase("reset")) {
             VoxelGuest.getInstance().loadFactorySettings();
             cs.sendMessage("§aReset to factory settings");
+        } else if (args[0].equalsIgnoreCase("gc") || args[0].equalsIgnoreCase("flush")) {
+            cs.sendMessage("§8//§e//§8//§e//§8//§e//§8//§e//§8//§e//");
+            cs.sendMessage("§cWARNING: May cause memory leaks. USE ONLY WHEN DESPERATE!");
+            
+            double old = Runtime.getRuntime().freeMemory() / 1048576;
+            Runtime.getRuntime().gc();
+            double now = Runtime.getRuntime().freeMemory() / 1048576;
+            double change = now - old;
+            
+            cs.sendMessage("§6JVM Garbage Collector run complete.");
+            cs.sendMessage("§6" + change + " MB of memory has been freed.");
+            cs.sendMessage("§e//§8//§e//§8//§e//§8//§e//§8//§e//§8//");
         }
     }
     

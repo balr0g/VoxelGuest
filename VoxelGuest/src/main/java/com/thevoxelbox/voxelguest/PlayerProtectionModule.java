@@ -80,70 +80,53 @@ public class PlayerProtectionModule extends Module {
         Entity e = event.getEntity();
         DamageCause dc = event.getCause();
         
-        if(e instanceof Player) {
-            if(dc.equals(DamageCause.BLOCK_EXPLOSION) && getConfiguration().getBoolean("disable-tnt-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.CONTACT) && getConfiguration().getBoolean("disable-cactus-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.DROWNING) && getConfiguration().getBoolean("disable-drowning-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.ENTITY_ATTACK) && getConfiguration().getBoolean("disable-pvp-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.ENTITY_EXPLOSION) && getConfiguration().getBoolean("disable-explosion-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.FALL) && getConfiguration().getBoolean("disable-fall-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.FIRE) && getConfiguration().getBoolean("disable-fire-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.FIRE_TICK) && getConfiguration().getBoolean("disable-firetick-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.LAVA) && getConfiguration().getBoolean("disable-lava-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.LIGHTNING) && getConfiguration().getBoolean("disable-lightning-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.MAGIC) && getConfiguration().getBoolean("disable-magic-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.POISON) && getConfiguration().getBoolean("disable-poison-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.PROJECTILE) && getConfiguration().getBoolean("disable-projectile-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.STARVATION) && getConfiguration().getBoolean("disable-starvation-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.SUFFOCATION) && getConfiguration().getBoolean("disable-suffocation-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-            else if(dc.equals(DamageCause.VOID) && getConfiguration().getBoolean("disable-void-damage")) {
-                event.setDamage(0);
-                event.setCancelled(true);
+        if (e instanceof Player) {
+            switch (dc) {
+                case BLOCK_EXPLOSION:
+                    if (getConfiguration().getBoolean("disable-tnt-damage"))
+                        event.setCancelled(true);
+                case CONTACT:
+                    if (getConfiguration().getBoolean("disable-cactus-damage"))
+                        event.setCancelled(true);
+                case DROWNING:
+                    if (getConfiguration().getBoolean("disable-drowning-damage"))
+                        event.setCancelled(true);
+                case ENTITY_ATTACK:
+                    if (getConfiguration().getBoolean("disable-pvp-damage"))
+                        event.setCancelled(true);
+                case ENTITY_EXPLOSION:
+                    if (getConfiguration().getBoolean("disable-explosion-damage"))
+                        event.setCancelled(true);
+                case FALL:
+                    if (getConfiguration().getBoolean("disable-fall-damage"))
+                        event.setCancelled(true);
+                case FIRE:
+                    if (getConfiguration().getBoolean("disable-fire-damage"))
+                        event.setCancelled(true);
+                case FIRE_TICK:
+                    if (getConfiguration().getBoolean("disable-firetick-damage"))
+                        event.setCancelled(true);
+                case LAVA:
+                    if (getConfiguration().getBoolean("disable-lava-damage"))
+                        event.setCancelled(true);
+                case LIGHTNING:
+                    if (getConfiguration().getBoolean("disable-lightning-damage"))
+                        event.setCancelled(true);
+                case MAGIC:
+                    if (getConfiguration().getBoolean("disable-magic-damage"))
+                        event.setCancelled(true);
+                case POISON:
+                    if (getConfiguration().getBoolean("disable-poison-damage"))
+                        event.setCancelled(true);
+                case PROJECTILE:
+                    if (getConfiguration().getBoolean("disable-projectile-damage"))
+                        event.setCancelled(true);
+                case STARVATION:
+                    if (getConfiguration().getBoolean("disable-suffocation-damage"))
+                        event.setCancelled(true);
+                case VOID:
+                    if (getConfiguration().getBoolean("disable-void-damage"))
+                        event.setCancelled(true);
             }
         }
     }
