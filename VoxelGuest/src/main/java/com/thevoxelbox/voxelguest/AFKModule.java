@@ -162,18 +162,12 @@ public class AFKModule extends Module {
     public void onPlayerQuit(BukkitEventWrapper wrapper) {
         PlayerQuitEvent event = (PlayerQuitEvent) wrapper.getEvent();
         timeMap.remove(event.getPlayer());
-        if(isAFK(event.getPlayer())){
-            afkList.remove(event.getPlayer());
-        }
     }
     
     @ModuleEvent(event=PlayerKickEvent.class)
     public void onPlayerKick(BukkitEventWrapper wrapper) {
         PlayerKickEvent event = (PlayerKickEvent) wrapper.getEvent();
         timeMap.remove(event.getPlayer());
-        if(isAFK(event.getPlayer())){
-            afkList.remove(event.getPlayer());
-        }
     }
     
     @ModuleEvent(event=PlayerChatEvent.class)
