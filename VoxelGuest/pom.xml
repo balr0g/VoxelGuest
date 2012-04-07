@@ -5,7 +5,7 @@
 
     <groupId>com.thevoxelbox</groupId>
     <artifactId>VoxelGuest</artifactId>
-    <version>4.0.4-SNAPSHOT</version>
+    <version>4.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>VoxelGuest</name>
     <description>A server administration suite from The Voxel Box</description>
@@ -14,16 +14,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
+    <scm>
+        <connection>scm:git:git://github.com/TVPT/VoxelGuest.git</connection>
+        <url>https://github.com/TVPT/VoxelGuest</url>
+        <developerConnection>scm:git:git@github.com:TVPT/VoxelGuest.git</developerConnection>
+    </scm>
+
+    
     <repositories>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
         </repository>
         
-        <repository>
-            <id>tehkode-repo</id>
-            <url>http://repo.tehkode.ru/repository/bukkit-plugins/</url>
-        </repository>
     </repositories>
     
     <dependencies>
@@ -31,8 +34,8 @@
         <!-- Bukkit -->
         <dependency>
             <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.2.3-R0.2-SNAPSHOT</version>
+            <artifactId>bukkit</artifactId>
+            <version>1.2.5-R0.1-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         
@@ -46,16 +49,21 @@
             <type>jar</type>
         </dependency>
         
-        <!-- PEX -->
+        <!-- Since PEX's repo sucks from time to time -->
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.20-SNAPSHOT</version>
+            <version>1.19.1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/PermissionsEx.jar</systemPath>
             <type>jar</type>
         </dependency>
     </dependencies>
     
     <build>
+        <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
+        
+        <!-- Resources -->
         <resources>
             <resource>
                 <targetPath>.</targetPath>
@@ -75,6 +83,7 @@
             </resource>
         </resources>
         
+        <!-- Plugins -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -91,6 +100,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
+                        <addMavenDescriptor>true</addMavenDescriptor>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>com.thevoxelbox.voxelguest.VoxelGuest</mainClass>
@@ -99,6 +109,15 @@
                 </configuration>
             </plugin>
             
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-2</version>
+                <configuration>
+                    <descriptor>${basedir}/src/main/assembly/default.xml</descriptor>
+                    <finalName>VoxelGuest</finalName>
+                    <outputDirectory>${basedir}/dist</outputDirectory>
+                </configuration>
+            </plugin>
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -108,7 +127,6 @@
                     <preparationGoals>assembly:assembly</preparationGoals>
                     <goals>assembly:assembly</goals>
                     <tagNameFormat>@{project.version}</tagNameFormat>
-                    <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
                 </configuration>
             </plugin>
             

@@ -38,10 +38,6 @@ import java.util.logging.Logger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- *
- * @author psanker
- */
 public class CommandManager {
     // =============================
     // - VOXELGUEST COMMAND ENGINE

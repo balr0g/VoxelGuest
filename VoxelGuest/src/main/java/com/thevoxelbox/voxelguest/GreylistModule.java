@@ -67,8 +67,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 @MetaData(name="Greylist", description="Allows for the setup of a greylist system!")
 public class GreylistModule extends Module {
     
-    private static final List<String> greylist = new ArrayList<String>();
-    private static final List<String> onlineGreys = new ArrayList<String>();
+    private final List<String> greylist = new ArrayList<String>();
+    private final List<String> onlineGreys = new ArrayList<String>();
     
     private StreamThread streamTask = null;
     private String streamPasswordHash;
@@ -90,6 +90,7 @@ public class GreylistModule extends Module {
         @Setting("greylist-online-limit") public int onlineLimit = 10;
         @Setting("greylist-not-greylisted-kick-message") public String notGreylistedKickMessage = "You are not greylisted on this server.";
         @Setting("greylist-over-capacity-kick-message") public String overCapacityKickMessage = "The server is temporarily over guest capacity. Check back later.";
+        @Setting("save-on-player-greylist") public boolean saveOnPlayerGreylist = false;
         
         public GreylistConfiguration(GreylistModule parent) {
             super(parent);
@@ -102,7 +103,6 @@ public class GreylistModule extends Module {
         String[] list = FlatFileManager.load("greylist");
         
         if (list == null) {
-            getConfiguration().setBoolean("enable-greylist", false);
             throw new ModuleException("Empty greylist");
         } else if (!getConfiguration().getBoolean("enable-greylist")) {
             throw new ModuleException("Greylist is disabled in config");
@@ -129,9 +129,7 @@ public class GreylistModule extends Module {
         if (streamTask != null)
             streamTask.killProcesses();
             
-        String[] toSave = new String[greylist.size()];
-        toSave = greylist.toArray(toSave);
-        FlatFileManager.save(toSave, "greylist");
+        saveGreylist();
     }
 
     @Override
@@ -180,6 +178,10 @@ public class GreylistModule extends Module {
         String user = args[0];
         injectGreylist(new String[] {user});
         announceGreylist(user);
+        
+        if (getConfiguration().getBoolean("save-on-player-greylist")) {
+            saveGreylist();
+        }
     }
     
     @Command(aliases={"whitelist", "wl"},
@@ -342,11 +344,11 @@ public class GreylistModule extends Module {
         }
         
         if (!explorationMode) {
-            if (!greylist.contains(gp.getPlayer().getName())) {
+            if (!greylist.contains(gp.getPlayer().getName().toLowerCase())) {
                 gp.getPlayer().kickPlayer((getConfiguration().getString("greylist-not-greylisted-kick-message") != null) ? getConfiguration().getString("greylist-not-greylisted-kick-message") : "You are not greylisted on this server.");
                 event.setJoinMessage("");
                 return;
-            } else if (greylist.contains(gp.getPlayer().getName()) && !PermissionsManager.getHandler().hasPermission(gp.getPlayer().getName(), "voxelguest.greylist.bypass")) {
+            } else if (greylist.contains(gp.getPlayer().getName().toLowerCase()) && !PermissionsManager.getHandler().hasPermission(gp.getPlayer().getName(), "voxelguest.greylist.bypass")) {
                 if (onlineGreylistLimit > -1 && onlineGreys.size() >= onlineGreylistLimit) {
                     String str = getConfiguration().getString("greylist-over-capacity-kick-message");
                     gp.getPlayer().kickPlayer((str != null) ? str : "The server is temporarily over guest capacity. Check back later.");
@@ -397,6 +399,21 @@ public class GreylistModule extends Module {
             onlineGreys.remove(event.getPlayer().getName());
     }
     
+    private void saveGreylist() {
+        if (!greylist.isEmpty()) {
+            Iterator<String> it = greylist.listIterator();
+            String[] toSave = new String[greylist.size()];
+            int i = 0;
+
+            while (it.hasNext()) {
+                String entry = it.next();
+                toSave[i] = entry.toLowerCase();
+            }
+
+            FlatFileManager.save(toSave, "greylist");
+        }
+    }
+    
     private void announceGreylist(String user) {
         Bukkit.getServer().broadcastMessage(ChatColor.GRAY + user + ChatColor.DARK_GRAY + " was added to the greylist.");
     }
@@ -415,8 +432,8 @@ public class GreylistModule extends Module {
             return;
         
         for (String str : strs) {
-            if (!greylist.contains(str))
-                greylist.add(str);
+            if (!greylist.contains(str.toLowerCase()))
+                greylist.add(str.toLowerCase());
         }
     }
     
@@ -424,7 +441,14 @@ public class GreylistModule extends Module {
         if (list.isEmpty() || list == null)
             return;
         
-       greylist.addAll(list);
+       Iterator<String> it = list.listIterator();
+       
+       while (it.hasNext()) {
+           String next = it.next();
+           
+           if (!greylist.contains(next.toLowerCase()))
+               greylist.add(next.toLowerCase());
+       }
     }
     
     private String interpretStreamInput(String input) {
@@ -520,6 +544,10 @@ public class GreylistModule extends Module {
 
                 injectGreylist(list);
                 announceGreylist(list);
+                
+                if (getConfiguration().getBoolean("save-on-player-greylist")) {
+                    saveGreylist();
+                }
             } catch (IOException ex) {
                 VoxelGuest.log(name, "Could not close client stream socket", 2);
                 status = 222;
@@ -577,7 +605,7 @@ public class GreylistModule extends Module {
         }
     }
     
-    private static String convertToHex(byte[] data) { 
+    private String convertToHex(byte[] data) { 
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < data.length; i++) { 
             int halfbyte = (data[i] >>> 4) & 0x0F;

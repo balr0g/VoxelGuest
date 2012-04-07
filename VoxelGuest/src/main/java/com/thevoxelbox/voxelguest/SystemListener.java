@@ -64,7 +64,7 @@ public class SystemListener extends ModuleSystemListener {
         GuestPlayer gp = VoxelGuest.registerPlayer(event.getPlayer());
         VoxelGuest.getGroupManager().verifyPlayerGroupExistence(event.getPlayer());
         
-        VoxelGuest.ONLINE_MEMBERS++;
+        ++VoxelGuest.ONLINE_MEMBERS;
         
         if (VoxelGuest.ONLINE_MEMBERS != Bukkit.getOnlinePlayers().length)
             VoxelGuest.ONLINE_MEMBERS = Bukkit.getOnlinePlayers().length;
@@ -83,7 +83,7 @@ public class SystemListener extends ModuleSystemListener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent event) {
         GuestPlayer gp = VoxelGuest.getGuestPlayer(event.getPlayer());
-        VoxelGuest.ONLINE_MEMBERS--;
+        --VoxelGuest.ONLINE_MEMBERS;
         
         try {
             String format = VoxelGuest.getConfigData().getString("leave-message-format");
@@ -106,7 +106,7 @@ public class SystemListener extends ModuleSystemListener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerKick(PlayerKickEvent event) {
         GuestPlayer gp = VoxelGuest.getGuestPlayer(event.getPlayer());
-        VoxelGuest.ONLINE_MEMBERS--;
+        --VoxelGuest.ONLINE_MEMBERS;
         
         try {
             String format = VoxelGuest.getConfigData().getString("kick-message-format");
@@ -156,7 +156,7 @@ public class SystemListener extends ModuleSystemListener {
         processModuleEvents(event);
     }
     
-    @EventHandler
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockBreak(BlockBreakEvent event) {
         processModuleEvents(event);
     }
