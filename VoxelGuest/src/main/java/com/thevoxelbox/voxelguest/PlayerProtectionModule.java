@@ -44,7 +44,7 @@ public class PlayerProtectionModule extends Module {
         @Setting("disable-firetick-damage") public boolean firetick = false;
         @Setting("disable-lava-damage") public boolean lava = false;
         @Setting("disable-lightning-damage") public boolean lightning = false;
-        @Setting("disable-potion-damage") public boolean potion = false;
+        @Setting("disable-poison-damage") public boolean potion = false;
         @Setting("disable-magic-damage") public boolean magic = false;
         @Setting("disable-projectile-damage") public boolean projectile = false;
         @Setting("disable-starvation-damage") public boolean starvation = false;
