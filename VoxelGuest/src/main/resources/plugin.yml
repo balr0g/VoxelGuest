@@ -1,7 +1,7 @@
 name: VoxelGuest
 main: com.thevoxelbox.voxelguest.VoxelGuest
 author: VoxelPlugineering
-version: 4.0.6
+version: 4.0.6a
 website: http://voxelwiki.com/minecraft/VoxelGuest
 
 commands:
@@ -58,3 +58,7 @@ commands:
     aliases: [ri]
   entitypurge:
     aliases: [ep]
+  spawn:
+    description: Takes you to spawn
+  setspawn:
+    description: Sets the spawn location

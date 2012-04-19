@@ -51,10 +51,10 @@ public class SpawnModule extends Module {
 
     class SpawnConfiguration extends ModuleConfiguration {
 
-        @Setting("use-default-world-spawn")
-        public boolean defaultWorld = true;
+        @Setting("use-configuration-location")
+        public boolean defaultWorld = false;
         @Setting("use-ender-pearl-teleportation-cause")
-        public boolean enderTeleport = true;
+        public boolean enderTeleport = false;
         @Setting("world")
         public String worldName = "";
         @Setting("world-x")
@@ -72,16 +72,16 @@ public class SpawnModule extends Module {
         @Setting("random-spawn-messages")
         public String messages = "Your butt hurts,Woosh!,Weeee!,Buy Now! Ganz Ganz!,Huzzah!,*Blip*,*Pop*,Eat your veggies,Shake-Shake-Shake";
 
-        public SpawnConfiguration(AFKModule parent) {
+        public SpawnConfiguration(SpawnModule parent) {
             super(parent);
         }
     }
 
     @Override
     public void enable() throws ModuleException {
-        setConfiguration(new ModuleConfiguration(this));
+        setConfiguration(new SpawnConfiguration(this));
 
-        if (!getConfiguration().getBoolean("use-default-world-spawn")) {
+        if (getConfiguration().getBoolean("use-configuration-location")) {
             Location loc = new Location(
                     Bukkit.getWorld(getConfiguration().getString("world")),
                     getConfiguration().getDouble("world-x"),
@@ -99,7 +99,7 @@ public class SpawnModule extends Module {
 
     @Override
     public String getLoadMessage() {
-        return "Spawn module enabled - Spawn location: " + spawnLocation.toString() + (getConfiguration().getBoolean("use-default-world-spawn") ? " (default)" : "");
+        return "Spawn module enabled - Spawn location: " + spawnLocation.toString() + (getConfiguration().getBoolean("use-configuration-location") ? "" : " (default)");
     }
 
     @Override
@@ -115,7 +115,7 @@ public class SpawnModule extends Module {
         Player p = (Player) cs;
 
         spawnLocation = p.getLocation();
-        getConfiguration().setBoolean("use-default-world-spawn", false);
+        getConfiguration().setBoolean("use-configuration-location", false);
         getConfiguration().setDouble("world-x", spawnLocation.getX());
         getConfiguration().setDouble("world-y", spawnLocation.getY());
         getConfiguration().setDouble("world-z", spawnLocation.getZ());
