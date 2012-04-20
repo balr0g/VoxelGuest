@@ -99,7 +99,7 @@ public class SpawnModule extends Module {
 
     @Override
     public String getLoadMessage() {
-        return "Spawn module enabled - Spawn location: " + spawnLocation.toString() + (getConfiguration().getBoolean("use-configuration-location") ? "" : " (default)");
+        return "Spawn module enabled - using " + (getConfiguration().getBoolean("use-configuration-location") ? "configuration spawn" : "default spawn");
     }
 
     @Override
@@ -115,7 +115,8 @@ public class SpawnModule extends Module {
         Player p = (Player) cs;
 
         spawnLocation = p.getLocation();
-        getConfiguration().setBoolean("use-configuration-location", false);
+        getConfiguration().setBoolean("use-configuration-location", true);
+        getConfiguration().setString("world", spawnLocation.getWorld().getName());
         getConfiguration().setDouble("world-x", spawnLocation.getX());
         getConfiguration().setDouble("world-y", spawnLocation.getY());
         getConfiguration().setDouble("world-z", spawnLocation.getZ());
