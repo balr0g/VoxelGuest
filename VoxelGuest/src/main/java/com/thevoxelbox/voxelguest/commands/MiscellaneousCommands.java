@@ -73,7 +73,7 @@ public class MiscellaneousCommands {
     @Command(aliases={"vteleport", "vtp"},
             bounds={1, 2},
             help="Teleport to other people with /vtp [player]\n"
-            + "Teleport to other people at an offset with /vtp [player] [x,y,z][num]\n"
+            + "Teleport to other people at an offset with /vtp [player] [x#,y#,z#][num]\n"
             + "Teleport others to you with /vtp [player] me",
             playerOnly=true)
     @CommandPermission(permission="voxelguest.miscellaneous.vtp")

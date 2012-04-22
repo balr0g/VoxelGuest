@@ -58,3 +58,7 @@ commands:
     aliases: [ri]
   entitypurge:
     aliases: [ep]
+  spawn:
+    description: Takes you to spawn
+  setspawn:
+    description: Sets the spawn location
