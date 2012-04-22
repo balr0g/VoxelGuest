@@ -32,7 +32,7 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
-import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.util.PropertyManager;
 
 public class GuestPlayer {

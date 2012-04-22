@@ -24,12 +24,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.permissions;
+package com.thevoxelbox.voxelguest.commands.engine;
 
-public class PermissionsException extends Exception {
-    private static final long serialVersionUID = 22300013938599292L;
+public class ArgumentOutOfBoundsException extends CommandException {
 
-    public PermissionsException(String reason) {
+    private static final long serialVersionUID = 37193865765124786L;
+
+    public ArgumentOutOfBoundsException(String reason) {
         super(reason);
     }
 }

@@ -24,12 +24,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.commands;
+package com.thevoxelbox.voxelguest.commands.engine;
 
-public class UnhandledCommandException extends CommandException {
-    private static final long serialVersionUID = 47749220015843974L;
+public class CommandMethodInvocationException extends CommandException {
+    private static final long serialVersionUID = 9407231027666806L;
 
-    public UnhandledCommandException(String reason) {
+    public CommandMethodInvocationException(String reason) {
         super(reason);
     }
 }

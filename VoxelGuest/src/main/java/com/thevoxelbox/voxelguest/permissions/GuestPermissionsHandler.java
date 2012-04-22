@@ -24,7 +24,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.permissions;
+package com.thevoxelbox.voxelguest.permissions;
 
 import com.thevoxelbox.voxelguest.VoxelGuest;
 import java.io.File;

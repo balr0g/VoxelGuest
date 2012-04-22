@@ -24,27 +24,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.commands;
+package com.thevoxelbox.voxelguest.commands.engine;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * 
+ * Inspired by sk89q's command system
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Subcommands {
+public @interface Command {
 
     /**
      * 
-     * Arguments of subcommands
-     * NOTE: ORDER MATTERS
+     * List of aliases for the command. ALWAYS SET THE PRIMARY COMMAND AS INDEX 0
      * 
      */
-    String[] arguments();
+    String[] aliases();
 
     /**
      * 
-     * Permissions needed for subcommands
-     * NOTE: ORDER MATTERS
+     * Minimum and maximum allowed argument lengths
+     * Index 0 is min number and index 1 is max number 
+     * (set index 1 to -1 or lower to have unlimited arguments)
      * 
      */
-    String[] permission();
+    int[] bounds();
+
+    /**
+     * 
+     * Prints this out when person does "/<command> ?", "/<command> help", or "/<command> h"
+     * 
+     */
+    String help() default "§cNo help is provided for this command";
+
+    /**
+     * 
+     * 
+     * Checks if the command is for players only
+     * 
+     */
+    boolean playerOnly() default false;
 }

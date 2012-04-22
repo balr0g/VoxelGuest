@@ -24,7 +24,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.commands;
+package com.thevoxelbox.voxelguest.commands.engine;
 
 public class CommandException extends Exception {
     private static final long serialVersionUID = 17124527707790318L;

@@ -24,10 +24,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.commands;
+package com.thevoxelbox.voxelguest.commands.engine;
 
-import com.thevoxelbox.permissions.InsufficientPermissionsException;
-import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.permissions.InsufficientPermissionsException;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

@@ -24,12 +24,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.permissions;
+package com.thevoxelbox.voxelguest.commands.engine;
 
-public class InsufficientPermissionsException extends PermissionsException {
-    private static final long serialVersionUID = 20814324162432463L;
-    
-    public InsufficientPermissionsException(String reason) {
-        super(reason);
-    }   
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Subcommands {
+
+    /**
+     * 
+     * Arguments of subcommands
+     * NOTE: ORDER MATTERS
+     * 
+     */
+    String[] arguments();
+
+    /**
+     * 
+     * Permissions needed for subcommands
+     * NOTE: ORDER MATTERS
+     * 
+     */
+    String[] permission();
 }

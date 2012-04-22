@@ -26,7 +26,7 @@
 
 package com.thevoxelbox.voxelguest.players;
 
-import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.util.Configuration;
 import java.io.File;
 import java.util.ArrayList;
@@ -108,8 +108,11 @@ public class GroupManager {
         if (groups != null && groups.length > 0) {
             String group = groups[0];
             
-            if (!groupMap.containsKey(group))
+            if (!groupMap.containsKey(group)) {
                 groupMap.put(group, defaultConfig);
+                getGroupConfiguration(group).assignTarget(group);
+            }
+            
         } else {
             groupMap.put(defaultGroupName, defaultConfig);
         }

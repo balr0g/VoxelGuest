@@ -24,12 +24,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.thevoxelbox.commands;
+package com.thevoxelbox.voxelguest.commands.engine;
 
-public class MalformattedCommandException extends CommandException {
-    private static final long serialVersionUID = 6045041945680663L;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-    public MalformattedCommandException(String reason) {
-        super(reason);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CommandPermission {
+
+    /**
+     * 
+     * The permission needed
+     * 
+     */
+    String permission() default "";
 }

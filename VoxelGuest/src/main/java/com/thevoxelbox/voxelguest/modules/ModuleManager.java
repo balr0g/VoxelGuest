@@ -26,7 +26,7 @@
 
 package com.thevoxelbox.voxelguest.modules;
 
-import com.thevoxelbox.commands.CommandManager;
+import com.thevoxelbox.voxelguest.commands.engine.CommandManager;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;

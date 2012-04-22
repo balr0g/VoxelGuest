@@ -1,8 +1,8 @@
 package com.thevoxelbox.voxelguest;
 
-import com.thevoxelbox.commands.Command;
-import com.thevoxelbox.commands.CommandPermission;
-import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.commands.engine.Command;
+import com.thevoxelbox.voxelguest.commands.engine.CommandPermission;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.modules.BukkitEventWrapper;
 import com.thevoxelbox.voxelguest.modules.MetaData;
 import com.thevoxelbox.voxelguest.modules.Module;

@@ -26,13 +26,13 @@
 
 package com.thevoxelbox.voxelguest;
 
-import com.thevoxelbox.commands.ArgumentOutOfBoundsException;
-import com.thevoxelbox.commands.CommandException;
-import com.thevoxelbox.commands.CommandMethodInvocationException;
-import com.thevoxelbox.commands.CommandManager;
-import com.thevoxelbox.commands.MalformattedCommandException;
-import com.thevoxelbox.permissions.InsufficientPermissionsException;
-import com.thevoxelbox.permissions.PermissionsManager;
+import com.thevoxelbox.voxelguest.commands.engine.ArgumentOutOfBoundsException;
+import com.thevoxelbox.voxelguest.commands.engine.CommandException;
+import com.thevoxelbox.voxelguest.commands.engine.CommandMethodInvocationException;
+import com.thevoxelbox.voxelguest.commands.engine.CommandManager;
+import com.thevoxelbox.voxelguest.commands.engine.MalformattedCommandException;
+import com.thevoxelbox.voxelguest.permissions.InsufficientPermissionsException;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.commands.MiscellaneousCommands;
 import com.thevoxelbox.voxelguest.commands.ServerAdministrationCommands;
 import com.thevoxelbox.voxelguest.modules.Module;

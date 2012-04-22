@@ -26,8 +26,8 @@
 
 package com.thevoxelbox.voxelguest.commands;
 
-import com.thevoxelbox.commands.Command;
-import com.thevoxelbox.commands.CommandPermission;
+import com.thevoxelbox.voxelguest.commands.engine.Command;
+import com.thevoxelbox.voxelguest.commands.engine.CommandPermission;
 import com.thevoxelbox.voxelguest.VoxelGuest;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;

@@ -77,6 +77,14 @@ public class Configuration {
         }
     }
     
+    public void assignTarget(String target) {
+        this.target = target;
+    }
+    
+    public void assignDestination(String dest) {
+        this.destination = dest;
+    }
+    
     public void save() {
         if (map == null || map.isEmpty()) {
             clear();
