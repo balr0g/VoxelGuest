@@ -126,7 +126,7 @@ public class SystemListener extends ModuleSystemListener {
             VoxelGuest.ONLINE_MEMBERS = Bukkit.getOnlinePlayers().length;
     }
     
-    @EventHandler
+    @EventHandler(priority=EventPriority.HIGHEST)
     public void onPlayerChat(PlayerChatEvent event) {
         processModuleEvents(event);
     }
