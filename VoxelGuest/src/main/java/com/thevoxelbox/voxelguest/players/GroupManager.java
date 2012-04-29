@@ -91,6 +91,15 @@ public class GroupManager {
         throw new GroupNotFoundException("No group found for key-value pair");
     }
     
+    public String findGroup(String str) {
+        for (Map.Entry<String, Configuration> entry : groupMap.entrySet()) {
+            if (entry.getKey().toLowerCase().startsWith(str.toLowerCase()))
+                return entry.getKey();
+        }
+        
+        return null;
+    }
+    
     public void saveGroupConfigurations() {
         for (Map.Entry<String, Configuration> entry : groupMap.entrySet()) {
             saveGroupConfiguration(entry.getKey());

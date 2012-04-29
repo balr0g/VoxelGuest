@@ -32,6 +32,7 @@ import com.thevoxelbox.voxelguest.VoxelGuest;
 import com.thevoxelbox.voxelguest.modules.Module;
 import com.thevoxelbox.voxelguest.modules.ModuleConfiguration;
 import com.thevoxelbox.voxelguest.modules.ModuleManager;
+import com.thevoxelbox.voxelguest.permissions.PermissionsManager;
 import com.thevoxelbox.voxelguest.util.Configuration;
 import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
@@ -202,6 +203,48 @@ public class ServerAdministrationCommands {
             cs.sendMessage("§aReset to factory settings");
         } else if (args[0].equalsIgnoreCase("gc") || args[0].equalsIgnoreCase("flush")) {
             new GarbageCollectionThread(cs).start();
+        }
+    }
+    
+    @Command(aliases={"vmptg", "vpg"},
+            bounds={2,2},
+            help="Set a player's group using\n"
+            + "§c/vmptg [player] [group]\n"
+            + "§6WARNING: This does NOT support multiworld",
+            playerOnly=true)
+    @CommandPermission(permission="system.groups.set.enable")
+    public void setGroup(CommandSender cs, String[] args) {
+        Player p = (Player) cs;
+        
+        List<Player> l = Bukkit.matchPlayer(args[0]);
+        
+        if (l.isEmpty()) {
+            cs.sendMessage("§cNo player found with that name.");
+        } else if (l.size() > 1) {
+            cs.sendMessage("§cMultiple players found with that name.");
+        } else {
+            Player toChange = l.get(0);
+            
+            String currentGroup = PermissionsManager.getHandler().getGroups(toChange.getName())[0];
+            String newGroup = VoxelGuest.getGroupManager().findGroup(args[1]);
+            
+            if (newGroup == null) {
+                cs.sendMessage("§cNo group found with that name.");
+                return;
+            }
+            
+            if (PermissionsManager.getHandler().hasPermission(p.getName(), "system.groups.set." + currentGroup.toLowerCase()) &&
+                PermissionsManager.getHandler().hasPermission(p.getName(), "system.groups.set." + newGroup.toLowerCase())) {
+                
+                for (String old : PermissionsManager.getHandler().getGroups(toChange.getName())) {
+                    PermissionsManager.getHandler().removeGroup(toChange.getName(), old);
+                }
+                
+                PermissionsManager.getHandler().addGroup(toChange.getName(), newGroup);
+                p.sendMessage("§7Set §a" + toChange.getName() + "§7's group to: §a" + newGroup);
+            } else {
+                p.sendMessage("§cYou do not have permission to perform this group change.");
+            }
         }
     }
     
