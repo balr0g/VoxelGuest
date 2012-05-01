@@ -59,7 +59,7 @@ public class SimpleFormatter extends Formatter {
         
         if (guestPlayerParcing) {
             
-            if (gp.getGroups() != null) {
+            if (gp.getGroups() != null && gp.getGroups().length >= 1) {
                 String group = gp.getGroups()[0];
                 Configuration config = VoxelGuest.getGroupManager().getGroupConfiguration(group);
                 String groupID = config.getString("group-id");
