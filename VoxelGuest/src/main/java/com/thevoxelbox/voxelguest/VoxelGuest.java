@@ -80,7 +80,7 @@ public class VoxelGuest extends JavaPlugin {
     protected Class<? extends Module>[] availableModules = new Class[] {
         AFKModule.class,
         SpawnModule.class,
-        CublicleModule.class,
+        //CublicleModule.class,
         AsshatMitigationModule.class,
         CreatureProtectionModule.class,
         GreylistModule.class,
